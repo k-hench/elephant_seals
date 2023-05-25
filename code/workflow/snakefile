@@ -1,0 +1,30 @@
+"""
+snakemake -n -R all
+snakemake -c 1 -R all_examples
+"""
+
+import os
+from copy import deepcopy
+
+configfile: "workflow/config.yml"
+
+base_dir = os.getcwd() + "/.."
+
+rule all:
+    params:
+      wd = os.getcwd(),
+      base_dir = base_dir
+    message:
+      '''
+
+      Ahoi there,
+      we are using `{params.wd}` as working directory,
+      while `{params.base_dir}` is the base directory
+      of this project.
+
+      run `snakemake -c 1 -R all_examples` to execute the example run.
+      '''
+
+
+
+include: "./rules/example.smk"

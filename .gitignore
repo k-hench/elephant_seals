@@ -1,0 +1,25 @@
+# exclude hidden R profile files
+.Rproj.user
+
+# exclude {renv} directory
+renv/
+
+# exclude snakemake housekeeping and logs
+code/.snakemake
+code/logs
+
+# exclude quarto compilation side-products but track reports
+.quarto/
+code/qmd/*
+code/styles*
+!code/qmd/*.qmd
+!code/qmd/snippets
+!code/styles.scss
+
+# exclude results by default
+results/*
+!results/img
+
+# exclude large data 
+# (explicitly define tracked files)
+data/*
