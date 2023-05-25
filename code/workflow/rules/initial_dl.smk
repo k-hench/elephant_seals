@@ -1,6 +1,14 @@
 """
 snakemake -n -R ncbi_download
 
+# interactive (online)
+snakemake \
+  --jobs 10 \
+  --cores 10 \
+  --latency-wait 30 \
+  --use-conda \
+  -R ncbi_download
+
 # batch-job submission (offline)
 snakemake --jobs 10 \
   --latency-wait 30 \
@@ -24,10 +32,14 @@ rule ncbi_download:
       'img/genomes_n50.svg',
       expand("../results/masking/{spec}_mask_check.tsv", spec = SPEC_ALL)
 
+rule only_download:
+    input: 
+      expand("../results/genomes/{spec}/{spec}.zip", spec = SPEC_ALL)
+
 checkpoint species_list:
     output: 
-      species_list = "../results/carnivora_genome_and_timetree.tsv",
-      short_label_tree = "../results/carnivora_short_labels.nwk"
+      species_list = "../data/carnivora_genome_and_timetree.tsv",
+      short_label_tree = "../data/carnivora_short_labels.nwk"
     log:
       "../code/logs/r_species_list.log"
     container: None
@@ -65,7 +77,7 @@ rule geneome_stats:
       """
 
 rule download_genome:
-    output: '../results/genomes/{spec}/{spec}.zip'
+    output: temp('../results/genomes/{spec}/{spec}.zip')
     params:
       name = lambda wc: get_accession(wc, what = "name"),
       accnr = lambda wc: get_accession(wc, what = "accession")
