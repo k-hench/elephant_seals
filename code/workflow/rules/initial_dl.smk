@@ -14,7 +14,7 @@ snakemake \
   -R only_download
 
 # batch-job submission (offline)
-snakemake --jobs 10 \
+snakemake --jobs 70 \
   --latency-wait 30 \
   --use-conda \
   -p \

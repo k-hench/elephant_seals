@@ -16,6 +16,8 @@ code/styles*
 !code/qmd/snippets
 !code/styles.scss
 
+code/sh/cactus
+
 # exclude results by default
 results/*
 !results/img

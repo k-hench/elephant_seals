@@ -20,29 +20,29 @@ snakemake --jobs 10 \
       -R all_repeat && mv job.* logs/
 '''
 
-GENOMES = config[ 'genomes' ]
+MASK_GENOMES=""
 
 rule all_repeat:
-    input: expand("data/genomes/{genome}_hardmasked.fa.gz", genome = MASK_GENOMES )
+    input: expand("../data/genomes/{genome}_hardmasked.fa.gz", genome = MASK_GENOMES )
 
 rule build_db:
-    input: 'data/genomes/{genome}.fa.gz'
-    output: touch("data/genomes/waypoints/db_{genome}.done")
+    input: '../data/genomes/{genome}.fa.gz'
+    output: touch("../data/genomes/waypoints/db_{genome}.done")
     log:
       'logs/db/{genome}.log'
     conda: 'repeat_masking'
     container: None
     shell:
       """
-      mkdir -p data/genomes/{wildcards.genome}_mod/ 
-      BuildDatabase -name data/genomes/{wildcards.genome}_mod/{wildcards.genome}_db -engine ncbi data/genomes/{wildcards.genome}.fa.gz 2>{log}
+      mkdir -p ../data/genomes/{wildcards.genome}_mod/ 
+      BuildDatabase -name ../data/genomes/{wildcards.genome}_mod/{wildcards.genome}_db -engine ncbi ../data/genomes/{wildcards.genome}.fa.gz 2>{log}
       """
 
 rule model_repeats:
     input:
-      db_done = "data/genomes/waypoints/db_{genome}.done"
+      db_done = "../data/genomes/waypoints/db_{genome}.done"
     output:
-      directory("data/genomes/{genome}_mod/{genome}_model")
+      directory("../data/genomes/{genome}_mod/{genome}_model")
     params:
       wd = os.getcwd()
     log:
@@ -52,16 +52,16 @@ rule model_repeats:
     threads: 8
     shell:
       """
-      cd data/genomes/{wildcards.genome}_mod/
+      cd ../data/genomes/{wildcards.genome}_mod/
       RepeatModeler -engine ncbi -pa {threads} -database {wildcards.genome}_db >& {params.wd}/{log}
       mv RM_* {wildcards.genome}_model
       """
 
 rule mask_repeats:
     input: 
-      model = "data/genomes/{genome}_mod/{genome}_model",
-      unmasked_genome = 'data/genomes/{genome}.fa.gz'
-    output: 'data/genomes/{genome}_masked.fa.gz'
+      model = "../data/genomes/{genome}_mod/{genome}_model",
+      unmasked_genome = '../data/genomes/{genome}.fa.gz'
+    output: '../data/genomes/{genome}_masked.fa.gz'
     log:
       'logs/mask/{genome}.log'
     conda: 'repeat_masking'
@@ -69,21 +69,21 @@ rule mask_repeats:
     threads: 8
     shell:
       """
-      mkdir -p data/genomes/tmp
-      zcat {input.unmasked_genome} > data/genomes/tmp/{wildcards.genome}.tmp.fa
+      mkdir -p ../data/genomes/tmp
+      zcat {input.unmasked_genome} > ../data/genomes/tmp/{wildcards.genome}.tmp.fa
       RepeatMasker \
         -e rmblast \
         -pa {threads} -s \
         -lib {input.model}/consensi.fa.classified \
-        -xsmall data/genomes/tmp/{wildcards.genome}.tmp.fa 2> {log}
-      mv data/genomes/tmp/{wildcards.genome}.tmp.fa.masked data/genomes/{wildcards.genome}_masked.fa
-      rm data/genomes/tmp/{wildcards.genome}.tmp.fa
-      gzip data/genomes/{wildcards.genome}_masked.fa
+        -xsmall ../data/genomes/tmp/{wildcards.genome}.tmp.fa 2> {log}
+      mv ../data/genomes/tmp/{wildcards.genome}.tmp.fa.masked data/genomes/{wildcards.genome}_masked.fa
+      rm ../data/genomes/tmp/{wildcards.genome}.tmp.fa
+      gzip ../data/genomes/{wildcards.genome}_masked.fa
       """
 
 rule convert_to_hardmasked:
-    input: 'data/genomes/{genome}_masked.fa.gz'
-    output: 'data/genomes/{genome}_hardmasked.fa.gz'
+    input: '../data/genomes/{genome}_masked.fa.gz'
+    output: '../data/genomes/{genome}_hardmasked.fa.gz'
     container: None
     shell:
       """

@@ -1,3 +1,5 @@
+# mamba env create -f map_align.yml
+name: map_align
 channels:
  - conda-forge
  - bioconda

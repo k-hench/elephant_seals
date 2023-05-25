@@ -1,0 +1,9 @@
+# mamba env create -f repeat_masking.yml
+name: repeat_masking
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - repeatmasker=4.1.2.p1
+  - repeatmodeler=2.0.2

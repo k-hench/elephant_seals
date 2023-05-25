@@ -33,6 +33,7 @@ SPEC_ALL = deepcopy( SPEC_QUERY )
 SPEC_ALL.insert( 0, SPEC_REF )
 CACTUS_CORES=config[ 'cactus_cores' ]
 
-include: "./rules/example.smk"
 include: "./rules/initial_dl.smk"
+include: "./rules/repeat_mask.smk"
 include: "./rules/align.smk"
+include: "./rules/cactus_prep.smk"
