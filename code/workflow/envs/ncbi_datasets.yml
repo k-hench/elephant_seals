@@ -1,0 +1,9 @@
+# mamba env create -f ncbi_datasets.yml
+name: ncbi_datasets
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ncbi-datasets-cli=14.15.0
+
+

@@ -2,9 +2,10 @@
 snakemake -n -R all
 snakemake -c 1 -R all_examples
 """
-
 import os
 from copy import deepcopy
+import numpy as np
+import pandas as pd
 
 configfile: "workflow/config.yml"
 
@@ -25,6 +26,12 @@ rule all:
       run `snakemake -c 1 -R all_examples` to execute the example run.
       '''
 
-
+P_NAME = config[ 'alignment_name' ]
+SPEC_REF = config[ 'refName' ]
+SPEC_QUERY = config[ 'species' ]
+SPEC_ALL = deepcopy( SPEC_QUERY )
+SPEC_ALL.insert( 0, SPEC_REF )
+CACTUS_CORES=config[ 'cactus_cores' ]
 
 include: "./rules/example.smk"
+include: "./rules/initial_dl.smk"

@@ -1,0 +1,8 @@
+# mamba env create -f r_base.yml
+name: r_base
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - r-base=4.3.0

@@ -1,3 +1,77 @@
-some_param: ""
+alignment_name: 'carnivora_set'
+refName: mirang
 
-apptainer_bind: ""
+species:
+  - acijub
+  - ailmel
+  - arcgaz
+  - calurs
+  - canlup
+  - carcar
+  - chrbra
+  - crocro
+  - cryfer
+  - eirbar
+  - enhlut
+  - eumjub
+  - felcat
+  - felcha
+  - felnig
+  - halgry
+  - helpar
+  - hyahya
+  - leogeo
+  - lepwed
+  - loncan
+  - lutlut
+  - lycpic
+  - lyncan
+  - lynpar
+  - lynruf
+  - marzib
+  - melmel
+  - melcap
+  - mirleo
+  - munmun
+  - muserm
+  - musnig
+  - musniv
+  - musput
+  - neosch
+  - nycpro
+  - odoros
+  - panleo
+  - panonc
+  - panpar
+  - pantig
+  - panunc
+  - parher
+  - phovit
+  - potfla
+  - priben
+  - priiri
+  - priviv
+  - prolot
+  - ptebra
+  - pumcon
+  - pumyag
+  - speven
+  - spigra
+  - sursur
+  - taxtax
+  - treorn
+  - ursame
+  - ursarc
+  - ursmar
+  - ursthi
+  - vulfer
+  - vullag
+  - vulvul
+  - zalcal
+
+# technical parameters
+cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
+cactus_cores: "4"
+
+# the bind-path list needs to start with a ',' to be appended properly
+singularity_bind_paths: ',$CDATA'

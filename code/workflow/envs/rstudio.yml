@@ -1,0 +1,12 @@
+# mamba env create -f rstudio.yml
+name: rstudio
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - mamba
+ - conda-forge::r-base=4.2.3
+ - conda-forge::rstudio-desktop=2022.07.2
+
+

@@ -19,7 +19,7 @@ code/styles*
 # exclude results by default
 results/*
 !results/img
-!results/img/*pdf
+results/img/*pdf
 
 # exclude large data 
 # (explicitly define tracked files)
