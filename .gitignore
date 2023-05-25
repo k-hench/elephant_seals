@@ -24,3 +24,5 @@ results/img/*pdf
 # exclude large data 
 # (explicitly define tracked files)
 data/*
+!data/carnivora_ref_genomes.tsv
+!data/carnivora_list.nwk

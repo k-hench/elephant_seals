@@ -1,0 +1,125 @@
+Assembly Accession	Assembly Name	Organism Name	Organism Infraspecific Names Breed	Organism Infraspecific Names Strain	Organism Infraspecific Names Cultivar	Organism Infraspecific Names Ecotype	Organism Infraspecific Names Isolate	Organism Infraspecific Names Sex	Annotation Name	Assembly Stats Total Sequence Length	Assembly Level	Assembly Submission Date	WGS project accession
+GCA_000002285.4	Dog10K_Boxer_Tasha	Canis lupus familiaris	boxer				Tasha	female		2312785471	Chromosome	2020-10-06	AAEX04
+GCA_000321225.1	Oros_1.0	Odobenus rosmarus divergens					Ivan	male		2400133628	Scaffold	2013-01-16	ANOP01
+GCA_000349705.1	LepWed1.0	Leptonychotes weddellii					WS11-02	female		3156886159	Scaffold	2013-03-29	APMU01
+GCA_002007445.3	ASM200744v3	Ailuropoda melanoleuca					Jingjing	female		2440260518	Chromosome	2020-04-20	LNAT02
+GCA_002007465.1	ASM200746v1	Ailurus styani					RP43	male		2342939051	Scaffold	2017-02-28	LNAC01
+GCA_002201575.2	ASM220157v2	Neomonachus schauinslandi						male		2419443398	Chromosome	2021-10-20	NINY02
+GCA_002288905.2	ASM228890v2	Enhydra lutris kenyoni					GAN:26980312	male		2455260235	Scaffold	2017-09-11	NSES01
+GCA_003009895.1	ASM300989v1	Hyaena hyaena					Hyena2069	female		2374716107	Scaffold	2018-03-19	PEQU01
+GCA_003160815.1	VulVul2.2	Vulpes vulpes		TameXAggressive cross				male		2421551259	Scaffold	2018-05-25	NBDQ01
+GCA_003254725.2	ASM325472v2	Canis lupus dingo					Sandy	female		2349862946	Chromosome	2020-09-11	QKWQ02
+GCA_003265705.1	ASM326570v1	Callorhinus ursinus					GAN/ISIS: 27379988/994484	female		2706852204	Scaffold	2018-06-26	QLOG01
+GCA_003327715.1	PumCon1.0	Puma concolor					SC36_Marlon	male		2432949531	Scaffold	2018-07-19	QAVW01
+GCA_003697995.1	ASM369799v1	Taxidea taxus jeffersonii					Tt_UBC01	male		2416005247	Scaffold	2018-10-30	RCUC01
+GCA_004023785.1	MunMun_v1_BIUU	Mungos mungo					US063			2448211634	Scaffold	2019-01-15	PISW01
+GCA_004023845.1	HelPar_v1_BIUU	Helogale parvula					US077			2392471390	Scaffold	2019-01-15	PJEM01
+GCA_004023965.1	SpiGra_v1_BIUU	Spilogale gracilis					US072			2463318012	Scaffold	2019-01-15	PITA01
+GCA_004024585.1	ParHer_v1_BIUU	Paradoxurus hermaphroditus					BSD07			2477229103	Scaffold	2019-01-15	PITB01
+GCA_004024605.1	PteBra_v1_BIUU	Pteronura brasiliensis					BS51			2602275310	Scaffold	2019-01-15	PJEN01
+GCA_004024625.1	MelCap_v1_BIUU	Mellivora capensis					BS25	female		3091173380	Scaffold	2019-01-15	PISX01
+GCA_004028035.1	ASM402803v1	Eumetopias jubatus					GAN:26980396	female		2418246527	Scaffold	2019-01-15	SBAQ01
+GCA_004216515.1	sis1-161031-pseudohap	Lycaon pictus				Zimbabwe	Sister 1	female		2137698293	Scaffold	2019-02-20	SIDF01
+GCA_004348235.1	GSC_HSeal_1.0	Phoca vitulina					PV1807	female		2363579318	Scaffold	2019-02-11	RXNX01
+GCA_006229205.1	meerkat_22Aug2017_6uvM2_HiC	Suricata suricatta					VVHF042			2353578744	Chromosome	2019-07-03	VCRZ01
+GCA_007474595.2	mLynCan4.pri.v2	Lynx canadensis					LIC74	male		2407810255	Chromosome	2020-07-14	VHLE02
+GCA_008692635.1	BGI_CrCroc_1.0	Crocuta crocuta					KB4526	male	Annotation submitted by BGI	2348360376	Scaffold	2019-10-07	VOAJ01
+GCA_009660055.1	ASM966005v1	Ursus thibetanus thibetanus					TBB2019			2373594928	Scaffold	2019-11-13	WEIE01
+GCA_009762305.2	mZalCal1.pri.v2	Zalophus californianus					mZalCal1	male		2409668595	Chromosome	2020-07-14	WPOA02
+GCA_009829155.1	mMusErm1.Pri	Mustela erminea					mMusErm1	male		2445200799	Chromosome	2020-01-03	WNLY01
+GCA_010015895.1	GSC_riverotter_1.0	Lontra canadensis					GAN:19392208	female		2405748306	Scaffold	2020-01-27	WMAJ01
+GCA_011764305.2	ASM1176430v1.1	Mustela putorius furo					JIRA1106	male		2577090966	Contig	2020-03-27	JAADYL01
+GCA_011800145.1	KU_Mleo_1.0	Mirounga leonina					KUSES-001		Annotation submitted by Earth Biogenome Project	2417303335	Scaffold	2020-03-31	JAAMPH01
+GCA_012393455.1	Tufts_HGry_1.1	Halichoerus grypus				Northwest Atlantic	241Hg	male		2338243510	Scaffold	2020-04-16	JAAXOB01
+GCA_012583365.1	ASM1258336v1	Martes zibellina					GKM	male		2420676913	Scaffold	2020-04-20	RDFD01
+GCA_014898765.1	PumYag	Puma yagouaroundi				Mexico		male		2473123098	Scaffold	2020-10-20	JACEOH01
+GCA_016509475.2	Fcat_Pben_1.1_paternal_pri	Prionailurus bengalensis					Pbe53	male		2435702060	Chromosome	2021-01-06	JADZGN01
+GCA_016801355.1	CarCar1.0	Caracal caracal					Chip ID 208007098900738	male		2420801777	Scaffold	2021-02-02	JACGTZ01
+GCA_017311185.1	Proteles_cristatus_TS307_19_07_2019	Proteles cristata cristata					TS307	male		2388965834	Scaffold	2021-03-09	JAESUZ01
+GCA_017311325.1	ASM1731132v1	Ursus maritimus					PB19			2330468424	Scaffold	2021-03-10	JADGMR01
+GCA_017311455.1	Otocyon_megalotis_TS305_17_09_2019	Otocyon megalotis megalotis					TS305	female		2374659532	Scaffold	2021-03-09	JAEUCK01
+GCA_018345385.1	ASM1834538v1	Vulpes lagopus		Blue_001				female		2345533697	Chromosome	2021-05-12	JADWOQ01
+GCA_018350155.1	O.geoffroyi_Oge1_pat1.0	Leopardus geoffroyi					Oge1	male		2426370816	Chromosome	2021-05-13	JAFEKB01
+GCA_018350175.1	F.catus_Fca126_mat1.0	Felis catus					Fca126	female		2425730029	Chromosome	2021-05-13	JAFEKA01
+GCA_018350195.2	P.tigris_Pti1_mat1.1	Panthera tigris					Pti1	female		2408678698	Chromosome	2021-05-13	JAEQMW01
+GCA_018350215.1	P.leo_Ple1_pat1.1	Panthera leo					Ple1	male		2297552363	Chromosome	2021-05-13	JAEQMX01
+GCA_018403415.1	P_iriomotensis_scaffold_01	Prionailurus iriomotensis								2382008360	Scaffold	2021-03-31	BOSP01
+GCA_019141155.1	MusNiv_Pri1.0	Mustela nivalis				Poland	MRI-KZ171007	male		2501163219	Scaffold	2021-07-06	JAGEND01
+GCA_019924945.1	FelChav1.0	Felis chaus					Fch-1a	male		2428287114	Chromosome	2021-09-14	JAGKTF01
+GCA_020171115.1	ASM_NN_V1	Neogale vison					M4711	female		2681198719	Chromosome	2021-09-29	JAIAWX01
+GCA_020311275.1	ASM2031127v1	Eira barbara					male tayra	male		2469724418	Scaffold	2021-10-05	JAHRIG01
+GCA_020975775.1	gsc_jax_bbear_1.0	Ursus americanus				Eastern	UA15103			2351947609	Contig	2021-11-24	JAJHTY01
+GCA_021288785.2	ASM2128878v2	Mirounga angustirostris					JK_09032017			2366166981	Scaffold	2021-12-26	JAJSZF01
+GCA_021288785.3	ASM2128878v3	Mirounga angustirostris					JK_09032017			2366166981	Chromosome	2022-12-21	JAJSZF01
+GCA_022079265.1	mLynRuf1.p	Lynx rufus				Redwood Valley	CCGP_SWC_20201006	male		2439239374	Scaffold	2022-02-08	JAJSDN01
+GCA_022355385.1	MUSNIG.SB6536	Mustela nigripes					SB6536	male		2498532951	Chromosome	2022-02-24	JABTCS01
+GCA_022837055.1	UM_Priviv_1.0	Prionailurus viverrinus					Anna	female		2461545606	Chromosome	2022-04-08	JALEAK01
+GCA_023065955.1	UrsArc1.0	Ursus arctos				North America	Adak	male		2474241652	Scaffold	2022-04-20	JALAAU01
+GCA_023159085.1	UWYO_SpInte_0.1	Spilogale interrupta					SI_2022a	male		2367125822	Contig	2022-04-27	JAKZGT01
+GCA_023170115.1	Speothos_venaticus_v01	Speothos venaticus					1598	male		2317707308	Scaffold	2022-04-01	BLYH01
+GCA_023721935.1	Puncia_PCG_1.0	Panthera uncia					11264	female		2433972596	Chromosome	2022-06-16	JAJAOB01
+GCA_024362965.1	ASM2436296v1	Panthera pardus					Hobbes	male		2441326314	Scaffold	2022-07-21	JANFAR01
+GCA_024500485.1	ASM2450048v1	Vulpes ferrilata					lyu1992	male		2379658649	Chromosome	2022-08-01	JAJBZS01
+GCA_024510155.1	Gulo_gulo_luscus_R-V1.0	Gulo gulo luscus					FN33715	male	Annotation submitted by The Hospital for Sick Children	2388197593	Scaffold	2022-08-04	JAJHUB01
+GCA_027422475.1	ASM2742247v1	Neofelis diardi					SundaMale-2018	male		2402909801	Scaffold	2022-12-27	JAPTHY01
+GCA_027475565.2	VMU_Ajub_asm_v1.0	Acinonyx jubatus					Ajub_Pintada_27869175	female		2377417351	Chromosome	2022-12-28	JANJSO01
+GCA_028018385.1	mNeoNeb1.pri	Neofelis nebulosa					mNeoNeb1	male		2468345093	Chromosome	2023-01-31	JAQMCS01
+GCA_028533245.1	Helarctos_malayanus_HiC	Helarctos malayanus					Sample0289	male		2486327345	Chromosome	2023-02-09	JAPYYF01
+GCA_028533295.1	Felis_nigripes_HiC	Felis nigripes					Sample2599	female		2454720760	Chromosome	2023-02-09	JAPYYG01
+GCA_028533335.1	Chrysocyon_brachyurus_HiC	Chrysocyon brachyurus					Sample0146	male		2338097569	Chromosome	2023-02-09	JAQIGB01
+GCA_028533385.1	Panthera_onca_HiC	Panthera onca					Sample0147	female		2498323642	Chromosome	2023-02-09	JAQIGD01
+GCA_028533885.1	Nasua_narica_HiC	Nasua narica					Pearl	female		2610174539	Chromosome	2023-02-09	JAPYYJ01
+GCA_028534135.1	Potos_flavus_HiC	Potos flavus					Darwin	male		2465739417	Chromosome	2023-02-09	JAPYYM01
+GCA_028551375.1	Tremarctos_ornatus_HiC	Tremarctos ornatus					Sample0412	female		2342007988	Chromosome	2023-02-09	JAPYXY01
+GCA_028564725.1	OtoMan_p1.0	Otocolobus manul					Tater	male		2487665568	Scaffold	2023-02-09	JAQHUJ01
+GCA_028646355.1	Arctocephalus_townsendi_HiC	Arctocephalus townsendi					Sample3856	male		2372365934	Chromosome	2023-02-16	JAQQSM01
+GCA_028646485.1	Cryptoprocta_ferox_HiC	Cryptoprocta ferox					Sample0336	male		2373352832	Chromosome	2023-02-16	JAQQST01
+GCA_028646535.1	pl-1k	Procyon lotor					Sample0574	female		2525713215	Chromosome	2023-02-16	JAQQSY01
+GCA_900642305.1	arcGaz3	Arctocephalus gazella								2313585684	Scaffold	2019-02-08	CAAAJK01
+GCA_900661375.1	LYPA1.0	Lynx pardinus							Annotation submitted by CNAG	2413208909	Scaffold	2019-03-28	CAAGRJ01
+GCA_902655055.2	mLutLut1.2	Lutra lutra								2438442342	Chromosome	2020-07-31	CACRWI02
+GCA_905146905.1	NYPRO_anot_genome	Nyctereutes procyonoides					TBG_1078		Annotation submitted by Senckenber Biodiversity and Climate Research Centre Frankfurt	2387080870	Scaffold	2021-02-14	CAJHUB01
+GCA_922984935.1	mMelMel3.1 paternal haplotype	Meles meles								2738678004	Chromosome	2021-12-19	CAKLPM01
+GCA_922984935.2	mMelMel3.2 paternal haplotype	Meles meles								2738678004	Chromosome	2022-03-23	CAKLPM02
+GCA_947044825.1	Saimaa ringed seal draft genome	Pusa hispida saimensis								2350022681	Contig	2023-02-03	CAMRHF01
+GCF_000002285.5	Dog10K_Boxer_Tasha	Canis lupus familiaris	boxer				Tasha	female	NCBI Annotation Release 106	2312785471	Chromosome	2020-10-06	AAEX04
+GCF_000321225.1	Oros_1.0	Odobenus rosmarus divergens					Ivan	male	NCBI Annotation Release 101	2400133628	Scaffold	2013-01-16	ANOP01
+GCF_000349705.1	LepWed1.0	Leptonychotes weddellii					WS11-02	female	NCBI Annotation Release 101	3156886159	Scaffold	2013-03-29	APMU01
+GCF_002007445.2	ASM200744v3	Ailuropoda melanoleuca					Jingjing	female	NCBI eukaryotic genome annotation pipeline	2440260518	Chromosome	2020-04-20	LNAT02
+GCF_002201575.2	ASM220157v2	Neomonachus schauinslandi						male	NCBI Annotation Release 101	2419443398	Chromosome	2021-10-20	NINY02
+GCF_002288905.1	ASM228890v2	Enhydra lutris kenyoni					GAN:26980312	male	NCBI Annotation Release 100	2455260235	Scaffold	2017-09-11	NSES01
+GCF_003009895.1	ASM300989v1	Hyaena hyaena					Hyena2069	female	NCBI Annotation Release 100	2374716107	Scaffold	2018-03-19	PEQU01
+GCF_003160815.1	VulVul2.2	Vulpes vulpes		TameXAggressive cross				male	NCBI Annotation Release 100	2421551259	Scaffold	2018-05-25	NBDQ01
+GCF_003254725.2	ASM325472v2	Canis lupus dingo					Sandy	female	NCBI Annotation Release 102	2349862946	Chromosome	2020-09-11	QKWQ02
+GCF_003265705.1	ASM326570v1	Callorhinus ursinus					GAN/ISIS: 27379988/994484	female	NCBI Annotation Release 100	2706852204	Scaffold	2018-06-26	QLOG01
+GCF_003327715.1	PumCon1.0	Puma concolor					SC36_Marlon	male	NCBI Annotation Release 100	2432949531	Scaffold	2018-07-19	QAVW01
+GCF_004028035.1	ASM402803v1	Eumetopias jubatus					GAN:26980396	female	NCBI Annotation Release 100	2418246527	Scaffold	2019-01-15	SBAQ01
+GCF_004348235.1	GSC_HSeal_1.0	Phoca vitulina					PV1807	female	NCBI Annotation Release 100	2363579318	Scaffold	2019-02-11	RXNX01
+GCF_006229205.1	meerkat_22Aug2017_6uvM2_HiC	Suricata suricatta					VVHF042		NCBI Annotation Release 100	2353578744	Chromosome	2019-07-03	VCRZ01
+GCF_007474595.2	mLynCan4.pri.v2	Lynx canadensis					LIC74	male	NCBI Annotation Release 102	2407810255	Chromosome	2020-07-14	VHLE02
+GCF_009762305.2	mZalCal1.pri.v2	Zalophus californianus					mZalCal1	male	NCBI Annotation Release 101	2409668595	Chromosome	2020-07-14	WPOA02
+GCF_009829155.1	mMusErm1.Pri	Mustela erminea					mMusErm1	male	NCBI Annotation Release 100	2445200799	Chromosome	2020-01-03	WNLY01
+GCF_010015895.1	GSC_riverotter_1.0	Lontra canadensis					GAN:19392208	female	NCBI Annotation Release 100	2405748306	Scaffold	2020-01-27	WMAJ01
+GCF_011764305.1	ASM1176430v1.1	Mustela putorius furo					JIRA1106	male	NCBI Annotation Release 102	2577090966	Contig	2020-03-27	JAADYL01
+GCF_011800145.1	KU_Mleo_1.0	Mirounga leonina					KUSES-001		NCBI Annotation Release 100	2417303335	Scaffold	2020-03-31	JAAMPH01
+GCF_012393455.1	Tufts_HGry_1.1	Halichoerus grypus				Northwest Atlantic	241Hg	male	NCBI Annotation Release 100	2338243510	Scaffold	2020-04-15	JAAXOB01
+GCF_014898765.1	PumYag	Puma yagouaroundi				Mexico		male	NCBI Annotation Release 100	2473123098	Scaffold	2020-10-20	JACEOH01
+GCF_016509475.1	Fcat_Pben_1.1_paternal_pri	Prionailurus bengalensis					Pbe53	male	NCBI Annotation Release 100	2435702060	Chromosome	2021-01-06	JADZGN01
+GCF_017311325.1	ASM1731132v1	Ursus maritimus					PB19		NCBI Annotation Release 101	2330468424	Scaffold	2021-03-09	JADGMR01
+GCF_018345385.1	ASM1834538v1	Vulpes lagopus		Blue_001				female	NCBI Annotation Release 100	2345533697	Chromosome	2021-05-12	JADWOQ01
+GCF_018350155.1	O.geoffroyi_Oge1_pat1.0	Leopardus geoffroyi					Oge1	male	NCBI Annotation Release 100	2426370816	Chromosome	2021-05-13	JAFEKB01
+GCF_018350175.1	F.catus_Fca126_mat1.0	Felis catus					Fca126	female	NCBI Annotation Release 105	2425730029	Chromosome	2021-05-13	JAFEKA01
+GCF_018350195.1	P.tigris_Pti1_mat1.1	Panthera tigris					Pti1	female	NCBI Annotation Release 102	2408678698	Chromosome	2021-05-13	JAEQMW01
+GCF_018350215.1	P.leo_Ple1_pat1.1	Panthera leo					Ple1	male	NCBI Annotation Release 100	2297552363	Chromosome	2021-05-13	JAEQMX01
+GCF_020171115.1	ASM_NN_V1	Neogale vison					M4711	female	NCBI Annotation Release 100	2681198719	Chromosome	2021-09-29	JAIAWX01
+GCF_020975775.1	gsc_jax_bbear_1.0	Ursus americanus				Eastern	UA15103		NCBI Annotation Release 100	2351947609	Contig	2021-11-24	JAJHTY01
+GCF_021288785.1	ASM2128878v2	Mirounga angustirostris					JK_09032017		NCBI Annotation Release 100	2366166981	Scaffold	2021-12-26	JAJSZF01
+GCF_022079265.1	mLynRuf1.p	Lynx rufus				Redwood Valley	CCGP_SWC_20201006	male	GCF_022079265.1-RS_2023_03	2439239374	Scaffold	2022-02-08	JAJSDN01
+GCF_022837055.1	UM_Priviv_1.0	Prionailurus viverrinus					Anna	female	GCF_022837055.1-RS_2023_03	2461545606	Chromosome	2022-04-08	JALEAK01
+GCF_023065955.1	UrsArc1.0	Ursus arctos				North America	Adak	male	NCBI Annotation Release 102	2474241652	Scaffold	2022-04-20	JALAAU01
+GCF_023721935.1	Puncia_PCG_1.0	Panthera uncia					11264	female	GCF_023721935.1-RS_2023_02	2433972596	Chromosome	2022-06-16	JAJAOB01
+GCF_024362965.1	ASM2436296v1	Panthera pardus					Hobbes	male	NCBI eukaryotic genome annotation pipeline	2441326314	Scaffold	2022-07-21	JANFAR01
+GCF_027475565.1	VMU_Ajub_asm_v1.0	Acinonyx jubatus					Ajub_Pintada_27869175	female	GCF_027475565.1-RS_2023_03	2377417351	Chromosome	2022-12-28	JANJSO01
+GCF_902655055.1	mLutLut1.2	Lutra lutra							GCF_902655055.1-RS_2023_03	2438442342	Chromosome	2020-07-31	CACRWI02
+GCF_922984935.1	mMelMel3.1 paternal haplotype	Meles meles							NCBI Annotation Release 100	2738678004	Chromosome	2021-12-19	CAKLPM01
+GCF_021288785.2	ASM2128878v3	Mirounga angustirostris					JK_09032017		GCF_021288785.2-RS_2023_03	2366166981	Chromosome	2022-12-21	JAJSZF01
