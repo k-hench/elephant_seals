@@ -126,7 +126,7 @@ rule split_fasta:
       speciesSizeFile='../results/genome/{species}.size',
       fastaFile='../data/genomes/{species}.fa' 
     output:
-      splitFa=temp(expand('../data/genomes/{{species}}.{index}.fa',index=padList)),
+      splitFa=temp('../data/genomes/{{species}}.fa'),
       flat=temp('../data/genomes/{species}.fa.flat'),
       gdx=temp('../data/genomes/{species}.fa.gdx'),
       splitDummy=temp('../data/genomes/{species}.split')
@@ -238,14 +238,14 @@ rule align_single_gsalign:
 
 rule align_split:
     input:
-      splitFa=expand("../data/genomes/{{species}}.{index}.fa",index=padList),
+      splitFa= "../data/genomes/{{species}}.fa",
       splitDummy='../data/genomes/{species}.split',
       speciesSizeFile='../results/genome/{species}.size'
     output:
       psl='../results/psl/{species}.psl',
       cmd=temp('../results/genome/{species}.cmd'),
       cmdcomp=temp('../results/genome/{species}.cmd.completed'),
-      splitMaf=temp(expand('../results/genome/{{species}}.{index}.maf',index=padList))
+      splitMaf=temp('../results/genome/{{species}}..maf')
     params:
       indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
       refName=ALIGN_REF,
@@ -253,7 +253,7 @@ rule align_split:
       speciesPath='../results/genome/{species}',
       lastParams=LAST_PARAMS,
       lastSplitParams='',
-      splitFa=expand('../data/genomes/{{species}}.{index}.fa',index=padList)
+      splitFa='../data/genomes/{{species}}.fa'
     log:
       'logs/{species}_lastAlign_split_log.txt'
     benchmark:
