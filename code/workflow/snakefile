@@ -35,3 +35,4 @@ CACTUS_CORES=config[ 'cactus_cores' ]
 
 include: "./rules/example.smk"
 include: "./rules/initial_dl.smk"
+include: "./rules/align.smk"

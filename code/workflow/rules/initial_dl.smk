@@ -1,4 +1,8 @@
 """
+# first create `carnivora_genome_and_timetree.tsv`
+# to avoid errors raised by the function `get_accession`
+snakemake -c 1 --use-conda ../data/carnivora_genome_and_timetree.tsv
+
 snakemake -n -R ncbi_download
 
 # interactive (online)
@@ -7,7 +11,7 @@ snakemake \
   --cores 10 \
   --latency-wait 30 \
   --use-conda \
-  -R ncbi_download
+  -R only_download
 
 # batch-job submission (offline)
 snakemake --jobs 10 \
