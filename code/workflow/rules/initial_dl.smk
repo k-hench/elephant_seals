@@ -81,7 +81,7 @@ rule geneome_stats:
       """
 
 rule download_genome:
-    output: temp('../results/genomes/{spec}/{spec}.zip')
+    output: '../results/genomes/{spec}/{spec}.zip'
     params:
       name = lambda wc: get_accession(wc, what = "name"),
       accnr = lambda wc: get_accession(wc, what = "accession")
