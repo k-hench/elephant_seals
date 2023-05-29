@@ -72,7 +72,7 @@ rule filter_genome:
     output:
       fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
       fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai",
-      bed = 'results/genome/{species}_subset_500bp.bed'
+      bed = '../results/genome/{species}_subset_500bp.bed'
     resources:
       mem_mb=8192
     container: c_popgen
@@ -115,7 +115,7 @@ rule index_bowtie:
       "logs/bt_log/{species}.log"
     resources:
       mem_mb=8192
-    container: c_gatk
+    container: c_qc
     shell:
       """
       bowtie2-build {input} {output.bt_index} &> {log}
