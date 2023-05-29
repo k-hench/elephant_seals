@@ -1,9 +1,8 @@
 """
-snakemake -n  --configfile workflow/config.yml -R cactus_stepwise
-snakemake --jobs 3  --configfile workflow/config.yml -R  cactus_stepwise
+snakemake -n -R cactus_stepwise
+snakemake --jobs 3 -R  cactus_stepwise
 
 snakemake --jobs 30 \
-  --configfile workflow/config.yml \
   --latency-wait 30 \
   -p \
   --default-resources mem_mb=51200 threads=1 \

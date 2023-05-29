@@ -77,3 +77,8 @@ cactus_cores: "4"
 
 # the bind-path list needs to start with a ',' to be appended properly
 singularity_bind_paths: '$(pwd)'
+
+# optional repeat masking
+need_masking:
+#  - name
+#  - name2

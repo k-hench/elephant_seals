@@ -23,7 +23,16 @@ rule all:
       while `{params.base_dir}` is the base directory
       of this project.
 
-      run `snakemake -c 1 -R all_examples` to execute the example run.
+      There are several sub-tasks witihin this pipeline,
+      that can be invoked as follows:
+
+      - run `snakemake <options> -R ncbi_download` for the download of the refernce geonmes
+      - run `snakemake <options> -R all_repeat` for the optional repeat masking of the refernce geonmes
+      - run `snakemake <options> -R align_all` for the alignment of the elephan seal genomes to the california sea lion genome
+      - run `snakemake <options> -R cactus_prep` to set up the jobs for the cactus alignment of the carnivora genomes
+      - run `snakemake <options> -R cactus_stepwise` to run the cactus alignment in a step-wise fashion
+      
+      Overall project parameters can be edited within `config.yml`.
       '''
 
 P_NAME = config[ 'alignment_name' ]
@@ -37,3 +46,12 @@ include: "./rules/initial_dl.smk"
 include: "./rules/repeat_mask.smk"
 include: "./rules/align.smk"
 include: "./rules/cactus_prep.smk"
+
+# conditional inclusion of repeat masking part
+if config[ 'need_masking' ] != None:
+  MASK_GENOMES = config[ 'need_masking' ]
+  include: "./rules/repeat_mask.smk"
+
+# conditional kick-off of the actual cactus alignment
+if os.path.exists("../results/cactus/job_inventory.tsv"):
+  include: "./rules/cactus_stepwise.smk"
