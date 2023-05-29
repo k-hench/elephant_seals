@@ -102,7 +102,8 @@ rule gsalign_index:
 rule build_index:
     input:
       str(rules.lastdb_index.output).format(refname = ALIGN_REF),
-      fastaFile="../data/genomes/{species}.fa"
+      fastaFile="../data/genomes/{species}.fa",
+      fastaRef='../data/genomes/{refname}.fa'.format(refname = ALIGN_REF)
     output:
       "../results/genome/{species}.size"
     params:
