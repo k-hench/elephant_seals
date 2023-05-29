@@ -123,9 +123,9 @@ rule download_genome:
 
 rule repack_genome:
     input: 
-      zp = '../results/genomes/{spec}/{spec}.zip'
+      zp = '../results/genomes/{spec,[a-z]+}/{spec,[a-z]+}.zip'
     output:
-      gz = '../data/genomes/{spec}.fa.gz'
+      gz = '../data/genomes/{spec,[a-z]+}.fa.gz'
     params:
       name = lambda wc: get_accession(wc, what = "name"),
       accnr = lambda wc: get_accession(wc, what = "accession")

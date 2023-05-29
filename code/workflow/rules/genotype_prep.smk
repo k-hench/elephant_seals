@@ -1,6 +1,6 @@
 """
 snakemake -n -R geno_prep
-snakemake --jobs 5 --use-singularity --use-conda -R geno_prep
+snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R geno_prep
 snakemake --dag -R  geno_prep | dot -Tsvg > ../results/img/control/dag_geno_prep.svg
 
 snakemake --jobs 5 \
@@ -35,13 +35,14 @@ rule geno_prep:
     input:
       expand("../data/genomes/{species}_partitions.tsv", species = GATK_REF),
       expand("../results/checkpoints/index_ref_{species}.check", species = GATK_REF),
+      expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF)
 
 rule faidx_index:
     input:
-      fa = "../data/genomes/{species}.fa.gz"
+      fa = "../data/genomes/{species,[a-z]+}.fa.gz"
     output:
-      fai = "../data/genomes/{species}.fa.gz.fai"
+      fai = "../data/genomes/{species,[a-z]+}.fa.gz.fai"
     resources:
       mem_mb=8192
     container: c_gatk
@@ -63,17 +64,46 @@ rule check_genome:
       Rscript R/partition_ref_genomes.R 2> {log} 1> {log}
       """
 
-rule index_genomes:
+
+rule filter_genome:
+    input: 
+      fa = "../data/genomes/{species,[a-z]+}.fa",
+      fai = "../data/genomes/{species,[a-z]+}.fa.gz.fai"
+    output:
+      fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
+      fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai",
+      bed = 'results/genome/{species}_subset_500bp.bed'
+    resources:
+      mem_mb=8192
+    container: c_popgen
+    shell:
+      """
+      awk  -v OFS="\t" '\$2 > 500 {{print \$1,0,\$2,\$1}}' {input.fai} > {output.bed}
+      
+      bedtools getfasta \
+          -fi {input.fa} \
+          -bed {output.bed} \
+          -fullHeader \
+          -nameOnly | \
+          sed 's/=/ /g' | \
+          bgzip > {output.fa_filtered}
+      
+      samtools faidx {output.fa_filtered}
+      """
+
+rule bwa_index:
     input:
-      fa = "../data/genomes/{species}.fa.gz",
-      fai = "../data/genomes/{species}.fa.gz.fai"
+      fa = "../data/genomes/filtered/{species}_filt.fa.gz",
+      fai = "../data/genomes/filtered/{species}_filt.fa.gz.fai"
     output: temp( touch("../results/checkpoints/index_ref_{species}.check") )
+    log:
+      "logs/bwa_log/{species}.log"
     resources:
       mem_mb=8192
     container: c_gatk
     shell:
       """
-      bwa index -a bwtsw {input.fa}
+      bwa index -a bwtsw {input.fa} &> {log}
       """
 
 rule index_bowtie:
@@ -81,10 +111,12 @@ rule index_bowtie:
       fa = "../data/genomes/{species}.fa"
     output:
       bt_index = directory("../data/fq_screen_db/{species}")
+    log:
+      "logs/bt_log/{species}.log"
     resources:
       mem_mb=8192
     container: c_gatk
     shell:
       """
-      bowtie2-build {input} {output.bt_index}
+      bowtie2-build {input} {output.bt_index} &> {log}
       """
