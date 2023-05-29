@@ -86,3 +86,9 @@ cactus_cores: "4"
 need_masking:
 #  - name
 #  - name2
+
+# GATK parameters:
+sif_gatk: '$CDATA/apptainer_local/genotyping_suite_v0.3.sif'
+sif_qc: '$CDATA/apptainer_local/qc_suite_v0.3.sif'
+sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.1.sif'
+sif_sim: '$CDATA/apptainer_local/popsim_suite_v0.2.sif'
