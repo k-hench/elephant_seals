@@ -17,7 +17,7 @@ p0 <- data |>
   geom_point() +
   scale_x_log10()
 
-ggsave(filename = here("results", "img","genomes_n50.pdf"),
+ggsave(filename = here("results", "img", "qc","genomes_n50.pdf"),
        plot = p0,
        height = 12,
        width = 6)
@@ -27,7 +27,7 @@ p1 <- data |>
   ggplot(aes(y = spec, x = `Assembly Stats Total Sequence Length`)) +
   geom_point()
 
-ggsave(filename = here("results","img", "genomes_length.pdf"),
+ggsave(filename = here("results","img", "qc", "genomes_length.pdf"),
        plot = p1,
        height = 12,
        width = 6)
@@ -48,7 +48,7 @@ p3 <- data |>
 
 p4 <- p2 / p3 + plot_layout(heights = c(1,.2))
 
-ggsave(filename = here("results", "img", "genomes_sorted.pdf"),
+ggsave(filename = here("results", "img", "qc", "genomes_sorted.pdf"),
        plot = p3,
        height = 12,
        width = 6)

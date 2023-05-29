@@ -1,5 +1,6 @@
 '''
 snakemake -n -R  align_all
+snakemake -dag -R  align_all | dot -Tsvg > ../results/img/control/dag_align.svg
 '''
 
 from snakemake import available_cpu_count
@@ -42,7 +43,7 @@ rule unpack_genome:
     input:
       gz ='../data/genomes/{refname}.fa.gz'
     output:
-      fasta = temp("../data/genomes/{refname}.fa")
+      fasta = "../data/genomes/{refname}.fa"
     conda:
       'msa_align'
     shell:
