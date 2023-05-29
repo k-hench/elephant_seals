@@ -3,11 +3,11 @@ library(patchwork)
 library(here)
 
 data_dir <- here("results", "genome_stats")
-files <- str_c(data_dir, dir(data_dir, pattern = ".tsv"))
+files <- str_c(data_dir, '/', dir(data_dir, pattern = ".tsv"))
 
 data <- map_dfr(files,
                 function(fl){
-                  vroom::vroom(fl ,col_types = "ccccdddD") |> 
+                  vroom::vroom(fl, col_types = "ccccdddD") |> 
                     mutate(spec = str_remove(fl, ".*/") |> str_remove(".tsv")) |> 
                     dplyr::select(spec, everything())}
                 )
