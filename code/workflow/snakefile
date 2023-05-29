@@ -26,6 +26,7 @@ rule all:
       There are several sub-tasks witihin this pipeline,
       that can be invoked as follows:
 
+      - run `snakemake <options> -R cleanup_all` to remove intermediate files that can not be flagged with temp() due to modularized pipeline setup
       - run `snakemake <options> -R ncbi_download` for the download of the refernce geonmes
       - run `snakemake <options> -R all_repeat` for the optional repeat masking of the refernce geonmes
       - run `snakemake <options> -R align_all` for the alignment of the elephan seal genomes to the california sea lion genome

@@ -1,5 +1,6 @@
 """
 snakemake -c 1 --use-conda cactus_prep
+snakemake --dag -R  cactus_prep | dot -Tsvg > ../results/img/control/dag_cactus_prep.svg
 """
 JOBSTORE_PATH='../results/cactus/jobStore.img'
 

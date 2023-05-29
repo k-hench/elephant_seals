@@ -1,5 +1,6 @@
 """
 snakemake -n -R cactus_stepwise
+snakemake --dag -R  cactus_stepwise | dot -Tsvg > ../results/img/control/dag_cactus_step.svg
 snakemake --jobs 3 -R  cactus_stepwise
 
 snakemake --jobs 30 \
@@ -14,7 +15,7 @@ snakemake --jobs 30 \
       -l si_flag=1 \
       -pe multislot {threads} \
       -l vf={resources.mem_mb}' \
-  --jn job.{name}.{jobid}.sh \
+  --jn job_c.{name}.{jobid}.sh \
   -R cactus_stepwise && mv job.* logs/
 """
 localrules: cactus_stepwise, round_completed, cactus_export_hal

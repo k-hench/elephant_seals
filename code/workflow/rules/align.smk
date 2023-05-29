@@ -1,6 +1,6 @@
 '''
 snakemake -n -R  align_all
-snakemake -dag -R  align_all | dot -Tsvg > ../results/img/control/dag_align.svg
+snakemake --dag -R  align_all | dot -Tsvg > ../results/img/control/dag_align.svg
 '''
 
 from snakemake import available_cpu_count
@@ -133,7 +133,6 @@ rule split_fasta:
       speciesSizeFile='../results/genome/{species}.size',
       fastaFile='../data/genomes/{species}.fa' 
     output:
-      splitFa=temp('../data/genomes/{species}.fa'),
       flat=temp('../data/genomes/{species}.fa.flat'),
       gdx=temp('../data/genomes/{species}.fa.gdx'),
       splitDummy=temp('../data/genomes/{species}.split')
