@@ -32,6 +32,12 @@ snakemake --jobs 70 \
 """
 
 rule ncbi_download:
+    message:
+      """
+      After the inital download from NCBI,
+      the `arcgaz` genome needs to be replaced by
+      the new dovetail assembly manually.
+      """
     input: 
       'img/genomes_n50.svg',
       expand("../results/masking/{spec}_mask_check.tsv", spec = SPEC_ALL)
