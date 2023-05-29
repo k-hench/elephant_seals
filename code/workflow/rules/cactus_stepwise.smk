@@ -84,7 +84,7 @@ rule single_job:
       readonly SEQFILE={params.seqfile}
       readonly SEQNAME=${{SEQFILE##*/}}
       readonly RUN_ID=${{SEQNAME%.txt}}
-      readonly CACTUS_SCRATCH=results/cactus/scratch/${{RUN_ID}}
+      readonly CACTUS_SCRATCH=../results/cactus/scratch/${{RUN_ID}}
 
       echo "file: " ${{SEQFILE}} &>> {log}
       echo "==================" &>> {log}
@@ -95,7 +95,6 @@ rule single_job:
       echo "bind {s_bind_paths}" &>> {log}
       echo "==================" &>> {log}
 
-      cd ../
       apptainer exec --cleanenv \
         --fakeroot --overlay ${{CACTUS_SCRATCH}} \
         --bind ${{CACTUS_SCRATCH}}/tmp:/tmp,$(pwd),{s_bind_paths} \
