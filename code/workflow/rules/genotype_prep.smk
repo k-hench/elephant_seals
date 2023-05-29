@@ -60,7 +60,6 @@ rule check_genome:
       """
 
 rule index_genomes:
-  label "Q_def_index_c_gatk"
     input:
       fa = "../data/genomes/{species}.fa.gz",
       fai = "../data/genomes/{species}.fa.gz.fai"
