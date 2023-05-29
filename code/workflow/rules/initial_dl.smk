@@ -33,6 +33,9 @@ snakemake --jobs 70 \
       -R ncbi_download && mv job.* logs/
 """
 
+WITH_CHICKEN = deepcopy( SPEC_ALL )
+WITH_CHICKEN.insert( 0, "galgal" )
+
 rule ncbi_download:
     message:
       """
@@ -42,7 +45,7 @@ rule ncbi_download:
       """
     input: 
       'img/genomes_n50.svg',
-      expand("../results/masking/{spec}_mask_check.tsv", spec = SPEC_ALL)
+      expand("../results/masking/{spec}_mask_check.tsv", spec = WITH_CHICKEN)
 
 rule only_download:
     message:
@@ -51,8 +54,8 @@ rule only_download:
       (which might be limmited on cluster batch-job nodes)
       """
     input: 
-      expand("../results/genomes/{spec}/{spec}.zip", spec = SPEC_ALL),
-      expand("../results/genome_stats/{spec}.tsv", spec = SPEC_ALL)
+      expand("../results/genomes/{spec}/{spec}.zip", spec = WITH_CHICKEN),
+      expand("../results/genome_stats/{spec}.tsv", spec = WITH_CHICKEN)
 
 checkpoint species_list:
     output: 
