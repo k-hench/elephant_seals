@@ -5,6 +5,8 @@ snakemake -c 1 --use-conda ../data/carnivora_genome_and_timetree.tsv
 
 snakemake -n -R ncbi_download
 
+snakemake --dag -R  ncbi_download | dot -Tsvg > ../results/img/control/dag_download.svg
+
 # interactive (online)
 snakemake \
   --jobs 10 \
@@ -55,7 +57,8 @@ rule only_download:
 checkpoint species_list:
     output: 
       species_list = "../data/carnivora_genome_and_timetree.tsv",
-      short_label_tree = "../data/carnivora_short_labels.nwk"
+      short_label_tree = "../data/carnivora_short_labels.nwk",
+      list_incl_chicken = "../data/carnivora_and_chicken.tsv"
     log:
       "../code/logs/r_species_list.log"
     container: None
@@ -63,7 +66,7 @@ checkpoint species_list:
     shell: 'Rscript R/compile_species_list.R 2> {log} 1> {log}'
 
 def get_accession(wildcards, what):
-    accessions = pd.read_table('../data/carnivora_genome_and_timetree.tsv').set_index("spec", drop = False)
+    accessions = pd.read_table('../data/carnivora_and_chicken.tsv').set_index("spec", drop = False)
     if what == 'name':
         return accessions.loc[wildcards.spec, 'organism_name']
     elif what == 'accession':

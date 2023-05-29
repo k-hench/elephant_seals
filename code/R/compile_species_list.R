@@ -90,3 +90,14 @@ tree_short_labels |> write.tree(here("data", "carnivora_short_labels.nwk"))
 
 table_export |> 
   write_tsv(here("data", "carnivora_genome_and_timetree.tsv"))
+
+table_export |> 
+  bind_rows(tibble(spec = "galgal",
+                   organism_name = "gallus_gallus",
+                   assembly_accession = "GCF_000002315.6",
+                   assembly_submission_date = as_date("2018-05-27"),
+                   repo = "refseq",
+                   spec_group = "other",
+                   genome_alternative = 1,
+                   genome_version = "gallus_gallus_1")) |>
+  write_tsv(here("data", "carnivora_and_chicken.tsv"))

@@ -71,3 +71,16 @@ rule index_genomes:
       """
       bwa index -a bwtsw {input.fa}
       """
+
+rule index_bowtie:
+    input:
+      fa = "../data/genomes/{species}.fa"
+    output:
+      bt_index = directory("../data/fq_screen_db/{species}")
+    resources:
+      mem_mb=8192
+    container: c_gatk
+    shell:
+      """
+      bowtie2-build {input} {output.bt_index}
+      """
