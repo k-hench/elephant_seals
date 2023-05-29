@@ -251,7 +251,7 @@ rule align_split:
       psl='../results/psl/{species}.psl',
       cmd=temp('../results/genome/{species}.cmd'),
       cmdcomp=temp('../results/genome/{species}.cmd.completed'),
-      splitMaf=temp('../results/genome/{species}..maf')
+      splitMaf=temp('../results/genome/{species}.maf')
     params:
       indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
       refName=ALIGN_REF,

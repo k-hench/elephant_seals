@@ -95,6 +95,7 @@ rule single_job:
       echo "bind {s_bind_paths}" &>> {log}
       echo "==================" &>> {log}
 
+      cd ../
       apptainer exec --cleanenv \
         --fakeroot --overlay ${{CACTUS_SCRATCH}} \
         --bind ${{CACTUS_SCRATCH}}/tmp:/tmp,$(pwd),{s_bind_paths} \
