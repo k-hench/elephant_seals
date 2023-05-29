@@ -1,5 +1,5 @@
 """
-snakemake -c 1 --use-conda cactus_prep --configfile workflow/config.yml
+snakemake -c 1 --use-conda cactus_prep
 """
 JOBSTORE_PATH='../results/cactus/jobStore.img'
 
