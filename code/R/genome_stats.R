@@ -33,7 +33,8 @@ ggsave(filename = here("results","img", "genomes_length.pdf"),
        width = 6)
 
 p2 <- data |> 
-  mutate(spec = fct_reorder(spec,`Assembly Stats Scaffold N50`)) |> 
+  mutate(`Assembly Stats Scaffold N50` = replace_na(`Assembly Stats Scaffold N50`, 0),
+         spec = fct_reorder(spec,`Assembly Stats Scaffold N50`)) |> 
   ggplot(aes(y = spec, x = `Assembly Stats Scaffold N50`)) +
   geom_point() +
   scale_x_log10(limits = c(1, 1e9))

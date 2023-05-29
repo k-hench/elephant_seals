@@ -27,8 +27,13 @@ ruleorder: align_single_last > align_single_minimap > align_single_gsalign > ali
 ruleorder: lastdb_index > gsalign_index
 ruleorder: align_split > align_single_last > align_single_minimap > align_single_gsalign 
 
-# This is the final output, and the rule to call to run all rules in this file
 rule align_all:
+    message:
+      """
+      Aligning the elephant seal reference genomes to
+      identify the sacffolds located on the X chromosome
+      based on the hits on the zalcal scaffold `NC_045612.1`.
+      """
     input:
       # the wildcards in psls will also handle definition of wildcards for fastas
       psls=expand("../results/psl/{species}.psl", species = ALIGN_SPECIES)
