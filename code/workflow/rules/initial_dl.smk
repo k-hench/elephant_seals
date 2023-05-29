@@ -43,8 +43,14 @@ rule ncbi_download:
       expand("../results/masking/{spec}_mask_check.tsv", spec = SPEC_ALL)
 
 rule only_download:
+    message:
+      """
+      bundeling of jobs that need online access
+      (which might be limmited on cluster batch-job nodes)
+      """
     input: 
-      expand("../results/genomes/{spec}/{spec}.zip", spec = SPEC_ALL)
+      expand("../results/genomes/{spec}/{spec}.zip", spec = SPEC_ALL),
+      expand("../results/genome_stats/{spec}.tsv", spec = SPEC_ALL)
 
 checkpoint species_list:
     output: 
