@@ -1,3 +1,10 @@
+# General setup
+#--------------
+# the bind-path list needs to start with a ',' to be appended properly
+singularity_bind_paths: '$(pwd),$CDATA'
+
+# cactus section
+# --------------
 alignment_name: 'carnivora_set'
 refName: mirang
 
@@ -74,9 +81,6 @@ speciesTree: "((((((((pumcon,pumyag),acijub),(lynruf,(lyncan,lynpar))),((((priir
 # technical parameters
 cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
 cactus_cores: "4"
-
-# the bind-path list needs to start with a ',' to be appended properly
-singularity_bind_paths: '$(pwd),$CDATA'
 
 # optional repeat masking
 need_masking:

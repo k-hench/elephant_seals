@@ -272,6 +272,6 @@ rule align_split:
       # It uses some potentially unsafe globbing and rm
       # These should be replaced with expand() inputs by eliminating 0 padding from split fasta names
       """
-      lastal {params.lastParams} {params.indexBase} data/genomes/${input.splitFa} > {output.splitMaf} &> {log}
+      lastal {params.lastParams} {params.indexBase} {input.splitFa} > {output.splitMaf} &> {log}
       sed '30,${{/^#/d;}}' {output.splitMaf} | maf-sort /dev/stdin {params.lastSplitParams} | maf-convert psl /dev/stdin | awk '$9!="++"' > {output.psl}
       """
