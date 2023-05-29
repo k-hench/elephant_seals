@@ -44,7 +44,7 @@ rule ncbi_download:
       the new dovetail assembly manually.
       """
     input: 
-      'img/genomes_n50.svg',
+      '../results/img/qc/genomes_n50.svg',
       expand("../results/masking/{spec}_mask_check.tsv", spec = WITH_CHICKEN)
 
 rule only_download:
@@ -169,7 +169,7 @@ rule stat_plots:
     input: 
       stats = expand("../results/genome_stats/{spec}.tsv", spec = SPEC_ALL),
       genomes = expand("../data/genomes/{spec}.fa.gz", spec = SPEC_ALL)
-    output: "img/genomes_n50.svg"
+    output: "../results/img/qc/genomes_n50.svg"
     container: None
     conda: "r_tidy"
     log:
