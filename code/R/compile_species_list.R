@@ -94,8 +94,8 @@ table_export |>
 table_export |> 
   bind_rows(tibble(spec = "galgal",
                    organism_name = "gallus_gallus",
-                   assembly_accession = "GCF_000002315.6",
-                   assembly_submission_date = as_date("2018-05-27"),
+                   assembly_accession = "GCF_016699485.2",
+                   assembly_submission_date = as_date("2021-01-19"),
                    repo = "refseq",
                    spec_group = "other",
                    genome_alternative = 1,

@@ -77,7 +77,7 @@ def get_accession(wildcards, what):
     elif what == 'repo':
         return accessions.loc[wildcards.spec, 'repo']
 
-rule geneome_stats:
+rule genome_stats:
     output: '../results/genome_stats/{spec}.tsv'
     params:
       name = lambda wc: get_accession(wc, what = "name"),
