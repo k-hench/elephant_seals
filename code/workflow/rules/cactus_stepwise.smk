@@ -92,6 +92,8 @@ rule single_job:
       echo "==================" &>> {log}
       echo "round {wildcards.nr}; job {wildcards.job}" &>> {log}
       echo "==================" &>> {log}
+      echo "bind {s_bind_paths}" &>> {log}
+      echo "==================" &>> {log}
 
       apptainer exec --cleanenv \
         --fakeroot --overlay ${{CACTUS_SCRATCH}} \
