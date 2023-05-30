@@ -110,7 +110,9 @@ rule index_bowtie:
     input:
       fa = "../data/genomes/{species}.fa"
     output:
-      bt_index = directory("../data/fq_screen_db/{species}")
+      bt_index = directory("../data/fq_screen_db/{species}/")
+    params:
+      bt_base = "../data/fq_screen_db/{species}/{species}"
     log:
       "logs/bt_log/{species}.log"
     resources:
@@ -118,5 +120,6 @@ rule index_bowtie:
     container: c_qc
     shell:
       """
-      bowtie2-build {input} {output.bt_index} &> {log}
+      mkdir -p {output.bt_index}
+      bowtie2-build {input} {params.bt_base} &> {log}
       """
