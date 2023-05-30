@@ -79,7 +79,7 @@ rule filter_genome:
     shell:
       """
       mkdir -p ../data/genomes/filtered/
-      awk  -v OFS="\t" '$2 > 500 {{print \$1,0,\$2,\$1}}' {input.fai} > {output.bed}
+      awk  -v OFS="\t" '$2 > 500 {{print $1,0,$2,$1}}' {input.fai} > {output.bed}
       
       bedtools getfasta \
           -fi {input.fa} \
