@@ -71,14 +71,15 @@ rule filter_genome:
       fai = "../data/genomes/{species,[a-z]+}.fa.gz.fai"
     output:
       fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
-      fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai",
+      fai_filtered = "  species,[a-z]+}_filt.fa.gz.fai",
       bed = '../results/genome/{species}_subset_500bp.bed'
     resources:
       mem_mb=8192
     container: c_popgen
     shell:
       """
-      awk  -v OFS="\t" '\$2 > 500 {{print \$1,0,\$2,\$1}}' {input.fai} > {output.bed}
+      mkdir -p ../data/genomes/filtered/
+      awk  -v OFS="\t" '$2 > 500 {{print \$1,0,\$2,\$1}}' {input.fai} > {output.bed}
       
       bedtools getfasta \
           -fi {input.fa} \
