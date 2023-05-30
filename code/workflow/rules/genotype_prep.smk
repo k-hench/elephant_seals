@@ -78,7 +78,7 @@ rule filter_genome:
       """
       mkdir -p ../data/genomes/filtered/
       # bioawk filters by length and drops comments from fa headers
-      bioawk -c fastx '{{ if(length($seq) > 500) {{ print ">"$name; print $seq }} }}' {input.fa} | \
+      bioawk -c fastx '{{ if(length($seq) > 1000) {{ print ">"$name; print $seq }} }}' {input.fa} | \
         fold | \
         bgzip > {output.fa_filtered}
       
