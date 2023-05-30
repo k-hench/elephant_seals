@@ -78,7 +78,7 @@ rule filter_genome:
       """
       mkdir -p ../data/genomes/filtered/
       # bioawk filters by length and drops comments from fa headers
-      bioawk -c fastx '{{ if(length($seq) > 200) {{ print ">"$name; print $seq }} }}' {input.fa} | \
+      bioawk -c fastx '{{ if(length($seq) > 500) {{ print ">"$name; print $seq }} }}' {input.fa} | \
         fold | \
         bgzip > {output.fa_filtered}
       
@@ -89,7 +89,7 @@ rule bwa_index:
     input:
       fa = "../data/genomes/filtered/{species}_filt.fa.gz",
       fai = "../data/genomes/filtered/{species}_filt.fa.gz.fai"
-    output: temp( touch("../results/checkpoints/index_ref_{species}.check") )
+    output: touch("../results/checkpoints/index_ref_{species}.check")
     log:
       "logs/bwa_log/{species}.log"
     resources:
