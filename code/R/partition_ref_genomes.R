@@ -115,14 +115,14 @@ check_paritions <- \(spec = "mirang"){
           axis.line = element_line(color = clr_ln, size = .4))
   }
 
-
-
-
 n_part <- 20
-c("mirang", "mirleo") |> walk(partition_genome, n_part = n_part)
+c("mirang", "mirleo", 'filtered/mirang_filt', 'filtered/mirleo_filt') |>
+  walk(partition_genome, n_part = n_part)
 
 pp <- check_paritions('mirang') /
-  check_paritions('mirleo')
+  check_paritions('mirleo') /
+  check_paritions('filtered/mirang_filt') /
+  check_paritions('filtered/mirleo_filt')
 
 p <- pp &
  scale_color_manual(values = c(

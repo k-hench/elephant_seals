@@ -53,9 +53,9 @@ rule faidx_index:
 
 rule check_genome:
     input:
-      fai = expand("../data/genomes/{species}.fa.gz.fai", species = GATK_REF)
+      fai = expand("../data/genomes/{species}.fa.gz.fai", species = ['mirang', 'mirleo', 'filtered/mirang_filt', 'filtered/mirleo_filt'])
     output:
-      partition = expand("../data/genomes/{species}_partitions.tsv", species = GATK_REF)
+      partition = expand("../data/genomes/{species}_partitions.tsv", species = ['mirang', 'mirleo', 'filtered/mirang_filt', 'filtered/mirleo_filt'])
     conda: "r_tidy"
     log:
       "logs/r_partition_ref_genomes.log"
