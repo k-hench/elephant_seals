@@ -127,151 +127,50 @@ rule build_index:
       faSize -detailed {input.fastaFile} > {output}
       """
 
-rule split_fasta:
-    input:
-      str(rules.lastdb_index.output).format(refname = ALIGN_REF),
-      speciesSizeFile='../results/genome/{species}.size',
-      fastaFile='../data/genomes/{species}.fa' 
-    output:
-      flat=temp('../data/genomes/{species}.fa.flat'),
-      gdx=temp('../data/genomes/{species}.fa.gdx'),
-      splitDummy=temp('../data/genomes/{species}.split')
-    params:
-      splitFastaN=1
-    log:
-      'logs/{species}_fasplit_log.txt'
-    benchmark:
-      'benchmark/{species}-split_bm.txt'
-    conda:
-      'msa_split'
-    threads: 1
-    shell:
-      """
-      pyfasta split -n {params.splitFastaN} {input.fastaFile} &>{log} && \
-      touch {output.splitDummy}
-      """
-
 rule align_single_last:
     input:
-      str(rules.lastdb_index.output).format(refname = ALIGN_REF),
-      fastaFile="../data/genomes/{species}.fa",
-      speciesSizeFile='../results/genome/{species}.size',
+      str(rules.lastdb_index.output).format( ref = ALIGN_REF ),
+      fastaFile = "../data/genomes/{species}.fa.gz",
+      speciesSizeFile = '../results/genome/{species}.size',
     output:
-      name='../results/psl/{species}.psl'
+      maf = '../results/maf/{species}_on_{ref}.maf.gz'
     params:
-      indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
-      lastParams=LAST_PARAMS,
-      lastSplitParams='',
+      indexBase = '../data/genomes/{ref}'.format( ref = ALIGN_REF ),
+      lastParams = LAST_PARAMS,
+      mafBase = '../results/maf/{species}_on_{ref}.maf'
     log:
-      'logs/{species}_align_log.txt'
-    benchmark:
-      'benchmark/{species}-align_bm.txt'
+      'logs/align/{species}_on_{ref}_align.log'
     conda:
       'msa_align'
     threads: 1
     shell:
-      # This shell will kick off for each fasta in the {genomedir}/fastas folder.  Each instance
-      # of this rule gets 1 thread, but multiple lastal commands may be run, depending on the number of species
-      # and the number of threads given on the command line.
-      # NOTE: more threads means more memory used, and you could run out, so have to
-      # temper the number of threads.
-      # the file size from faSize is needed is the chain/net steps later as is the
-      # ref .2bit file
       """
-      lastal {params.lastParams} {params.indexBase} {input.fastaFile} {params.lastSplitParams} | maf-convert psl /dev/stdin 2>{log} 1>{output.name}
+      lastal {params.lastParams} {params.indexBase} {input.fastaFile} 2>{log} 1>{params.mafBase}
+      gzip {params.mafBase}
       """
 
-rule align_single_minimap:
+rule maf_to_psl:
     input:
-      str(rules.lastdb_index.output).format(refname = ALIGN_REF),
-      fastaFile="../data/genomes/{species}.fa",
-      speciesSizeFile='../results/genome/{species}.size',
+      maf = '../results/maf/{species}_on_{ref}.maf.gz'
     output:
-      name='../results/psl/{species}.psl'
+      psl = '../results/psl/{species}_on_{ref}.psl.gz'
     params:
-      minimap2Params = "-a -cx asm20",
-      refFastaFile = '../data/genomes/{refname}.fa'.format(refname = ALIGN_REF),
+      pslBase = '../results/psl/{species}_on_{ref}.psl'
     log:
-      'logs/{species}_align_log.txt'
-    benchmark:
-      'benchmark/{species}-align_bm.txt'
+      'logs/psl/{species}_on_{ref}_psl.log'
     conda:
       'msa_align'
     threads: 1
     shell:
-      # This shell will kick off for each fasta in the {genomedir}/fastas folder.  Each instance
-      # of this rule gets 1 thread, but multiple lastal commands may be run, depending on the number of species
-      # and the number of threads given on the command line.
-      # NOTE: more threads means more memory used, and you could run out, so have to
-      # temper the number of threads.
-      # the file size from faSize is needed is the chain/net steps later as is the
-      # ref .2bit file
       """
-      minimap2 {params.minimap2Params} {params.refFastaFile} {input.fastaFile} 2>>{log} | samtools sort 2>>{log} | bamToPsl /dev/stdin {output.name} &>>{log}
+      zcat {input.maf} | maf-convert psl 2>{log} 1>{params.pslBase}
+      gzip {params.pslBase}
       """
 
-rule align_single_gsalign:
-    input:
-      str(rules.lastdb_index.output).format(refname = ALIGN_REF),
-      fastaFile="../data/genomes/{species}.fa",
-      speciesSizeFile='../results/genome/{species}.size',
-    output:
-      name='../results/psl/{species}.psl'
-    params:
-      indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
-      speciesPath='../results/genome/{species}',
-      gsalignParams="-sen -no_vcf",
-    log:
-      'logs/{species}_align_log.txt'
-    benchmark:
-      'benchmark/{species}-align_bm.txt'
-    conda:
-      'msa_align'
-    threads: 1
+rule slim_psl:
+    input: '../results/psl/{species}_on_{ref}.psl.gz'
+    output: '../results/psl/slim_{species}_on_{ref}.psl.gz'
     shell:
-      # This shell will kick off for each fasta in the {genomedir}/fastas folder.  Each instance
-      # of this rule gets 1 thread, but multiple lastal commands may be run, depending on the number of species
-      # and the number of threads given on the command line.
-      # NOTE: more threads means more memory used, and you could run out, so have to
-      # temper the number of threads.
-      # the file size from faSize is needed is the chain/net steps later as is the
-      # ref .2bit file
       """
-      GSAlign {params.gsalignParams} -r {params.refFastaFile} -q {input.fastaFile} -o {params.speciesPath} -i {params.indexBase} &>>{log} && \
-      sed -i 's/^s qry\./s /' {params.speciesPath}.maf && sed -i 's/^s ref\./s /' {params.speciesPath}.maf && \
-      maf-convert psl {params.speciesPath}.maf 2>>{log} 1>{output.name}
-      """
-
-rule align_split:
-    input:
-      splitFa= "../data/genomes/{species}.fa",
-      splitDummy='../data/genomes/{species}.split',
-      speciesSizeFile='../results/genome/{species}.size'
-    output:
-      psl='../results/psl/{species}.psl',
-      cmd=temp('../results/genome/{species}.cmd'),
-      cmdcomp=temp('../results/genome/{species}.cmd.completed'),
-      splitMaf=temp('../results/genome/{species}.maf')
-    params:
-      indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
-      refName=ALIGN_REF,
-      splitDir='../results/genome/',
-      speciesPath='../results/genome/{species}',
-      lastParams=LAST_PARAMS,
-      lastSplitParams='',
-      splitFa='../data/genomes/{species}.fa'
-    log:
-      'logs/{species}_lastAlign_split_log.txt'
-    benchmark:
-      'benchmark/{species}_lastAlign_split_bm.txt'
-    conda:
-      'msa_align'
-    threads: 1
-    shell:
-      # This script will align split fasta files to the reference using parafly parallelization
-      # It uses some potentially unsafe globbing and rm
-      # These should be replaced with expand() inputs by eliminating 0 padding from split fasta names
-      """
-      lastal {params.lastParams} {params.indexBase} {input.splitFa} > {output.splitMaf} &> {log}
-      sed '30,${{/^#/d;}}' {output.splitMaf} | maf-sort /dev/stdin {params.lastSplitParams} | maf-convert psl /dev/stdin | awk '$9!="++"' > {output.psl}
+      zcat {input} | cut -f 1-18  | gzip > {output}
       """
