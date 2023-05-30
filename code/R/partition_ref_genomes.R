@@ -132,5 +132,5 @@ p <- pp &
 ggsave(filename = here("results", "img", "qc", "genome_partitions.pdf"),
        plot = p,
        width = 16,
-       height = 9,
+       height = 16,
        device = cairo_pdf)
