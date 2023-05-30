@@ -22,11 +22,6 @@ LAST_PARAMS = "-m 10 -j 3 -u 1 -p HOXD70"
 minimap2Params: "-a -cx asm20"
 gsalignParams: "-sen -no_vcf"
 
-ruleorder: unpack_genome > split_fasta
-ruleorder: lastdb_index > gsalign_index
-ruleorder: align_single_last > align_single_minimap > align_single_gsalign > align_split
-ruleorder: lastdb_index > gsalign_index
-ruleorder: align_split > align_single_last > align_single_minimap > align_single_gsalign 
 
 rule align_all:
     message:
@@ -76,30 +71,6 @@ rule lastdb_index:
       faSize -detailed {input.fasta} > {params.refSizeFile} 2>{log} && lastdb -R 10 -u YASS -c {params.indexBase} {input.fasta} 2>{log} && touch {output} 2>{log}
       """
 
-rule gsalign_index:
-    input:
-      fasta='../data/genomes/{refname}.fa'
-    output:
-      # Create a dummy file that tells us indexing the ref has finished.
-      # file is actually created in the shell: directive with "touch"
-      # This rule will also create the ref's 2bit file, which may be
-      # used later in net_to_axt (but isn't used at the time of writing)
-      temp('../results/genome/{refname}lastdb_index.done')
-    params:
-      indexBase='../data/genomes/{refname}',
-      refSizeFile='../results/genome/{refname}.size',
-    log:
-      'logs/{refname}_lastdbIndex_log.txt'
-    threads: 2
-    benchmark:
-      'benchmark/{refname}-lastdb.txt'
-    conda:
-      'msa_align'
-    shell:
-      """
-      faSize -detailed {input.fasta} > {params.refSizeFile} 2>{log} && GSAlign index {input.fasta} {params.indexBase} 2>{log} && touch {output} 2>{log}
-      """
-
 rule build_index:
     input:
       str(rules.lastdb_index.output).format(refname = ALIGN_REF),
@@ -129,7 +100,7 @@ rule build_index:
 
 rule align_single_last:
     input:
-      str(rules.lastdb_index.output).format( ref = ALIGN_REF ),
+      str(rules.lastdb_index.output).format( refname = ALIGN_REF ),
       fastaFile = "../data/genomes/{species}.fa.gz",
       speciesSizeFile = '../results/genome/{species}.size',
     output:
