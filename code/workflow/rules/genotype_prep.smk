@@ -41,7 +41,7 @@ rule geno_prep:
 
 rule faidx_index:
     input:
-      fa = "../data/genomes/{species,[a-z]+}.fa.gz"
+      fa = "../data/genomes/{species}.fa.gz"
     output:
       fai = "../data/genomes/{species,[a-z]+}.fa.gz.fai"
     resources:
@@ -68,7 +68,7 @@ rule check_genome:
 
 rule filter_genome:
     input: 
-      fa = "../data/genomes/{species,[a-z]+}.fa.gz",
+      fa = "../data/genomes/{species}.fa.gz",
     output:
       fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
       fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai"
