@@ -36,7 +36,8 @@ rule geno_prep:
       expand("../data/genomes/{species}_partitions.tsv", species = GATK_REF),
       expand("../results/checkpoints/index_ref_{species}.check", species = GATK_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
-      expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF)
+      expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
+      expand("../data/genomes/filtered/{species}.dict", species = GATK_REF)
 
 rule faidx_index:
     input:
@@ -117,3 +118,19 @@ rule index_bowtie:
       mkdir -p {output.bt_index}
       bowtie2-build {input} {params.bt_base} &> {log}
       """
+
+rule create_genome_dictionary:
+  input:
+    fa="../data/genomes/filtered/{species}_filt.fa.gz"
+  output:
+    dct="../data/genomes/filtered/{species}.dict"
+  resources:
+    mem_mb=11264
+  container: c_gatk
+  shell:
+    """
+    gatk --java-options "-Xmx10G" \
+      CreateSequenceDictionary \
+      -R {input.fa} \
+      -O {output.dct}
+    """
