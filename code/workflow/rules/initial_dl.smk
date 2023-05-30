@@ -123,7 +123,7 @@ rule download_genome:
 
 rule repack_genome:
     input: 
-      zp = '../results/genomes/{spec}/{spec,[a-z]+}.zip'
+      zp = '../results/genomes/{spec}/{spec}.zip'
     output:
       gz = '../data/genomes/{spec,[a-z]+}.fa.gz'
     params:
