@@ -67,27 +67,21 @@ rule check_genome:
 
 rule filter_genome:
     input: 
-      fa = "../data/genomes/{species,[a-z]+}.fa",
-      fai = "../data/genomes/{species,[a-z]+}.fa.gz.fai"
+      fa = "../data/genomes/{species,[a-z]+}.fa.gz",
     output:
       fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
       fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai",
       bed = '../results/genome/{species}_subset_500bp.bed'
     resources:
       mem_mb=8192
-    container: c_popgen
+    conda: 'bioawk'
     shell:
       """
       mkdir -p ../data/genomes/filtered/
-      awk  -v OFS="\t" '$2 > 500 {{print $1,0,$2,$1}}' {input.fai} > {output.bed}
-      
-      bedtools getfasta \
-          -fi {input.fa} \
-          -bed {output.bed} \
-          -fullHeader \
-          -nameOnly | \
-          sed 's/=/ /g' | \
-          bgzip > {output.fa_filtered}
+      # bioawk filters by length and drops comments from fa headers
+      bioawk -c fastx '{{ if(length($seq) > 200) {{ print ">"$name; print $seq }} }}' {input.fa} | \
+        fold | \
+        bgzip > {output.fa_filtered}
       
       samtools faidx {output.fa_filtered}
       """
