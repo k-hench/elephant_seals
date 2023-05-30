@@ -37,7 +37,7 @@ rule align_all:
       """
     input:
       # the wildcards in psls will also handle definition of wildcards for fastas
-      psls=expand("../results/psl/{species}.psl", species = ALIGN_SPECIES)
+      psls=expand("../results/psl/slim_{species}_on_{ref}.psl.gz", species = ALIGN_SPECIES, ref = ALIGN_REF )
 
 rule unpack_genome:
     input:
