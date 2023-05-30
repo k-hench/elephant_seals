@@ -70,8 +70,7 @@ rule filter_genome:
       fa = "../data/genomes/{species,[a-z]+}.fa.gz",
     output:
       fa_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz",
-      fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai",
-      bed = '../results/genome/{species}_subset_500bp.bed'
+      fai_filtered = "../data/genomes/filtered/{species,[a-z]+}_filt.fa.gz.fai"
     resources:
       mem_mb=8192
     conda: 'bioawk'

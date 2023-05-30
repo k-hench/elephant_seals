@@ -6,3 +6,4 @@ channels:
  - defaults
 dependencies:
  - bioawk=1.0
+ - samtools=1.17
