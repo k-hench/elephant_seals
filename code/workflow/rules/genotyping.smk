@@ -7,7 +7,7 @@ snakemake -n -R mapping_done
 snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R mapping_done
 snakemake --dag -R  mapping_done | dot -Tsvg > ../results/img/control/dag_mapping.svg
 
-snakemake --jobs 5 \
+snakemake --jobs 60 \
   --latency-wait 30 \
   -p \
   --default-resources mem_mb=51200 threads=1 \
@@ -23,7 +23,7 @@ snakemake --jobs 5 \
       -pe multislot {threads} \
       -l vf={resources.mem_mb}' \
   --jn job_gt.{name}.{jobid}.sh \
-  -R mapping_done && mv job_g.* logs/
+  -R mapping_done && mv job_gt.* logs/
 """
 
 # read in the sequencing meta-data
@@ -65,6 +65,8 @@ rule ubam_adapters:
       flowcell = lambda wc: get_sample_info(wc, what = "flowcell_id"),
       lane = lambda wc: get_sample_info(wc, what = "lane_header"),
       company = lambda wc: get_sample_info(wc, what = "company")
+    benchmark:
+      'benchmark/genotyping/adapter_{sample_ln}.tsv'
     resources:
       mem_mb=15360
     container: c_gatk
@@ -109,6 +111,8 @@ rule bwa_mapping:
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
       bam = temp( 'tmp/bam/{sample_ln}_on_{ref}.bam' )
+    benchmark:
+      'benchmark/genotyping/map_{sample_ln}_on_{ref}.tsv'
     resources:
       mem_mb=15360
     threads: 5
@@ -130,6 +134,8 @@ rule merge_bam:
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
       bam = temp( "tmp/merged/{sample_ln}_on_{ref}.bam" )
+    benchmark:
+      'benchmark/genotyping/merge_{sample_ln}_on_{ref}.tsv'
     resources:
       mem_mb=81920
     container: c_gatk
@@ -161,6 +167,8 @@ rule mark_duplicates:
         sorted_bam = temp( "tmp/sorted/{sample_ln}_on_{ref}.sorted.bam" ),
         final_bam = "../results/mapped_bams/{sample_ln}_on_{ref}.dedup.bam",
         metrics =  '../results/qc/dedup/{sample_ln}_on_{ref}_dedup_metrics.tsv'
+    benchmark:
+      'benchmark/genotyping/dedup_{sample_ln}_on_{ref}.tsv'
       resources:
         mem_mb=122880
       container: c_gatk
