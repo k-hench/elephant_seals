@@ -37,7 +37,8 @@ rule geno_prep:
       expand("../results/checkpoints/index_ref_{species}.check", species = GATK_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
-      expand("../data/genomes/filtered/{species}.dict", species = GATK_REF)
+      expand("../data/genomes/filtered/{species}.dict", species = GATK_REF),
+      '../results/checkpoints/prj_structure_ready.check'
 
 rule faidx_index:
     input:
@@ -64,7 +65,6 @@ rule check_genome:
       """
       Rscript R/partition_ref_genomes.R 2> {log} 1> {log}
       """
-
 
 rule filter_genome:
     input: 

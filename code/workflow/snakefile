@@ -36,6 +36,19 @@ rule all:
       Overall project parameters can be edited within `config.yml`.
       '''
 
+rule setup_proj_dirs:
+    # some rules depend on the existance of the folders
+    # created here
+    output: touch( '../results/checkpoints/prj_structure_ready.check' )
+    shell:
+      """
+      mkdir -p \
+        ../results/qc/adapter \
+        ../results/qc/metrics \
+        ../results/img/qc \
+        ../results/img/control 
+      """
+
 P_NAME = config[ 'alignment_name' ]
 SPEC_REF = config[ 'refName' ]
 SPEC_QUERY = config[ 'species' ]
