@@ -167,8 +167,8 @@ rule mark_duplicates:
         sorted_bam = temp( "tmp/sorted/{sample_ln}_on_{ref}.sorted.bam" ),
         final_bam = "../results/mapped_bams/{sample_ln}_on_{ref}.dedup.bam",
         metrics =  '../results/qc/dedup/{sample_ln}_on_{ref}_dedup_metrics.tsv'
-    benchmark:
-      'benchmark/genotyping/dedup_{sample_ln}_on_{ref}.tsv'
+      benchmark:
+        'benchmark/genotyping/dedup_{sample_ln}_on_{ref}.tsv'
       resources:
         mem_mb=122880
       container: c_gatk
