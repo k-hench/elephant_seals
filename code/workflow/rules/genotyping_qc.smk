@@ -1,4 +1,24 @@
 """
+snakemake -n -R all_gt_qc
+snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R all_gt_qc
+
+snakemake --jobs 60 \
+  --latency-wait 30 \
+  -p \
+  --default-resources mem_mb=51200 threads=1 \
+  --use-singularity \
+  --singularity-args "--bind $CDATA" \
+  --use-conda \
+  --cluster '
+    qsub \
+      -V -cwd \
+      -P fair_share \
+      -l idle=1 \
+      -l si_flag=1 \
+      -pe multislot {threads} \
+      -l vf={resources.mem_mb}' \
+  --jn job_gt.{name}.{jobid}.sh \
+  -R all_gt_qc && mv job_gt.* logs/
 """
 
 rule all_gt_qc:
@@ -9,128 +29,141 @@ rule all_gt_qc:
       inter-specific contamination (`fastq-screen`),
       allelic imbalance for intra-specific contamination.
       """
+    input:
+      by_sample_ln = expand( ["../results/checkpoints/fastqc/{sample_ln}.check",
+                              "../results/qc/fastq_screen/{sample_ln}_fw_screen.txt"],
+                              sample_ln = SAMPLES_LN ),
+      by_sample = expand(["../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv.gz",
+                          "../results/qc/coverage/masks/{sample_id}_on_{ref}_covmask.bed.gz",
+                          "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats"],
+                         sample_id = SAMPLES, ref = GATK_REF[0])
+      # GATK_REF[0] <- subset to mirang for now for disc-usage
 
+rule fastqc:
+    input:
+      fq_fw = lambda wc: "../data/raw_sequences/" + get_sample_info(wc, what = "file_fw"),
+      fq_rv = lambda wc: "../data/raw_sequences/" + get_sample_info(wc, what = "file_rv")
+    output: 
+      check = touch( "../results/checkpoints/fastqc/{sample_ln}.check" )
+    benchmark:
+      'benchmark/qc/fastqc_{sample_ln}.tsv'
+    resources:
+      mem_mb=10240
+    container: c_qc
+    shell:
+      """
+      fastqc {input.fq_fw} {input.fq_rv} -o ../results/qc/fastqc/
+      """
+
+rule subsample_fastq:
+    input:
+      fq_fw = lambda wc: "../data/raw_sequences/" + get_sample_info(wc, what = "file_fw"),
+      fq_rv = lambda wc: "../data/raw_sequences/" + get_sample_info(wc, what = "file_rv")
+    output:
+      fq_fw = temp( "../data/raw_sequences/subsets/{sample_ln}_fw.fq.gz" ),
+      fq_rv = temp( "../data/raw_sequences/subsets/{sample_ln}_rv.fq.gz" )
+    benchmark:
+      'benchmark/qc/subsample_{sample_ln}.tsv'
+    resources:
+      mem_mb=8192
+    container: c_qc
+    shell:
+      """
+      seqtk sample -s 42 {input.fq_fw} 100000 | bgzip > {output.fq_fw}
+      seqtk sample -s 42 {input.fq_rv} 100000 | bgzip > {output.fq_fw}
+      """
+
+rule fastq_screen:
+    input:
+      fq_fw = "../data/raw_sequences/subsets/{sample_ln}_fw.fq.gz",
+      fq_rv = "../data/raw_sequences/subsets/{sample_ln}_rv.fq.gz"
+    output:
+      fw = "../results/qc/fastq_screen/{sample_ln}_fw_screen.txt",
+      rv = "../results/qc/fastq_screen/{sample_ln}_rv_screen.txt"
+    benchmark:
+      'benchmark/qc/fq_screen_{sample_ln}.tsv'
+    resources:
+      mem_mb=8192
+    threads: 7
+    container: c_qc
+    shell:
+      """
+      fastq_screen \
+        --conf fastq_screen.conf \
+        --threads 7 \
+        --outdir ../results/qc/fastq_screen/ \ 
+        --aligner bowtie2 {input.fq_fw} {input.fq_rv}
+      """
+
+rule merge_bam_by_sample:
+    input:
+      bams = lambda wc: "../results/mapped_bams/" + gather_sample_entries(wc, what = "sample_ln") + "_on_{ref}.dedup.bam"
+    output:
+      single_bam = '../results/mapped_bams/combined_per_sample/{sample_id}_on_{ref}.bam'
+    benchmark:
+      'benchmark/qc/merge_bam_{sample_id}_on_{ref}.tsv'
+    resources:
+      mem_mb=51200
+    container: c_gatk
+    shell:
+      """
+      BAMS=$( echo {input.bams} | sed "s/\[//g; s/\]//g; s/,//g; s/'//g" )
+      samtools merge  -o {output.single_bam} $BAMS
+      gatk --java-options "-Xmx45g" BuildBamIndex -I {output.single_bam}
+      """
+
+rule bamcov:
+    input:
+      bam = "../results/mapped_bams/combined_per_sample/{sample_id}_on_{ref}.bam"
+    output:
+      cov = "../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv.gz"
+    benchmark:
+      'benchmark/qc/bamcov_{sample_id}_on_{ref}.tsv'
+    params:
+      unzipped = "../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv"
+    resources:
+      mem_mb=51200
+    container: c_qc
+    shell:
+      """
+      bamcov {input.bam} -o {params.unzipped}
+      gzip {params.unzipped}
+      """
+
+rule bamcov_mask:
+    input:
+      bam = "../results/mapped_bams/combined_per_sample/{sample_id}_on_{ref}.bam"
+    output:
+      bed = "../results/qc/coverage/masks/{sample_id}_on_{ref}_covmask.bed.gz"
+    benchmark:
+      'benchmark/qc/covmask_{sample_id}_on_{ref}.tsv'
+    resources:
+      mem_mb=40960
+    container: c_popgen
+    shell:
+      """
+      samtools view -b {input.bam} | \
+        genomeCoverageBed -ibam stdin -bg | \
+        gzip > {output.bed}
+      """
+
+rule bamtools:
+    input:
+      bam = "../results/mapped_bams/combined_per_sample/{sample_id}_on_{ref}.bam"
+    output:
+      stats = "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats"
+    benchmark:
+      'benchmark/qc/bamtools_{sample_id}_on_{ref}.tsv'
+    resources:
+      mem_mb=40960
+    container: c_qc
+    script:
+      """
+      bamtools stats -in {input.bam} | \
+        grep -v "*" > {output.stats}
+      """
 
 '''
-process run_fastqc {
-  publishDir "${params.outdir}/qc/", mode: 'copy'
-  tag "${sample}.${info.lane}"
-  label "Q_fastqc_c_qc"
-  memory '15. GB'
-  time '2.5h'
-
-  input:
-  tuple val( spec ), val( sample ), val( fw ), val( rv ),  val( info )
-
-  output:
-  file( "fastqc/*" )
-
-  script:
-  """
-  mkdir -p fastqc
-  fastqc ${params.seq_dir}/${fw} ${params.seq_dir}/${rv} -o fastqc/
-  """
-}
-
-process subsample_fastq {
-  label "Q_def_subsample_c_qc"
-  memory '8. GB'
-  tag "${sample}.${info.lane}"
-
-  input:
-  tuple val( spec ), val( sample ), val( fw ), val( rv ),  val( info )
-
-  output:
-  tuple val( "${sample}" ), file( "*.1.fq.gz" ), file( "*.2.fq.gz" )
-
-  script:
-  """
-  seqtk sample -s 42 ${params.seq_dir}/${fw} 100000 | bgzip > ${sample}.${info.lane}.1.fq.gz
-  seqtk sample -s 42 ${params.seq_dir}/${rv} 100000 | bgzip > ${sample}.${info.lane}.2.fq.gz
-  """
-}
-
-process run_fastq_screen {
-  publishDir "${params.outdir}/qc/fastq_screen", mode: 'copy'
-  tag "${sample}"
-  label "fast_screen_c_qc"
-  time { 20.m * task.attempt }
-  memory '3. GB'
-  clusterOptions '-V -cwd -P fair_share -l idle=1 -l si_flag=1 -pe multislot 7'
-
-  input:
-  tuple val( sample ), file( fw ), file( rv )
-
-  output:
-  tuple file( "*_screen.html" ), file( "*_screen.txt" )
-
-  script:
-  """
-  sed "s=<fq_screen_dir>=${params.base}/data/fq_screen_db/=g" \
-    ${params.base}/data/fq_screen_db/fastq_screen.conf > fastq_screen.conf
-
-  fastq_screen --conf fastq_screen.conf --threads 7 --aligner bowtie2  ${fw} ${rv}
-  """
-}
-
-process run_bamcov {
-  publishDir "${params.outdir}/qc/coverage", mode: 'copy'
-  label 'Q_def_bamcov_c_qc'
-  memory '40. GB'
-  tag "${sample}.${info.lane}"
-
-  input:
-  tuple val( sample ), val( spec ), val( lane ), val( info ), file( bam ), file( bai ), file( tsv )
-
-  output:
-  file( "*_coverage.tsv.gz" )
-
-  script:
-  """
-  bamcov ${bam} -o ${sample}.${info.lane}_on_${params.reference}_coverage.tsv
-  gzip ${sample}.${info.lane}_on_${params.reference}_coverage.tsv
-  """
-}
-
-process run_bamcov_mask {
-  publishDir "${params.outdir}/qc/coverage/masks", mode: 'copy'
-  label 'Q_def_bamcov_c_pop'
-  memory '40. GB'
-  tag "${sample}.${info.lane}"
-
-  input:
-  tuple val( sample ), val( spec ), val( lane ), val( info ), file( bam ), file( bai ), file( tsv )
-
-  output:
-  file( "*_covmask.bed.gz" )
-
-  script:
-  """
-  samtools view -b ${bam} | \
-    genomeCoverageBed -ibam stdin -bg | \
-    gzip > ${sample}.${info.lane}_on_${params.reference}_covmask.bed.gz
-  """
-}
-
-process run_bamtools {
-  publishDir "${params.outdir}/qc/bamstats", mode: 'copy'
-  label 'Q_def_bamtools_c_qc'
-  memory '20. GB'
-  tag "${sample}.${info.lane}"
-
-  input:
-  tuple val( sample ), val( spec ), val( lane ), val( info ), file( bam ), file( bai ), file( tsv )
-
-  output:
-  file( "*_on_${params.reference}.bamstats" )
-
-  script:
-  """
-  bamtools stats -in ${bam} | \
-    grep -v "*" > ${sample}_${info.lane}_on_${params.reference}.bamstats
-  """
-}
-
 // **Allelic imbalance**
 //
 // More straight forward alternative for contamination-check through allelic imbalance (based on [workshop by Joana Meier and Mark Ravinet](https://speciationgenomics.github.io/allelicBalance/))

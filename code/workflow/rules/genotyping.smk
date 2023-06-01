@@ -26,6 +26,10 @@ snakemake --jobs 60 \
       -l vf={resources.mem_mb}' \
   --jn job_gt.{name}.{jobid}.sh \
   -R gt_all && mv job_gt.* logs/
+
+files with ref subset to single species (GATK_REF[0]):
+ - genotyping.smk
+ - genotyping_qc.smk
 """
 
 # read in the sequencing meta-data
@@ -43,7 +47,7 @@ def get_sample_info(wildcards, what):
 
 # get a set of all entries of a certain type (eg files)
 # from the file info table given a sample_id
-def gather_sample_enties(wildcards, what):
+def gather_sample_entries(wildcards, what):
     return( seq_file_data[what][ seq_file_data["sample_id"] == wildcards.sample_id ].values )
 
 rule gt_all:
@@ -224,7 +228,7 @@ rule mark_duplicates:
 
 rule collect_sample_and_haplotypecaller:
     input:
-      bams = lambda wc: "../results/mapped_bams/" + gather_sample_enties(wc, what = "sample_ln") + "_on_{ref}.dedup.bam",
+      bams = lambda wc: "../results/mapped_bams/" + gather_sample_entries(wc, what = "sample_ln") + "_on_{ref}.dedup.bam",
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
       gvcf = "../results/genotyping/gvcf/{sample_id}_on_{ref}.g.vcf.gz"
