@@ -26,11 +26,6 @@ GATK_REF = [ 'mirang', 'mirleo' ]
 FASTQSCREEN_REF = deepcopy( GATK_REF )
 FASTQSCREEN_REF.insert( 0, "galgal" )
 
-c_gatk = config[ 'sif_gatk' ]
-c_qc = config[ 'sif_qc' ]
-c_popgen = config[ 'sif_popgen' ]
-c_sim = config[ 'sif_sim' ]
-
 rule geno_prep:
     input:
       expand("../data/genomes/{species}_partitions.tsv", species = GATK_REF),

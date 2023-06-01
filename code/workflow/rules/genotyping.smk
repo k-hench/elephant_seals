@@ -1,10 +1,9 @@
 """
 snakemake -n -R gt_all
 snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R gt_all
-snakemake --dag -R  gt_all | dot -Tsvg > ../results/img/control/dag_genotyping.svg
-snakemake --dag -R  gt_all --batch gt_all=1/30 | dot -Tsvg > ../results/img/control/dag_genotyping_single.svg
+snakemake --dag -R  gt_all | dot -Tsvg > ../results/img/control/dag_gt.svg
 
-snakemake --dag ../results/qc/snp_metrics/mirang_snp_metrics.tsv | dot -Tsvg > ../results/img/control/dag_mirang_metrics.svg
+snakemake --dag ../results/img/control/snp_metrics_mirang.pdf | dot -Tsvg > ../results/img/control/dag_mirang_metrics.svg
 
 snakemake -n -R mapping_done
 snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R mapping_done
@@ -53,7 +52,7 @@ rule gt_all:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand("../results/genotyping/filtered/{ref}_filtered.vcf.gz", ref = GATK_REF[0] )
+      vcf = expand("../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz", ref = GATK_REF[0] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule mapping_done:
@@ -350,7 +349,7 @@ rule metrics_density:
     benchmark:
       "benchmark/genotyping/snp_metrics_density_{ref}.tsv"
     log:
-      "logs/r_partition_ref_genomes.log"
+      "logs/r_gatk_metrics_density_{ref}"
     conda: "r_tidy"
     resources:
       mem_mb=20480
@@ -362,19 +361,19 @@ rule metrics_density:
 rule metrics_plot:
     input:
       check = "../results/checkpoints/gatk_snp_metrics_density_{ref}.check"
-    output: "../results/img/control/snp_metrics_{ref}.pdf")
+    output:
+      plot = "../results/img/control/snp_metrics_{ref}.pdf"
     benchmark:
       "benchmark/genotyping/snp_metrics_density_plot_{ref}.tsv"
     log:
-      "logs/r_partition_ref_genomes.log"
+      "logs/r_gatk_metrics_plot_{ref}.log"
     conda: "r_tidy"
     resources:
-      mem_mb=5120
+      mem_mb=5120 
     shell:
       """
       Rscript R/gatk_metrics_plot.R {wildcards.ref} 2> {log} 1> {log}
       """
-
 
 # data farme with the filter thresholds
 # (currently dummy values 1-16, to be replaced once
@@ -429,4 +428,27 @@ rule gatk_filter_snps:
         -V {output.vcf_flagged} \
         -O {output.vcf_filtered} \
         --exclude-filtered
+      """
+
+rule vcftools_snp_filter:
+    input:
+      vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+    output:
+      vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz"
+    benchmark:
+      "benchmark/genotyping/snp_filtering_vcftools_{ref}.tsv"
+    resources:
+      mem_mb=40960
+    container: c_popgen
+    shell:
+      """
+      vcftools \
+        --gzvcf {input.vcf} \
+        --max-missing-count 5 \
+        --max-alleles 2 \
+        --stdout  \
+        --recode | \
+        bgzip > {output.vcf}
+    
+      tabix -p vcf {output.vcf}
       """
