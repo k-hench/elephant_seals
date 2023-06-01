@@ -466,7 +466,7 @@ rule vcftools_snp_filter:
       tabix -p vcf {output.vcf}
       """
 
-# ---  invariant site calling (all_bp)---------------
+# ---  invariant site calling (all_bp) --------------
 rule consolidate_gather_all_bp:
     input:
       db = "../results/genotyping/{ref}_{part}_db",
