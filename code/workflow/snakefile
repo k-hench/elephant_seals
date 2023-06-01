@@ -45,6 +45,7 @@ rule setup_proj_dirs:
       mkdir -p \
         ../results/qc/adapter \
         ../results/qc/metrics \
+        ../results/qc/snp_metrics/
         ../results/img/qc \
         ../results/img/control 
       """

@@ -29,6 +29,7 @@ dependencies:
  - conda-forge::r-tidytree=0.4.2
  - conda-forge::r-renv=0.17.3
  - conda-forge::r-biocmanager=1.30.20 
+ - conda-forge::r-envstats=2.7.0 
  - bioconda::bioconductor-ggtree=3.6.0
 
 

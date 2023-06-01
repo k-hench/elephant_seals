@@ -2,7 +2,7 @@
 snakemake -n -R gt_all
 snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R gt_all
 snakemake --dag -R  gt_all | dot -Tsvg > ../results/img/control/dag_genotyping.svg
-snakemake --dag -R  gt_all --batch gt_all=1/30| dot -Tsvg > ../results/img/control/dag_genotyping_single.svg
+snakemake --dag -R  gt_all --batch gt_all=1/30 | dot -Tsvg > ../results/img/control/dag_genotyping_single.svg
 
 snakemake --dag ../results/qc/snp_metrics/mirang_snp_metrics.tsv | dot -Tsvg > ../results/img/control/dag_mirang_metrics.svg
 
@@ -53,7 +53,7 @@ rule gt_all:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand("../results/genotyping/raw/{ref}_raw_snps.vcf.gz", ref = GATK_REF[0] )
+      vcf = expand("../results/genotyping/filtered/{ref}_filtered.vcf.gz", ref = GATK_REF[0] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule mapping_done:
@@ -341,4 +341,92 @@ rule snp_metrics:
         -F MQRankSum \
         -F ReadPosRankSum \
         --show-filtered
+      """
+
+rule metrics_density:
+    input:
+      metrics = "../results/qc/snp_metrics/{ref}_snp_metrics.tsv"
+    output: touch("../results/checkpoints/gatk_snp_metrics_density_{ref}.check")
+    benchmark:
+      "benchmark/genotyping/snp_metrics_density_{ref}.tsv"
+    log:
+      "logs/r_partition_ref_genomes.log"
+    conda: "r_tidy"
+    resources:
+      mem_mb=20480
+    shell:
+      """
+      Rscript R/gatk_metrics_density.R {wildcards.ref} {input.metrics} 2> {log} 1> {log}
+      """
+
+rule metrics_plot:
+    input:
+      check = "../results/checkpoints/gatk_snp_metrics_density_{ref}.check"
+    output: "../results/img/control/snp_metrics_{ref}.pdf")
+    benchmark:
+      "benchmark/genotyping/snp_metrics_density_plot_{ref}.tsv"
+    log:
+      "logs/r_partition_ref_genomes.log"
+    conda: "r_tidy"
+    resources:
+      mem_mb=5120
+    shell:
+      """
+      Rscript R/gatk_metrics_plot.R {wildcards.ref} 2> {log} 1> {log}
+      """
+
+
+# data farme with the filter thresholds
+# (currently dummy values 1-16, to be replaced once
+# the snp metrics have completed)
+filter_params = pd.DataFrame({'mirang': [1, 2, 3, 4, 5, 6, 7, 8],
+                              'mirleo': [9, 10, 11, 12, 13, 14, 15, 16]},
+                              index = ["qd", "fs", "mq", "sor",
+                                       "mq_r_lower", "mq_r_upper",
+                                       "rpos_lower", "rpos_upper"])
+
+def get_filter_params(wildcards):
+    return(filter_params[wildcards.ref])
+
+rule gatk_filter_snps:
+    input:
+      vcf = "../results/genotyping/raw/{ref}_raw_snps.vcf.gz",
+      ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
+      metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
+    output:
+      vcf_flagged = temp( "../results/genotyping/raw/{ref}_flagged.vcf.gz" ),
+      vcf_filtered = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+    params:
+      vals = lambda wc: get_filter_params(wc)
+    benchmark:
+      "benchmark/genotyping/snp_filtering_{ref}.tsv"
+    resources:
+      mem_mb=51200
+    container: c_gatk
+    shell:
+      """
+      gatk --java-options "-Xmx35G" \
+        VariantFiltration \
+        -R {input.ref} \
+        -V {input.vcf} \
+        -O {output.vcf_flagged} \
+        --filter-expression "QD < {params.vals[qd]}" \
+        --filter-name "filter_QD" \
+        --filter-expression "FS > {params.vals[fs]}" \
+        --filter-name "filter_FS" \
+        --filter-expression "MQ < {params.vals[mq]}" \
+        --filter-name "filter_MQ" \
+        --filter-expression "SOR > {params.vals[sor]}" \
+        --filter-name "filter_SOR" \
+        --filter-expression "MQRankSum < {params.vals[mq_r_lower]} || MQRankSum > {params.vals[mq_r_upper]}" \
+        --filter-name "filter_MQRankSum" \
+        --filter-expression "ReadPosRankSum < {params.vals[rpos_lower]} || ReadPosRankSum > {params.vals[rpos_lower]} " \
+        --filter-name "filter_ReadPosRankSum"
+    
+      gatk --java-options "-Xmx35G" \
+        SelectVariants \
+        -R {input.ref} \
+        -V {output.vcf_flagged} \
+        -O {output.vcf_filtered} \
+        --exclude-filtered
       """
