@@ -37,7 +37,7 @@ rule geno_prep:
       expand("../results/checkpoints/index_ref_{species}.check", species = GATK_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
       expand("../data/fq_screen_db/{species}", species = FASTQSCREEN_REF),
-      expand("../data/genomes/filtered/{species}.dict", species = GATK_REF),
+      expand("../data/genomes/filtered/{species}_filt.dict", species = GATK_REF),
       '../results/checkpoints/prj_structure_ready.check'
 
 rule faidx_index:
@@ -123,7 +123,7 @@ rule create_genome_dictionary:
   input:
     fa="../data/genomes/filtered/{species}_filt.fa.gz"
   output:
-    dct="../data/genomes/filtered/{species}.dict"
+    dct="../data/genomes/filtered/{species}_filt.dict"
   resources:
     mem_mb=11264
   container: c_gatk
