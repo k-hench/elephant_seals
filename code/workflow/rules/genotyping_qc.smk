@@ -1,6 +1,8 @@
 """
-snakemake -n -R all_gt_qc
-snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R all_gt_qc
+snakemake -n --rerun-triggers mtime -R all_gt_qc
+snakemake --jobs 5 \
+  --use-singularity --singularity-args "--bind $CDATA" \
+  --use-conda --rerun-triggers mtime -R all_gt_qc
 snakemake --dag -R all_gt_qc | dot -Tsvg > ../results/img/control/dag_qc.svg
 
 snakemake --jobs 60 \
@@ -10,6 +12,7 @@ snakemake --jobs 60 \
   --use-singularity \
   --singularity-args "--bind $CDATA" \
   --use-conda \
+  --rerun-triggers mtime \
   --cluster '
     qsub \
       -V -cwd \
@@ -242,6 +245,8 @@ rule bin_hets:
     output:
       freq = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_freq2d.tsv",
       d = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_d.tsv"
+    params:
+      het_base = "../results/het/{ref}_"
     benchmark:
       "benchmark/qc/allelic_imbalance_bin_{ref}.tsv"
     log:
@@ -251,7 +256,11 @@ rule bin_hets:
       mem_mb=20480
     shell:
       """
-      Rscript R/allelic_imbalance_het_bin.R {wildcards.ref} 2> {log} 1> {log}
+      Rscript R/allelic_imbalance_het_bin.R \
+        {params.het_base} \
+        {input.inds} \
+        {output.freq} \
+        {output.d} 2> {log} 1> {log}
       """
 
 rule plot_allelic_imbalance:
@@ -269,7 +278,9 @@ rule plot_allelic_imbalance:
       mem_mb=12288
     shell:
       """
-      Rscript R/allelic_imbalance_plot.R {wildcards.ref} 2> {log} 1> {log}
+      Rscript R/allelic_imbalance_plot.R \
+        {input.freq} \
+        {input.d} \
+        {wildcards.ref} \
+        {output.plt} 2> {log} 1> {log}
       """
-
-'''

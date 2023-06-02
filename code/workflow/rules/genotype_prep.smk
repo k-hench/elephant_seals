@@ -1,6 +1,8 @@
 """
-snakemake -n -R geno_prep
-snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R geno_prep
+snakemake -n --rerun-triggers mtime -R geno_prep
+snakemake --jobs 5 \
+  --use-singularity --singularity-args "--bind $CDATA" \
+  --use-conda --rerun-triggers mtime -R geno_prep
 snakemake --dag -R  geno_prep | dot -Tsvg > ../results/img/control/dag_geno_prep.svg
 
 snakemake --jobs 5 \
@@ -10,6 +12,7 @@ snakemake --jobs 5 \
   --use-singularity \
   --singularity-args "--bind $CDATA" \
   --use-conda \
+  --rerun-triggers mtime \
   --cluster '
     qsub \
       -V -cwd \

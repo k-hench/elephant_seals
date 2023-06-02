@@ -1,12 +1,16 @@
 """
-snakemake -n -R gt_all
-snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R gt_all
+snakemake -n --rerun-triggers mtime -R gt_all
+snakemake --jobs 5 \
+  --use-singularity --singularity-args "--bind $CDATA" \
+  --use-conda --rerun-triggers mtime -R gt_all
 snakemake --dag -R  gt_all | dot -Tsvg > ../results/img/control/dag_gt.svg
 
 snakemake --dag ../results/img/control/snp_metrics_mirang.pdf | dot -Tsvg > ../results/img/control/dag_mirang_metrics.svg
 
-snakemake -n -R mapping_done
-snakemake --jobs 5 --use-singularity --singularity-args "--bind $CDATA" --use-conda -R mapping_done
+snakemake -n --rerun-triggers mtime -R mapping_done
+snakemake --jobs 5 \
+  --use-singularity --singularity-args "--bind $CDATA" \
+  --use-conda --rerun-triggers mtime -R mapping_done
 snakemake --dag -R  mapping_done | dot -Tsvg > ../results/img/control/dag_mapping.svg
 
 snakemake --jobs 60 \
@@ -16,6 +20,7 @@ snakemake --jobs 60 \
   --use-singularity \
   --singularity-args "--bind $CDATA" \
   --use-conda \
+  --rerun-triggers mtime \
   --cluster '
     qsub \
       -V -cwd \
