@@ -3,7 +3,7 @@ snakemake -n --rerun-triggers mtime -R all_gt_qc
 snakemake --jobs 5 \
   --use-singularity --singularity-args "--bind $CDATA" \
   --use-conda --rerun-triggers mtime -R all_gt_qc
-snakemake --dag -R all_gt_qc | dot -Tsvg > ../results/img/control/dag_qc.svg
+snakemake --rerun-triggers mtime --dag -R all_gt_qc | dot -Tsvg > ../results/img/control/dag_qc.svg
 
 snakemake --jobs 60 \
   --latency-wait 30 \
@@ -21,8 +21,8 @@ snakemake --jobs 60 \
       -l si_flag=1 \
       -pe multislot {threads} \
       -l vf={resources.mem_mb}' \
-  --jn job_gt.{name}.{jobid}.sh \
-  -R all_gt_qc && mv job_gt.* logs/
+  --jn job_qc.{name}.{jobid}.sh \
+  -R all_gt_qc && mv job_qc.* logs/
 """
 
 rule all_gt_qc:
@@ -78,7 +78,7 @@ rule subsample_fastq:
     shell:
       """
       seqtk sample -s 42 {input.fq_fw} 100000 | bgzip > {output.fq_fw}
-      seqtk sample -s 42 {input.fq_rv} 100000 | bgzip > {output.fq_fw}
+      seqtk sample -s 42 {input.fq_rv} 100000 | bgzip > {output.fq_rv}
       """
 
 rule fastq_screen:
@@ -118,7 +118,7 @@ rule merge_bam_by_sample:
       """
       BAMS=$( echo {input.bams} | sed "s/\[//g; s/\]//g; s/,//g; s/'//g" )
       samtools merge  -o {output.single_bam} $BAMS
-      gatk --java-options "-Xmx45g" BuildBamIndex -I {output.single_bam}
+      gatk --java-options "-Xmx45g" BuildBamIndex -I {output.single_bam} -O {output.single_bam}.bai
       """
 
 rule bamcov:
