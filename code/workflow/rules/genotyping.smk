@@ -306,7 +306,7 @@ rule gather_vcfs:
       vcfs = expand( "../results/genotyping/raw/{{ref}}_{part}_raw.vcf.gz", part = GENOME_PARTITIONS ),
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
-      vcf_list = temp( "tmp/{ref}_vcf_list.txt" ),
+      vcf_list = temp( "tmp/{ref}_vcf.list" ),
       vcf_all = protected( "../results/genotyping/raw/{ref}_raw.vcf.gz" ),
       vcf_snps = "../results/genotyping/raw/{ref}_raw_snps.vcf.gz"
     benchmark:
