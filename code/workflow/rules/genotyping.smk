@@ -316,7 +316,7 @@ rule gather_vcfs:
     container: c_gatk
     shell:
       """
-      $(echo "{input.vcfs}" | sed "s/\[//g; s/\]//g; s/,//g; s/'//g; s/ /\n/g") > {output.vcf_list}
+      echo "{input.vcfs}" | sed "s/ /\\n/g" > {output.vcf_list}
     
       gatk GatherVcfsCloud \
         -I {output.vcf_list} \
