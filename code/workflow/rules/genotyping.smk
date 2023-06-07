@@ -307,7 +307,7 @@ rule gather_vcfs:
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
       vcf_list = temp( "tmp/{ref}_vcf_list.txt" ),
-      vcf_all = "../results/genotyping/raw/{ref}_raw.vcf.gz",
+      vcf_all = protected( "../results/genotyping/raw/{ref}_raw.vcf.gz" ),
       vcf_snps = "../results/genotyping/raw/{ref}_raw_snps.vcf.gz"
     benchmark:
       "benchmark/genotyping/raw_vcf_{ref}_collect.tsv"
@@ -411,7 +411,7 @@ rule gatk_filter_snps:
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
       vcf_flagged = temp( "../results/genotyping/raw/{ref}_flagged.vcf.gz" ),
-      vcf_filtered = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+      vcf_filtered = protected( "../results/genotyping/filtered/{ref}_filtered.vcf.gz" )
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
