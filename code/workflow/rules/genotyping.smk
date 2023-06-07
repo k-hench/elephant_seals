@@ -3,7 +3,7 @@ snakemake -n --rerun-triggers mtime -R gt_all
 snakemake --jobs 5 \
   --use-singularity --singularity-args "--bind $CDATA" \
   --use-conda --rerun-triggers mtime -R gt_all
-snakemake --dag -R  gt_all | dot -Tsvg > ../results/img/control/dag_gt.svg
+snakemake --dag  --rerun-triggers mtime -R gt_all | dot -Tsvg > ../results/img/control/dag_gt.svg
 
 snakemake --dag ../results/img/control/snp_metrics_mirang.pdf | dot -Tsvg > ../results/img/control/dag_mirang_metrics.svg
 
@@ -395,8 +395,8 @@ rule metrics_plot:
 # data farme with the filter thresholds
 # (currently dummy values 1-16, to be replaced once
 # the snp metrics have completed)
-filter_params = pd.DataFrame({'mirang': [1, 2, 3, 4, 5, 6, 7, 8],
-                              'mirleo': [9, 10, 11, 12, 13, 14, 15, 16]},
+filter_params = pd.DataFrame({'mirang': [7.5, 17.5, 55.0, 3.0, -0.5, 0.5, -2.25, 2.25],
+                              'mirleo': [7.5, 17.5, 55.0, 3.0, -0.5, 0.5, -2.25, 2.25]},
                               index = ["qd", "fs", "mq", "sor",
                                        "mq_r_lower", "mq_r_upper",
                                        "rpos_lower", "rpos_upper"])
