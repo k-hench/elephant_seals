@@ -366,7 +366,7 @@ rule metrics_density:
     benchmark:
       "benchmark/genotyping/snp_metrics_density_{ref}.tsv"
     log:
-      "logs/r_gatk_metrics_density_{ref}"
+      "logs/r_gatk_metrics_density_{ref}.log"
     conda: "r_tidy"
     resources:
       mem_mb=20480

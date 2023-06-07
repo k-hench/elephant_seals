@@ -7,7 +7,7 @@ ref <- as.character(args[1])
 
 base_dir <- "../results/qc/snp_metrics/"
 files <- dir(base_dir, pattern = ref)
-files <- files[!grepl("_snp_metrics.tsv.gz", files)]
+files <- files[!grepl("_snp_metrics.tsv", files)]
 
 filter_values <- list(
   mirang = list(QD = 7.5, FS = 17.5, log_FS = log10(17.5), MQ = 55.0, SOR = 3.0, MQRankSum = c( -0.5, 0.5), ReadPosRankSum = c(-2.25, 2.25)),
