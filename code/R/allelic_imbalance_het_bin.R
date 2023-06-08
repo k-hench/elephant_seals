@@ -20,7 +20,7 @@ for(i in inds){
 
   if(file.exists(current_file)){
     if(file.info(current_file)$size > 0){
-      d <- read.table(current_file), sep = ",")
+      d <- read.table(current_file, sep = ",")
       d <- cbind(d, max = apply(d, 1, max), min = apply(d, 1, min))
       d <- cbind(d, minreadprop = d$min/(d$min+d$max), depth = d$min+d$max)
   
