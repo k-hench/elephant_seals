@@ -5,7 +5,7 @@ snakemake --dag -R  cactus_prep | dot -Tsvg > ../results/img/control/dag_cactus_
 JOBSTORE_PATH='../results/cactus/jobStore.img'
 
 rule cactus_prep:
-    input: '../results/checkpoints/done_round_0.txt'
+    input: '../results/checkpoints/done_round_0.check'
 
 rule parse_cactus_config:
     output: "../results/checkpoints/jobstore_setup.txt"
@@ -29,12 +29,23 @@ rule stepwise_instructions:
     log: "logs/cactus/instructions.log"
     script: "../../sh/sm_cactus_instructions.sh"
 
-rule parse_cactus_steps:
+rule parse_cactus_step_1:
     input: "../results/cactus/cactus_instructions.sh"
-    output: "../results/checkpoints/done_round_0.txt"
-    log: "logs/cactus/parse_instructions.log"
+    output: touch( "../results/checkpoints/parse-instructions_step_1.check" )
+    log: "logs/cactus/parse_instructions_step1.log"
     conda: "r_base"
     shell:
       """
-      Rscript --vanilla R/parse_cactus_jobs.R &> {log} && touch {output}
+      Rscript --vanilla R/parse_cactus_jobs_step_1.R &> {log}
+      """
+
+rule parse_cactus_step_2:
+    input: "../results/checkpoints/parse-instructions_step_1.check"
+    output: touch( "../results/checkpoints/done_round_0.check" ),
+            touch( "../results/checkpoints/done_round_0_j0_s0.check" )
+    log: "logs/cactus/parse_instructions_setp2.log"
+    conda: "r_base"
+    shell:
+      """
+      Rscript --vanilla R/parse_cactus_jobs_step_2.R &> {log}
       """
