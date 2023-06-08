@@ -91,16 +91,13 @@ rule fastq_screen:
     benchmark:
       'benchmark/qc/fq_screen_{sample_ln}.tsv'
     resources:
-      mem_mb=8192
+      mem_mb=8192,
+      threads=7
     threads: 7
     container: c_qc
     shell:
       """
-      fastq_screen \
-        --conf fastq_screen.conf \
-        --threads 7 \
-        --outdir ../results/qc/fastq_screen/ \ 
-        --aligner bowtie2 {input.fq_fw} {input.fq_rv}
+      fastq_screen --conf fastq_screen.conf --threads 7 --outdir ../results/qc/fastq_screen/ --aligner bowtie2 {input.fq_fw} {input.fq_rv}
       """
 
 # ---  mapping qc -----------------------------------
