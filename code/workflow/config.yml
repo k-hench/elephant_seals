@@ -79,8 +79,8 @@ species:
 speciesTree: "((((((((pumcon,pumyag),acijub),(lynruf,(lyncan,lynpar))),((((priiri,priben),priviv),carcar),(felnig,(felcat,felcha)))),leogeo),(pantig,(((panleo,panpar),panonc),panunc))),(parher,((cryfer,((munmun,helpar),sursur)),(hyahya,crocro)))),((((canlup,lycpic),(chrbra,speven)),(nycpro,((vulvul,vulfer),vullag))),(((((taxtax,(((((((lutlut,enhlut),loncan),ptebra),((musniv,(musput,musnig)),muserm)),(eirbar,marzib)),melmel),melcap)),(potfla,prolot)),spigra),((odoros,(calurs,(arcgaz,(eumjub,zalcal)))),(((lepwed,(mirleo,mirang)),neosch),(phovit,halgry)))),(ailmel,(treorn,((ursame,ursthi),(ursmar,ursarc)))))));"
 
 # technical parameters
-cactus_sif: 'docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1'
-#cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
+# cactus_sif: 'docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1'
+cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
 cactus_cores: "8"
 
 # optional repeat masking
