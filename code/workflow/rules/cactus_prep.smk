@@ -13,7 +13,7 @@ rule reformat_arcgaz:
     conda: "msa_align"
     shell:
       """
-      zcat "^>" arcgaz_anc_h1.fa.gz | sed 's/=/./g; s/;/:/g' | bgzip > {output}
+      zcat "^>" {input} | sed 's/=/./g; s/;/:/g' | bgzip > {output}
       """
 
 rule parse_cactus_config:
