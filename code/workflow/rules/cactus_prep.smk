@@ -7,7 +7,17 @@ JOBSTORE_PATH='../results/cactus/jobStore.img'
 rule cactus_prep:
     input: '../results/checkpoints/done_round_0.check'
 
+rule reformat_arcgaz:
+    input: '../data/genomes/arcgaz_anc_h1.fa.gz'
+    output: '../data/genomes/arcgaz.fa.gz'
+    conda: "msa_align"
+    shell:
+      """
+      zcat "^>" arcgaz_anc_h1.fa.gz | sed 's/=/./g; s/;/:/g' | bgzip > {output}
+      """
+
 rule parse_cactus_config:
+    input: '../data/genomes/arcgaz.fa.gz'
     output: "../results/checkpoints/jobstore_setup.txt"
     log: "logs/cactus/parse_config.log"
     params:
