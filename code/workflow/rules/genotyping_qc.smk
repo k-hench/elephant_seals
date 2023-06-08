@@ -215,7 +215,7 @@ rule export_het_ind:
       # Creates individual file
       zgrep "#CHROM" {input.vcf} | \
         cut -f 10- | \
-        sed 's/\t/\n/g' > {output.inds}
+        sed 's/\\t/\\n/g' > {output.inds}
       
       # Writes the AD fields from all heterozygous genotypes with minor allele count i into a file hets.i
       n={params.n_samples}
