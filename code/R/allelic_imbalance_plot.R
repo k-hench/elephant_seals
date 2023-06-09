@@ -40,8 +40,8 @@ p1 <- freq2D |>
                                 barwidth = unit(.75, "npc"),
                                 barheight = unit(5,"pt"))) +
     labs(x = "DP", y = "Reads minor alleles") +
-  coord_cartesian(xlim = c(0, 3 * seq_depth),
-                  ylim = c(0, 1.5 * seq_depth))
+  coord_cartesian(xlim = c(0, 2 * seq_depth),
+                  ylim = c(0, 1 * seq_depth))
 
 p2 <- d |> 
   ggplot(aes(x = minreadprop)) +
