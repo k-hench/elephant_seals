@@ -30,7 +30,7 @@ p1 <- freq2D |>
               alpha = .5, linewidth = .4) +
   facet_wrap(ind~., nrow = 2)+
   scale_fill_gradientn(colours = clrs, na.value = 'transparent',
-                      breaks = (c(0:6)/2), labels = \\(x){sprintf('%.1f',10^x)}) +
+                      breaks = (c(0:6)/2), labels = \(x){sprintf('%.1f',10^x)}) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none")+
   scale_x_continuous(limits = c(-1, 3.5 * seq_depth)) +
