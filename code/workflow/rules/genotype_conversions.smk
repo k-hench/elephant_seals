@@ -1,7 +1,7 @@
 """
 *auxillary rules for converions*
 
-snakemake -n ../results/genotyping/filtered/mirang_filtered.ped
+snakemake --rerun-triggers mtime  -n ../results/genotyping/filtered/mirang_filtered.ped
 """
 
 rule vcf_to_plink:
