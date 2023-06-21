@@ -477,8 +477,7 @@ rule consolidate_gather_all_bp:
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
       intervals = "../data/genomes/filtered/{ref}_{part}.intervals"
     output:
-      vcf_raw = temp( "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw.vcf.gz" ),
-      vcf_snps = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw_snps.vcf.gz"
+      vcf_raw = temp( "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw.vcf.gz" )
     benchmark:
       'benchmark/genotyping/gather_gvcf_all_bp_{ref}_pt{part}.tsv'
     resources:
@@ -494,12 +493,27 @@ rule consolidate_gather_all_bp:
         --tmp-dir tmp/ \
         -L {input.intervals} \
         --include-non-variant-sites true
-      
+      """
+
+rule select_var_all_bp:
+    input:
+      ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
+      intervals = "../data/genomes/filtered/{ref}_{part}.intervals",
+      vcf_raw = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw.vcf.gz"
+    output:
+      vcf_snps = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw_snps.vcf.gz"
+    benchmark:
+      'benchmark/genotyping/select_var_all_bp_{ref}_pt{part}.tsv'
+    resources:
+      mem_mb=174080
+    container: c_gatk
+    shell:
+      """
       gatk --java-options "-Xmx135g" \
         SelectVariants \
         -L {input.intervals} \
         -R {input.ref} \
-        -V {output.vcf_raw} \
+        -V {input.vcf_raw} \
         --select-type-to-exclude INDEL \
         -O {output.vcf_snps} 
       """

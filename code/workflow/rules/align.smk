@@ -54,10 +54,10 @@ rule lastdb_index:
       # file is actually created in the shell: directive with "touch"
       # This rule will also create the ref's 2bit file, which may be
       # used later in net_to_axt (but isn't used at the time of writing)
-      temp('../results/genome/{refname}lastdb_index.done')
+      temp('../results/genomes/{refname}lastdb_index.done')
     params:
       indexBase='../data/genomes/{refname}',
-      refSizeFile='../results/genome/{refname}.size',
+      refSizeFile='../results/genomes/{refname}.size',
     log:
       'logs/align/{refname}_lastdbIndex_log.txt'
     threads: 2
@@ -77,13 +77,13 @@ rule build_index:
       fastaFile="../data/genomes/{species}.fa",
       fastaRef='../data/genomes/{refname}.fa'.format(refname = ALIGN_REF)
     output:
-      "../results/genome/{species}.size"
+      "../results/genomes/{species}.size"
     params:
       indexBase='../data/genomes/{refname}'.format(refname = ALIGN_REF),
-      speciesSizeFile='../results/genome/{species}.size',
-      refNibDir='../results/genome/nib',
+      speciesSizeFile='../results/genomes/{species}.size',
+      refNibDir='../results/genomes/nib',
       refFastaFile='../data/genomes/{refname}.fa'.format(refname = ALIGN_REF),
-      refNib2Bit='../results/genome/nib/{refname}.2bit'.format(refname = ALIGN_REF),
+      refNib2Bit='../results/genomes/nib/{refname}.2bit'.format(refname = ALIGN_REF),
     log:
       'logs/{species}_index_log.txt'
     benchmark:
@@ -102,7 +102,7 @@ rule align_single_last:
     input:
       str(rules.lastdb_index.output).format( refname = ALIGN_REF ),
       fastaFile = "../data/genomes/{species}.fa.gz",
-      speciesSizeFile = '../results/genome/{species}.size',
+      speciesSizeFile = '../results/genomes/{species}.size',
     output:
       maf = '../results/maf/{species}_on_{ref}.maf.gz'
     params:
