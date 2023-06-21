@@ -71,6 +71,8 @@ include: "./rules/cactus_prep.smk"
 include: "./rules/genotype_prep.smk"
 include: "./rules/genotyping.smk"
 include: "./rules/genotyping_qc.smk"
+include: "./rules/genotype_conversions.smk"
+include: "./rules/roh_calling.smk"
 
 # conditional inclusion of repeat masking part
 if config[ 'need_masking' ] != None:

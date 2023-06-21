@@ -540,7 +540,7 @@ rule gatk_filter_snps_all_bp:
         -R {input.ref} \
         -V {input.vcf} \
         -O {output.vcf_flagged} \
-        --filter-expression "QD < {params.vals[qd]}"" \
+        --filter-expression "QD < {params.vals[qd]}" \
         --filter-name "filter_QD" \
         --filter-expression "FS > {params.vals[fs]}" \
         --filter-name "filter_FS" \
