@@ -42,8 +42,8 @@ rule all_gt_qc:
                           "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
                           "../results/het/{ref}_{sample_id}.csv"],
                          sample_id = SAMPLES, ref = GATK_REF[0]),
-      by_ref = expand( "../results/img/qc/{ref}_all_het_stats_all_ind.pdf",
-                       ref = GATK_REF[0] )
+      by_ref = expand( "../results/img/qc/{ref}_{set}_het_stats_all_ind.pdf",
+                       ref = GATK_REF[0], set = ["all", "mirang", "mirleo"] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 # ---  sequencing qc --------------------------------
