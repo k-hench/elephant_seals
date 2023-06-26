@@ -42,7 +42,7 @@ rule all_gt_qc:
                           "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
                           "../results/het/{ref}_{sample_id}.csv"],
                          sample_id = SAMPLES, ref = GATK_REF[0]),
-      by_ref = expand( "../results/img/qc/{ref}_{set}_het_stats_all_ind.pdf",
+      by_ref = expand( "../results/img/qc/{ref}_{set}_het_stats.pdf",
                        ref = GATK_REF[0], set = ["all", "mirang", "mirleo"] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
@@ -210,7 +210,7 @@ rule filter_mac1:
 
 rule export_het_ind:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz",
+      vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz"",
       inds = "../results/inds_all.pop"
     output:
       hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
@@ -276,7 +276,7 @@ rule plot_allelic_imbalance:
       freq = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_freq2d.tsv",
       d = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_d.tsv"
     output:
-      plt = "../results/img/qc/{ref,\w+}_{set,\w+}_het_stats_all_ind.pdf"
+      plt = "../results/img/qc/{ref,\w+}_{set,\w+}_het_stats.pdf"
     benchmark:
       "benchmark/qc/allelic_imbalance_plot_{ref}_{set}.tsv"
     log:
