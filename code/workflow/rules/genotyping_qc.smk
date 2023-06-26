@@ -210,7 +210,7 @@ rule filter_mac1:
 
 rule export_het_ind:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz"",
+      vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz",
       inds = "../results/inds_all.pop"
     output:
       hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
