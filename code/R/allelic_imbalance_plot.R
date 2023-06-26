@@ -28,7 +28,7 @@ p1 <- freq2D |>
   geom_abline(data = tibble(a = c(.5, .3,.2)),
               aes(slope = a, intercept = 0, linetype = factor(a)),
               alpha = .5, linewidth = .4) +
-  facet_wrap(ind~., nrow = 2)+
+  facet_wrap(ind~., nrow = 3)+
   scale_fill_gradientn(colours = clrs, na.value = 'transparent',
                       breaks = (c(0:6)/2), labels = \(x){sprintf('%.1f',10^x)}) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
@@ -40,7 +40,7 @@ p1 <- freq2D |>
                                 barwidth = unit(.75, "npc"),
                                 barheight = unit(5,"pt"))) +
     labs(x = "DP", y = "Reads minor alleles") +
-  coord_cartesian(xlim = c(0, 2 * seq_depth),
+  coord_cartesian(xlim = c(0, 1.75 * seq_depth),
                   ylim = c(0, 1 * seq_depth))
 
 p2 <- d |> 
@@ -53,7 +53,7 @@ p2 <- d |>
             alpha = .5, linewidth = .4) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none") +
-  facet_wrap(ind~., nrow = 2)+
+  facet_wrap(ind~., nrow = 3)+
   labs(x = "Proportion minor allele reads") +
   coord_cartesian(xlim = c(0,0.5))
 
@@ -67,7 +67,7 @@ p3 <- d |>
             alpha = .5, linewidth = .4) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none") +
-  facet_wrap(ind~., nrow = 2)+
+  facet_wrap(ind~., nrow = 3)+
   labs(x = "Proportion minor allele reads") +
   coord_cartesian(xlim = c(0,0.5))
 
@@ -81,5 +81,5 @@ p_out <- p1 / p2 / p3 +
 ggsave(plot = p_out,
       filename = out_plt,
       width = 16,
-      height = 12,
+      height = 16,
       device = cairo_pdf)
