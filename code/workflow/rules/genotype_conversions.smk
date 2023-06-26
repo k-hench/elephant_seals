@@ -2,7 +2,27 @@
 *auxillary rules for converions*
 
 snakemake --rerun-triggers mtime  -n ../results/genotyping/filtered/mirang_filtered.ped
+
+# python dummy wildcards
+wc_dummy = type('MyObject', (object,), {})
+wildcards = wc_dummy()
+wildcards.spec = "all"
+wildcards.spec = "mirang"
 """
+
+# get all sample ids for an individual species
+def get_samples_spec(spec):
+    return( seq_file_data["sample_id"][seq_file_data["spec"] == spec].values )
+
+def get_samples_spec_wc(wildcards):
+    if( wildcards.spec == "all" ):
+      return( seq_file_data["sample_id"].values )
+    else:
+      return( seq_file_data["sample_id"][seq_file_data["spec"] == wildcards.spec].values )
+
+SAMPLES_ANG = get_samples_spec("mirang")
+SAMPLES_LEO = get_samples_spec("mirleo")
+SAMPLES_SPEC = {"mirang": SAMPLES_ANG, "mirleo": SAMPLES_LEO, "all": SAMPLES}
 
 rule vcf_to_plink:
     input: 
@@ -34,3 +54,34 @@ rule vcf_to_plink:
           --allow-extra-chr \
           --out {params.geno_base}{wildcards.file_base}
         """
+
+rule create_species_pop:
+    output: 
+      pp = "../results/inds_{spec}.pop"
+    params: 
+      inds = lambda wc: SAMPLES_SPEC[wc.spec]
+    shell:
+      """
+      echo "{params.inds}" | sed 's/ /\\n/g' > {output.pp}
+      """
+
+rule vcf_subset_species:
+    input:
+      vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
+      inds = "../results/inds_{spec}.pop"
+    output:
+      vcf = "../results/genotyping/filtered/{file_base}_{spec}_only.vcf.gz"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      vcftools \
+          --gzvcf {input.vcf} \
+          --indv {input.inds} \
+           --recode \
+           --stdout | \
+           bgzip > {output.vcf}
+      
+      tabix -p vcf {output.vcf}
+      """

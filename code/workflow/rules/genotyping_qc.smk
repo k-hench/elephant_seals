@@ -42,7 +42,7 @@ rule all_gt_qc:
                           "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
                           "../results/het/{ref}_{sample_id}.csv"],
                          sample_id = SAMPLES, ref = GATK_REF[0]),
-      by_ref = expand( "../results/img/qc/{ref}_het_stats_all_ind.pdf",
+      by_ref = expand( "../results/img/qc/{ref}_all_het_stats_all_ind.pdf",
                        ref = GATK_REF[0] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
@@ -192,11 +192,27 @@ rule filter_mac1:
       tabix -p vcf {output.vcf}
       """
 
+# rule all_pop:
+#     input:
+#       vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz"
+#     output:
+#       inds = "../results/{ref}_all_inds.pop"
+#     resources:
+#       mem_mb=25600
+#     container: c_popgen
+#     shell:
+#       """
+#       # Creates individual file
+#       zgrep "#CHROM" {input.vcf} | \
+#         cut -f 10- | \
+#         sed 's/\\t/\\n/g' > {output.inds}
+#       """
+
 rule export_het_ind:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz"
+      vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz",
+      inds = "../results/inds_all.pop"
     output:
-      inds = "../results/{ref}_inds.txt",
       hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
     params:
       vcf_base = "{ref}_mac1",
@@ -209,15 +225,10 @@ rule export_het_ind:
     container: c_popgen
     shell:
       """
-      # Creates individual file
-      zgrep "#CHROM" {input.vcf} | \
-        cut -f 10- | \
-        sed 's/\\t/\\n/g' > {output.inds}
-      
       # Writes the AD fields from all heterozygous genotypes with minor allele count i into a file hets.i
       n={params.n_samples}
       c=1
-      for i in $(cat {output.inds})
+      for i in $(cat {input.inds})
       do
         echo -ne "$i | $c of $n"
         vcftools \
@@ -237,17 +248,17 @@ rule export_het_ind:
 
 rule bin_hets:
     input:
-      inds = "../results/{ref}_inds.txt",
+      inds = "../results/inds_{set}.pop",
       hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
     output:
-      freq = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_freq2d.tsv",
-      d = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_d.tsv"
+      freq = "../results/qc/allelic_imbalance/{ref,\w+}_{set,\w+}_het_ind_stats_freq2d.tsv",
+      d = "../results/qc/allelic_imbalance/{ref,\w+}_{set,\w+}_het_ind_stats_d.tsv"
     params:
       het_base = "../results/het/{ref}_"
     benchmark:
-      "benchmark/qc/allelic_imbalance_bin_{ref}.tsv"
+      "benchmark/qc/allelic_imbalance_bin_{ref}_{set}.tsv"
     log:
-      "logs/r_allelic_imbalance_bin_{ref}"
+      "logs/r_allelic_imbalance_bin_{ref}_{set}"
     conda: "r_tidy"
     resources:
       mem_mb=20480
@@ -262,14 +273,14 @@ rule bin_hets:
 
 rule plot_allelic_imbalance:
     input:
-      freq = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_freq2d.tsv",
-      d = "../results/qc/allelic_imbalance/{ref}_het_ind_stats_d.tsv"
+      freq = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_freq2d.tsv",
+      d = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_d.tsv"
     output:
-      plt = "../results/img/qc/{ref}_het_stats_all_ind.pdf"
+      plt = "../results/img/qc/{ref,\w+}_{set,\w+}_het_stats_all_ind.pdf"
     benchmark:
-      "benchmark/qc/allelic_imbalance_plot_{ref}.tsv"
+      "benchmark/qc/allelic_imbalance_plot_{ref}_{set}.tsv"
     log:
-      "logs/r_allelic_imbalance_plot_{ref}"
+      "logs/r_allelic_imbalance_plot_{ref}_{set}"
     conda: "r_tidy"
     resources:
       mem_mb=12288

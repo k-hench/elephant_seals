@@ -13,6 +13,8 @@ library(prismatic)
 library(patchwork)
 library(glue)
 
+
+n_rows <- 3
 d <- read_tsv(in_d)
 freq2D <- read_tsv(in_freq)
 
@@ -28,7 +30,7 @@ p1 <- freq2D |>
   geom_abline(data = tibble(a = c(.5, .3,.2)),
               aes(slope = a, intercept = 0, linetype = factor(a)),
               alpha = .5, linewidth = .4) +
-  facet_wrap(ind~., nrow = 3)+
+  facet_wrap(ind~., nrow = n_rows)+
   scale_fill_gradientn(colours = clrs, na.value = 'transparent',
                       breaks = (c(0:6)/2), labels = \(x){sprintf('%.1f',10^x)}) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
@@ -53,7 +55,7 @@ p2 <- d |>
             alpha = .5, linewidth = .4) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none") +
-  facet_wrap(ind~., nrow = 3)+
+  facet_wrap(ind~., nrow = n_rows)+
   labs(x = "Proportion minor allele reads") +
   coord_cartesian(xlim = c(0,0.5))
 
@@ -67,7 +69,7 @@ p3 <- d |>
             alpha = .5, linewidth = .4) +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none") +
-  facet_wrap(ind~., nrow = 3)+
+  facet_wrap(ind~., nrow = n_rows)+
   labs(x = "Proportion minor allele reads") +
   coord_cartesian(xlim = c(0,0.5))
 
