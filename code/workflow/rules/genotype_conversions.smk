@@ -20,8 +20,8 @@ def get_samples_spec_wc(wildcards):
     else:
       return( seq_file_data["sample_id"][seq_file_data["spec"] == wildcards.spec].values )
 
-SAMPLES_ANG = get_samples_spec("mirang")
-SAMPLES_LEO = get_samples_spec("mirleo")
+SAMPLES_ANG = sorted(list(set(get_samples_spec("mirang"))))
+SAMPLES_LEO = sorted(list(set(get_samples_spec("mirleo"))))
 SAMPLES_SPEC = {"mirang": SAMPLES_ANG, "mirleo": SAMPLES_LEO, "all": SAMPLES}
 
 rule vcf_to_plink:
