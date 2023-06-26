@@ -62,7 +62,7 @@ rule create_species_pop:
       inds = lambda wc: SAMPLES_SPEC[wc.spec]
     shell:
       """
-      echo "{params.inds}" | sed 's/ /\\n/g' > {output.pp}
+      echo "{params.inds}" | sed "s/ /\\n/g; s/'//g; s/\[//g; s/\]//g; /^[[:space:]]*$/d" > {output.pp}
       """
 
 rule vcf_subset_species:
