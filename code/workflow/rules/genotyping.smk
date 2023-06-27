@@ -436,7 +436,7 @@ rule gatk_filter_snps:
         --filter-name "filter_SOR" \
         --filter-expression "MQRankSum < {params.vals[mq_r_lower]} || MQRankSum > {params.vals[mq_r_upper]}" \
         --filter-name "filter_MQRankSum" \
-        --filter-expression "ReadPosRankSum < {params.vals[rpos_lower]} || ReadPosRankSum > {params.vals[rpos_lower]}" \
+        --filter-expression "ReadPosRankSum < {params.vals[rpos_lower]} || ReadPosRankSum > {params.vals[rpos_upper]}" \
         --filter-name "filter_ReadPosRankSum"
     
       gatk --java-options "-Xmx35G" \
@@ -550,7 +550,7 @@ rule gatk_filter_snps_all_bp:
         --filter-name "filter_SOR" \
         --filter-expression "MQRankSum < {params.vals[mq_r_lower]} || MQRankSum > {params.vals[mq_r_upper]}" \
         --filter-name "filter_MQRankSum" \
-        --filter-expression "ReadPosRankSum < {params.vals[rpos_lower]} || ReadPosRankSum > {params.vals[rpos_lower]}" \
+        --filter-expression "ReadPosRankSum < {params.vals[rpos_lower]} || ReadPosRankSum > {params.vals[rpos_upper]}" \
         --filter-name "filter_ReadPosRankSum"
     
       gatk --java-options "-Xmx55G" \
