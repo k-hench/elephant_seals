@@ -214,7 +214,7 @@ rule allele_depth:
     output:
       ad = "../results/qc/allele_depth/{file_base}_{spec}_ad.tsv.gz"
     params:
-      ad_base = "../results/het/{file_base}_{spec}_ad.tsv"
+      ad_base = "../results/qc/allele_depth/{file_base}_{spec}_ad.tsv"
     benchmark:
       'benchmark/qc/ad_{file_base}_{spec}.tsv'
     resources:
