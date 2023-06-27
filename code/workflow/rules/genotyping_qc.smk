@@ -230,7 +230,7 @@ rule allele_depth:
       gzip {params.ad_base}
       """
 
-rule ad_to_het:
+rule allele_depth_to_het:
     input: 
       tsv = "../results/qc/allele_depth/{file_base}_{spec}_ad.tsv.gz"
     output:
@@ -252,87 +252,24 @@ rule ad_to_het:
         {params.n_samples} 2> {log} 1> {log}
       """
 
-rule export_het_ind:
-    input:
-      vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz",
-      inds = "../results/inds_all.pop"
-    output:
-      hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
-    params:
-      vcf_base = "{ref}_mac1",
-      n_samples = len(SAMPLES),
-      het_base = "../results/het/"
-    benchmark:
-      'benchmark/qc/het_{ref}.tsv'
-    resources:
-      mem_mb=25600
-    container: c_popgen
-    shell:
-      """
-      # Writes the AD fields from all heterozygous genotypes with minor allele count i into a file hets.i
-      n={params.n_samples}
-      c=1
-      for i in $(cat {input.inds})
-      do
-        echo -ne "$i | $c of $n"
-        vcftools \
-          --gzvcf {input.vcf} \
-          --mac 1 \
-          --max-mac 1 \
-          --indv $i \
-           --recode \
-           --stdout | \
-            grep -v "^#" | \
-             grep "0[/|]1" |\
-              awk '{{split($9,a,":");for(i=1;i<=10;i++){{if(match(a[i],"AD")){{adidx=i}} }};for(i=10;i<=NF;i++){{if(match($i,"0[/|]1")==1){{split($i,b,":"); print b[adidx]}} }} }}' \
-              > {params.het_base}/{wildcards.ref}_$i".csv"
-        ((c=c+1))
-      done
-      """
-
-rule bin_hets:
-    input:
-      inds = "../results/inds_{set}.pop",
-      hets = expand( "../results/het/{{ref}}_{sample_id}.csv", sample_id = SAMPLES )
-    output:
-      freq = "../results/qc/allelic_imbalance/{ref,\w+}_{set,\w+}_het_ind_stats_freq2d.tsv",
-      d = "../results/qc/allelic_imbalance/{ref,\w+}_{set,\w+}_het_ind_stats_d.tsv"
-    params:
-      het_base = "../results/het/{ref}_"
-    benchmark:
-      "benchmark/qc/allelic_imbalance_bin_{ref}_{set}.tsv"
-    log:
-      "logs/r_allelic_imbalance_bin_{ref}_{set}"
-    conda: "r_tidy"
-    resources:
-      mem_mb=20480
-    shell:
-      """
-      Rscript R/allelic_imbalance_het_bin.R \
-        {params.het_base} \
-        {input.inds} \
-        {output.freq} \
-        {output.d} 2> {log} 1> {log}
-      """
-
 rule plot_allelic_imbalance:
     input:
-      freq = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_freq2d.tsv",
-      d = "../results/qc/allelic_imbalance/{ref}_{set}_het_ind_stats_d.tsv"
+      het = "../results/qc/allele_depth/{file_base}_{spec}_het_bin.tsv.gz"
     output:
-      plt = "../results/img/qc/{ref,\w+}_{set,\w+}_het_stats.pdf"
+      plt = "../results/img/qc/{file_base}_{spec}_het_stats.pdf"
+    params:
+      max_n_ref = 30
     benchmark:
-      "benchmark/qc/allelic_imbalance_plot_{ref}_{set}.tsv"
+      "benchmark/qc/allelic_imbalance_plot_{file_base}_{spec}.tsv"
     log:
-      "logs/r_allelic_imbalance_plot_{ref}_{set}"
+      "logs/r_allelic_imbalance_plot_{file_base}_{spec}"
     conda: "r_tidy"
     resources:
       mem_mb=12288
     shell:
       """
       Rscript R/allelic_imbalance_plot.R \
-        {input.freq} \
-        {input.d} \
-        {wildcards.ref} \
-        {output.plt} 2> {log} 1> {log}
+        {input.het} \
+        {output.plt} \
+        {params.max_n_ref} 2> {log} 1> {log}
       """

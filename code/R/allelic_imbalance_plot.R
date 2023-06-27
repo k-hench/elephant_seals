@@ -1,87 +1,69 @@
 #!/usr/bin/env Rscript
-# Rscript <in_freq> <in_d> <base_name> <out_plt_name>
+# Rscript <tsv_file> <out_plt> <max_n_ref>
+# Rscript mirang_filtered_mirang_het_bin.tsv.gz mirang_filtered_mirang_het_stats.pdf 30
 library(tidyverse)
-
 args <- commandArgs(trailingOnly = TRUE)
-in_freq <- as.character(args[1])
-in_d <- as.character(args[2])
-base <- as.character(args[3])
-out_plt  <- as.character(args[4])
+tsv_file <- as.character(args[1])
+out_plt <- as.character(args[2])
+max_n_ref <- as.integer(args[3])
 
 library(tidyverse)
 library(prismatic)
 library(patchwork)
-library(glue)
 
+data <- read_tsv(tsv_file, col_types = "ciii")
 
-n_rows <- 3
-d <- read_tsv(in_d)
-freq2D <- read_tsv(in_freq)
+p1 <- data |> 
+  group_by(ind) |> 
+  summarise(n = sum(n)) |> 
+  ggplot(aes(x = n *1e-3)) +
+  geom_histogram(boundary = 0, color = "gray70", fill = "gray95")+
+  labs(subtitle = "n SNPs per sample", x = "n SNPs (k)", y = "sample count") +
+  theme_light() +
+  theme(plot.subtitle = element_text(hjust = .5))
 
-clrs <- c("#fcde9c", "#faa476", "#f0746e",
-          "#e34f6f", "#dc3977", "#b9257a", "#7c1d6f")
-clr_pick <- clrs[[2]]
-clr_high <- 'black'
-  
-seq_depth <- 30
-p1 <- freq2D |> 
-  ggplot(aes(x =x ,y = y, fill = log10(het_GT_count))) +
-  geom_raster() +
-  geom_abline(data = tibble(a = c(.5, .3,.2)),
-              aes(slope = a, intercept = 0, linetype = factor(a)),
+p2 <- data |> 
+  ggplot(aes(x = major, y = minor, color = n)) +
+  geom_tile(aes(fill = after_scale(clr_lighten(color)))) +
+  geom_abline(data = tibble(a = c(0.5, 0.3, 0.2)),
+              aes(slope = a*2, intercept = 0, linetype = factor(a)),
               alpha = .5, linewidth = .4) +
-  facet_wrap(ind~., nrow = n_rows)+
-  scale_fill_gradientn(colours = clrs, na.value = 'transparent',
-                      breaks = (c(0:6)/2), labels = \(x){sprintf('%.1f',10^x)}) +
+  facet_wrap(ind ~ .) +
+  scale_color_viridis_c() +
   scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
                         guide = "none")+
-  scale_x_continuous(limits = c(-1, 3.5 * seq_depth)) +
-  scale_y_continuous(limits = c(-1, 1.75 * seq_depth)) +
-  guides(fill = guide_colorsteps(title.position = 'top',
-                                title = "log10(hetrozygous genotype count)",
-                                barwidth = unit(.75, "npc"),
-                                barheight = unit(5,"pt"))) +
-    labs(x = "DP", y = "Reads minor alleles") +
-  coord_cartesian(xlim = c(0, 1.75 * seq_depth),
-                  ylim = c(0, 1 * seq_depth))
-
-p2 <- d |> 
-  ggplot(aes(x = minreadprop)) +
-  geom_histogram(binwidth = 0.02, boundary = 0,
-                color = clr_pick,
-                fill = clr_lighten(clr_pick))+
-  geom_vline(data = tibble(a = c(.5, .3,.2)),
-              aes(xintercept =  a, linetype = factor(a)),
-            alpha = .5, linewidth = .4) +
-  scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
-                        guide = "none") +
-  facet_wrap(ind~., nrow = n_rows)+
-  labs(x = "Proportion minor allele reads") +
-  coord_cartesian(xlim = c(0,0.5))
-
-p3 <- d |> 
-  ggplot(aes(x = minreadprop)) +
-  geom_density(adjust = 0.4,
-                color = clr_pick,
-                fill = clr_lighten(clr_pick))+
-  geom_vline(data = tibble(a = c(.5, .3,.2)),
-              aes(xintercept =  a, linetype = factor(a)),
-            alpha = .5, linewidth = .4) +
-  scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
-                        guide = "none") +
-  facet_wrap(ind~., nrow = n_rows)+
-  labs(x = "Proportion minor allele reads") +
-  coord_cartesian(xlim = c(0,0.5))
-
-p_out <- p1 / p2 / p3 + 
-  plot_annotation(subtitle = base) +
-  plot_layout(guides = 'collect') &
-  theme_minimal() &
-  theme(legend.position = "bottom",
+  coord_equal(xlim = c(0, max_n_ref),
+              ylim = c(0, max_n_ref * .75)) +
+  labs(subtitle = "distribution of allele frequency", x = "allele frequency", y = "SNP count") +
+  theme_light()+
+  theme(legend.position = "none",
         plot.subtitle = element_text(hjust = .5))
 
+p3 <- data |> 
+  mutate(maf = minor/(minor+major)) |> 
+  group_by(ind, maf) |> 
+  summarise(n = sum(n)) |> 
+  ungroup() |> 
+  mutate(rep = map(n, \(x){rep(1, x)})) |> 
+  unnest(rep) |> 
+  ggplot(aes(x = maf)) +
+  geom_histogram(binwidth = .025, boundary = 0,
+                 color = "gray70", fill = "gray95") +
+  geom_vline(data = tibble(a = c(.5, .3,.2)),
+             aes(xintercept =  a, linetype = factor(a)),
+             alpha = .5, linewidth = .4) +
+  scale_linetype_manual(values = c(`0.5` = 1, `0.3` = 2, `0.2` = 3),
+                        guide = "none") +
+  labs(subtitle = "2D allele frequency spectrum", x = "major allele count", y = "minor allele count") +
+  facet_wrap(ind ~ ., scales = "free_y") +
+  theme_light()
+
+
+p_out <- (p3 / p1 + plot_layout(heights = c(1, .15)) ) | p2
+
+scl <- 1.4
 ggsave(plot = p_out,
       filename = out_plt,
-      width = 16,
-      height = 16,
+      width = 15*scl,
+      height = 6*scl,
       device = cairo_pdf)
