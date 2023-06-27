@@ -84,7 +84,7 @@ rule vcf_subset_species:
           --mac 1 \
           --recode \
           --stdout | \
-          bgzip > {output.vcf} &> {log}
+          bgzip > {output.vcf} 2> {log}
       
       tabix -p vcf {output.vcf} &>> {log}
       """
