@@ -71,6 +71,8 @@ rule vcf_subset_species:
       inds = "../results/inds_{spec}.pop"
     output:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz"
+    log:
+      "logs/conversion/subset_{file_base}_{spec}.log"
     resources:
       mem_mb=15360
     container: c_popgen
@@ -82,7 +84,7 @@ rule vcf_subset_species:
           --mac 1 \
           --recode \
           --stdout | \
-          bgzip > {output.vcf}
+          bgzip > {output.vcf} &> {log}
       
-      tabix -p vcf {output.vcf}
+      tabix -p vcf {output.vcf} &>> {log}
       """
