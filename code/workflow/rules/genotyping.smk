@@ -411,7 +411,7 @@ rule gatk_filter_snps:
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
       vcf_flagged = temp( "../results/genotyping/raw/{ref}_flagged.vcf.gz" ),
-      vcf_filtered = protected( "../results/genotyping/filtered/{ref}_filtered.vcf.gz" )
+      vcf_filtered = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
