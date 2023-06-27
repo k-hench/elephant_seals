@@ -208,6 +208,29 @@ rule filter_mac1:
 #         sed 's/\\t/\\n/g' > {output.inds}
 #       """
 
+rule allele_depth:
+    input:
+      vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz",
+    output:
+      ad = "../results/qc/allele_depth/{file_base}_{spec}.tsv.gz"
+    params:
+      ad_base = "../results/het/{file_base}_{spec}.tsv"
+    benchmark:
+      'benchmark/qc/ad_{ref}_{spec}.tsv'
+    resources:
+      mem_mb=25600
+    container: c_gatk
+    shell:
+      """
+      gatk VariantsToTable \
+        -V {input.vcf} \
+        -F CHROM -F POS -F TYPE -GF AD \
+        -O {params.ad_base}
+      
+      gzip {params.ad_base}
+      """
+
+
 rule export_het_ind:
     input:
       vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz",

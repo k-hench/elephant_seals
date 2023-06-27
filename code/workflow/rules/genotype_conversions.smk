@@ -70,7 +70,7 @@ rule vcf_subset_species:
       vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
       inds = "../results/inds_{spec}.pop"
     output:
-      vcf = "../results/genotyping/filtered/{file_base}_{spec}_only.vcf.gz"
+      vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz"
     resources:
       mem_mb=15360
     container: c_popgen
@@ -79,9 +79,10 @@ rule vcf_subset_species:
       vcftools \
           --gzvcf {input.vcf} \
           --indv {input.inds} \
-           --recode \
-           --stdout | \
-           bgzip > {output.vcf}
+          --mac 1 \
+          --recode \
+          --stdout | \
+          bgzip > {output.vcf}
       
       tabix -p vcf {output.vcf}
       """
