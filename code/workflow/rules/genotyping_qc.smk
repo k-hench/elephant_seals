@@ -212,11 +212,11 @@ rule allele_depth:
     input:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz",
     output:
-      ad = "../results/qc/allele_depth/{file_base}_{spec}.tsv.gz"
+      ad = "../results/qc/allele_depth/{file_base}_{spec}_ad.tsv.gz"
     params:
-      ad_base = "../results/het/{file_base}_{spec}.tsv"
+      ad_base = "../results/het/{file_base}_{spec}_ad.tsv"
     benchmark:
-      'benchmark/qc/ad_{ref}_{spec}.tsv'
+      'benchmark/qc/ad_{file_base}_{spec}.tsv'
     resources:
       mem_mb=25600
     container: c_gatk
