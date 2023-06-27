@@ -71,8 +71,6 @@ rule vcf_subset_species:
       inds = "../results/inds_{spec}.pop"
     output:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz"
-    params:
-      vcf_base = "../results/genotyping/filtered/{file_base}_{spec}.vcf"
     log:
       "logs/conversion/subset_{file_base}_{spec}.log"
     resources:
@@ -82,11 +80,11 @@ rule vcf_subset_species:
       """
       vcftools \
           --gzvcf {input.vcf} \
-          --indv {input.inds} \
+          --keep {input.inds} \
           --mac 1 \
           --recode \
-          --out {params.vcf_base} 2> {log}
-      bgzip {params.vcf_base} 2> {log}
+          --stdout | \
+          bgzip > {output.vcf} &> {log}
       
       tabix -p vcf {output.vcf} &>> {log}
       """
