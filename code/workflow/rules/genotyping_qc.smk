@@ -230,6 +230,27 @@ rule allele_depth:
       gzip {params.ad_base}
       """
 
+rule ad_to_het:
+    input: 
+      tsv = "../results/qc/allele_depth/{file_base}_{spec}_ad.tsv.gz"
+    output:
+      het = "../results/qc/allele_depth/{file_base}_{spec}_het_bin.tsv.gz"
+    params:
+      n_samples = lambda wc: len(SAMPLES_SPEC[wc.spec])
+    benchmark:
+      "benchmark/qc/allelic_imbalance_het_bin_{file_base}_{spec}.tsv"
+    log:
+      "logs/r_allelic_imbalance_het_bin_{file_base}_{spec}"
+    conda: "r_tidy"
+    resources:
+      mem_mb=20480
+    shell:
+      """
+      Rscript R/allelic_depth_convert.R \
+        {input.tsv} \
+        {output.het} \
+        {params.n_samples} 2> {log} 1> {log}
+      """
 
 rule export_het_ind:
     input:
