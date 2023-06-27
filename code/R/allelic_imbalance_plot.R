@@ -56,7 +56,8 @@ p3 <- data |>
                         guide = "none") +
   labs(subtitle = "2D allele frequency spectrum", x = "major allele count", y = "minor allele count") +
   facet_wrap(ind ~ ., scales = "free_y") +
-  theme_light()
+  theme_light() +
+  theme(plot.subtitle = element_text(hjust = .5))
 
 
 p_out <- (p3 / p1 + plot_layout(heights = c(1, .15)) ) | p2
