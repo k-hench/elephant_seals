@@ -480,6 +480,8 @@ rule consolidate_gather_all_bp:
       vcf_raw = temp( "../results/genotyping/all_bp/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_raw.vcf.gz" )
     benchmark:
       'benchmark/genotyping/gather_gvcf_all_bp_{ref}_pt{part}_s{sub}.tsv'
+    log:
+      "logs/genotyping/all_bp/gather_{ref}_pt{part}_s{sub}.log"
     resources:
       mem_mb=174080
     container: c_gatk
@@ -492,7 +494,7 @@ rule consolidate_gather_all_bp:
         -O {output.vcf_raw} \
         --tmp-dir tmp/ \
         -L {input.intervals} \
-        --include-non-variant-sites true
+        --include-non-variant-sites true 2> {log} 1> {log}
       """
 
 rule select_var_all_bp:
