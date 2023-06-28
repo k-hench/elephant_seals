@@ -100,8 +100,8 @@ rule subset_genome_partitions:
       """
       Rscript R/partition_ref_genomes_subsets.R \
         {wildcards.species} \
-        {params:n_partitions} \
-        {params:n_subs} \
+        {params.n_partitions} \
+        {params.n_subs} \
         {output.plt} 2> {log} 1> {log}
       """
 
