@@ -84,6 +84,27 @@ rule filter_genome:
       samtools faidx {output.fa_filtered}
       """
 
+rule subset_genome_partitions:
+    input: 
+      partition = "../data/genomes/filtered/{species}_filt_partitions.tsv",
+      fai_filtered = "../data/genomes/filtered/{species}_filt.fa.gz.fai"
+    output:
+      plt = "../results/img/qc/partition_sub_{species}.pdf"
+    params:
+      n_partitions = 20,
+      n_subs = 10
+    conda: "r_tidy"
+    log:
+      "logs/r_partition_{spec}_subset.log"
+    shell:
+      """
+      Rscript R/partition_ref_genomes_subsets.R \
+        {wildcards.species} \
+        {params:n_partitions} \
+        {params:n_subs} \
+        {output.plt} 2> {log} 1> {log}
+      """
+
 rule bwa_index:
     input:
       fa = "../data/genomes/filtered/{species}_filt.fa.gz",

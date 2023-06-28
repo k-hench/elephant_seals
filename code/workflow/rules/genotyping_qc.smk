@@ -192,22 +192,6 @@ rule filter_mac1:
       tabix -p vcf {output.vcf}
       """
 
-# rule all_pop:
-#     input:
-#       vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz"
-#     output:
-#       inds = "../results/pop/{ref}_all_inds.pop"
-#     resources:
-#       mem_mb=25600
-#     container: c_popgen
-#     shell:
-#       """
-#       # Creates individual file
-#       zgrep "#CHROM" {input.vcf} | \
-#         cut -f 10- | \
-#         sed 's/\\t/\\n/g' > {output.inds}
-#       """
-
 rule allele_depth:
     input:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz",
