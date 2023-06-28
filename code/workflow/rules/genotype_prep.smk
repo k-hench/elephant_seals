@@ -95,7 +95,7 @@ rule subset_genome_partitions:
       n_subs = 10
     conda: "r_tidy"
     log:
-      "logs/r_partition_{spec}_subset.log"
+      "logs/r_partition_{species}_subset.log"
     shell:
       """
       Rscript R/partition_ref_genomes_subsets.R \
