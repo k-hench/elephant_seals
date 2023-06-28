@@ -69,7 +69,7 @@ rule gt_invariant:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand( "../results/genotyping/filtered/{ref}_all_bp_{part}_sub_{sub}_filtered.vcf.gz",
+      vcf = expand( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_sub_{sub}_filtered.vcf.gz",
                     part = GENOME_PARTITIONS, ref = GATK_REF[0], sub = (np.arange(10) + 1) )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
@@ -525,7 +525,7 @@ rule gatk_filter_snps_all_bp:
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
       vcf_flagged = temp( "../results/genotyping/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_flagged.vcf.gz" ),
-      vcf_filtered = "../results/genotyping/filtered/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_filtered.vcf.gz"
+      vcf_filtered = "../results/genotyping/filtered/partitions/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_filtered.vcf.gz"
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
