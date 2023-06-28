@@ -89,7 +89,9 @@ rule subset_genome_partitions:
       partition = "../data/genomes/filtered/{species}_filt_partitions.tsv",
       fai_filtered = "../data/genomes/filtered/{species}_filt.fa.gz.fai"
     output:
-      plt = "../results/img/qc/partition_sub_{species}.pdf"
+      plt = "../results/img/qc/partition_sub_{species}.pdf",
+      intervals = expand("../data/genomes/filtered/{{species}}_filt_partitions/part_{part}_sub_{sub}.intervals",
+               part = GENOME_PARTITIONS, sub = (np.arange(10) + 1))
     params:
       n_partitions = 20,
       n_subs = 10

@@ -43,7 +43,6 @@ seq_file_data['sample_ln'] = seq_file_data['sample_id'] + "_" +  [x[-1:] for x i
 
 SAMPLES_LN = seq_file_data['sample_ln'].values
 SAMPLES = list(set(seq_file_data['sample_id'].values ))
-GENOME_PARTITIONS = [ str(x + 1).zfill(2) for x in np.arange(20)]
 
 # get a single entry from the file info table given a
 # combination of sample_id + lane number
@@ -70,7 +69,8 @@ rule gt_invariant:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand(  "../results/genotyping/filtered/{ref}_all_bp_{part}_filtered.vcf.gz", part = GENOME_PARTITIONS, ref = GATK_REF[0] )
+      vcf = expand( "../results/genotyping/filtered/{ref}_all_bp_{part}_sub_{sub}_filtered.vcf.gz",
+                    part = GENOME_PARTITIONS, ref = GATK_REF[0], sub = (np.arange(10) + 1) )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule mapping_done:
@@ -236,7 +236,7 @@ rule collect_sample_and_haplotypecaller:
       bams = lambda wc: "../results/mapped_bams/" + gather_sample_entries(wc, what = "sample_ln") + "_on_{ref}.dedup.bam",
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
-      gvcf = "../results/genotyping/gvcf/{sample_id}_on_{ref}.g.vcf.gz"
+      gvcf = "../results/genotyping/gvcf/{sample_id}_on_{ref,[^0-9]+}.g.vcf.gz"
     benchmark:
       'benchmark/genotyping/gvcf_{sample_id}_on_{ref}.tsv'
     resources:
@@ -258,8 +258,8 @@ rule gather_gvcfs:
       gvcfs = expand( "../results/genotyping/gvcf/{sample_id}_on_{{ref}}.g.vcf.gz", sample_id = SAMPLES ),
       partitions = "../data/genomes/filtered/{ref}_filt_partitions.tsv"
     output:
-      db =  directory( "../results/genotyping/{ref}_{part}_db" ),
-      intervals = "../data/genomes/filtered/{ref}_{part}.intervals"
+      db =  directory( "../results/genotyping/{ref,[^0-9]+}_{part,[0-9]*}_db" ),
+      intervals = "../data/genomes/filtered/{ref,[^0-9]+}_{part,[0-9]*}.intervals"
     benchmark:
       'benchmark/genotyping/gather_gvcf_{ref}_pt{part}.tsv'
     resources:
@@ -285,7 +285,7 @@ rule consolidate_gvcfs:
       db = "../results/genotyping/{ref}_{part}_db",
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz"
     output:
-      vcf = temp( "../results/genotyping/raw/{ref}_{part}_raw.vcf.gz" )
+      vcf = temp( "../results/genotyping/raw/{ref,[^0-9]+}_{part}_raw.vcf.gz" )
     benchmark:
       "benchmark/genotyping/raw_vcf_{ref}_pt{part}.tsv"
     resources:
@@ -475,11 +475,11 @@ rule consolidate_gather_all_bp:
     input:
       db = "../results/genotyping/{ref}_{part}_db",
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
-      intervals = "../data/genomes/filtered/{ref}_{part}.intervals"
+      intervals = "../data/genomes/filtered/{ref}_filt_partitions/part_{part}_sub_{sub}.intervals"
     output:
-      vcf_raw = temp( "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw.vcf.gz" )
+      vcf_raw = temp( "../results/genotyping/all_bp/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_raw.vcf.gz" )
     benchmark:
-      'benchmark/genotyping/gather_gvcf_all_bp_{ref}_pt{part}.tsv'
+      'benchmark/genotyping/gather_gvcf_all_bp_{ref}_pt{part}_s{sub}.tsv'
     resources:
       mem_mb=174080
     container: c_gatk
@@ -498,12 +498,12 @@ rule consolidate_gather_all_bp:
 rule select_var_all_bp:
     input:
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
-      intervals = "../data/genomes/filtered/{ref}_{part}.intervals",
-      vcf_raw = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw.vcf.gz"
+      intervals = "../data/genomes/filtered/{ref}_filt_partitions/part_{part}_sub_{sub}.intervals",
+      vcf_raw = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_sub_{sub}_raw.vcf.gz"
     output:
-      vcf_snps = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw_snps.vcf.gz"
+      vcf_snps = "../results/genotyping/all_bp/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_raw_snps.vcf.gz"
     benchmark:
-      'benchmark/genotyping/select_var_all_bp_{ref}_pt{part}.tsv'
+      'benchmark/genotyping/select_var_all_bp_{ref}_pt{part}_sub_{sub}.tsv'
     resources:
       mem_mb=174080
     container: c_gatk
@@ -520,16 +520,16 @@ rule select_var_all_bp:
 
 rule gatk_filter_snps_all_bp:
     input:
-      vcf = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_raw_snps.vcf.gz",
+      vcf = "../results/genotyping/all_bp/raw/{ref}_all_bp_{part}_sub_{sub}_raw_snps.vcf.gz",
       ref = "../data/genomes/filtered/{ref}_filt.fa.gz",
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
-      vcf_flagged = temp( "../results/genotyping/raw/{ref}_all_bp_{part}_flagged.vcf.gz" ),
-      vcf_filtered = "../results/genotyping/filtered/{ref}_all_bp_{part}_filtered.vcf.gz"
+      vcf_flagged = temp( "../results/genotyping/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_flagged.vcf.gz" ),
+      vcf_filtered = "../results/genotyping/filtered/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_filtered.vcf.gz"
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
-      'benchmark/genotyping/snp_filtering_all_bp_{ref}_pt{part}.tsv'
+      'benchmark/genotyping/snp_filtering_all_bp_{ref}_pt{part}_s{sub}.tsv'
     resources:
       mem_mb=61440
     container: c_gatk

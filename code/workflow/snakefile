@@ -62,6 +62,7 @@ SPEC_QUERY = config[ 'species' ]
 SPEC_ALL = deepcopy( SPEC_QUERY )
 SPEC_ALL.insert( 0, SPEC_REF )
 CACTUS_CORES=config[ 'cactus_cores' ]
+GENOME_PARTITIONS = [ str(x + 1).zfill(2) for x in np.arange(20)]
 
 include: "./rules/cleanup.smk"
 include: "./rules/initial_dl.smk"
