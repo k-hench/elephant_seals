@@ -57,7 +57,7 @@ rule vcf_to_plink:
 
 rule create_species_pop:
     output: 
-      pp = "../results/inds_{spec}.pop"
+      pp = "../results/pop/inds_{spec}.pop"
     params: 
       inds = lambda wc: SAMPLES_SPEC[wc.spec]
     shell:
@@ -68,7 +68,7 @@ rule create_species_pop:
 rule vcf_subset_species:
     input:
       vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
-      inds = "../results/inds_{spec}.pop"
+      inds = "../results/pop/inds_{spec}.pop"
     output:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz"
     log:

@@ -196,7 +196,7 @@ rule filter_mac1:
 #     input:
 #       vcf = "../results/genotyping/filtered/{ref}_mac1.vcf.gz"
 #     output:
-#       inds = "../results/{ref}_all_inds.pop"
+#       inds = "../results/pop/{ref}_all_inds.pop"
 #     resources:
 #       mem_mb=25600
 #     container: c_popgen
