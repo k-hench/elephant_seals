@@ -568,6 +568,11 @@ rule concat_parts_snps_all_bp:
     output:
       vcf_list = temp( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered_vcf.list" ),
       vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz"
+    benchmark:
+      'benchmark/genotyping/concat_all_bp_{ref}_pt{part}.tsv'
+    resources:
+      mem_mb=61440
+    container: c_gatk
     shell:
       """
       echo "{input.vcfs}" | sed "s/ /\\n/g" > {output.vcf_list}
