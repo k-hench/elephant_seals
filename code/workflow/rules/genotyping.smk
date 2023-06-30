@@ -69,8 +69,7 @@ rule gt_invariant:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_sub_{sub}_filtered.vcf.gz",
-                    part = GENOME_PARTITIONS, ref = GATK_REF[0], sub = (np.arange(10) + 1) )
+      vcf = expand( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz", part = GENOME_PARTITIONS, ref = GATK_REF[0] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule mapping_done:
@@ -527,7 +526,7 @@ rule gatk_filter_snps_all_bp:
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
       vcf_flagged = temp( "../results/genotyping/raw/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_flagged.vcf.gz" ),
-      vcf_filtered = "../results/genotyping/filtered/partitions/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_filtered.vcf.gz"
+      vcf_filtered = temp( "../results/genotyping/filtered/partitions/{ref,[^0-9]+}_all_bp_{part,[0-9]*}_sub_{sub,[0-9]*}_filtered.vcf.gz")
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
@@ -561,4 +560,20 @@ rule gatk_filter_snps_all_bp:
         -V {output.vcf_flagged} \
         -O {output.vcf_filtered} \
         --exclude-filtered
+      """
+
+rule concat_parts_snps_all_bp:
+    input: 
+      vcfs = expand( "../results/genotyping/filtered/partitions/{{ref}}_all_bp_{{part}}_sub_{sub}_filtered.vcf.gz", sub = (np.arange(10) + 1) )
+    output:
+      vcf_list = temp( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered_vcf.list" ),
+      vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz"
+    shell:
+      """
+      echo "{input.vcfs}" | sed "s/ /\\n/g" > {output.vcf_list}
+    
+      gatk --java-options "-Xmx55G" \
+        MergeVcfs \
+        -I {output.vcf_list} \
+        -O {output.vcf}
       """
