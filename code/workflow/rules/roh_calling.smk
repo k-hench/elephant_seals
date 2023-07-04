@@ -16,8 +16,10 @@ rule roh_calling_bcftools:
       samples = expand( "{smp}", smp = SAMPLES )
     benchmark:
       "benchmark/roh/bcftools_{ref}_{part}.tsv"
+    log:
+      "logs/roh/bcftools_{ref}_{part}.log"
     resources:
-      mem_mb=15360
+      mem_mb=35840
     container: c_popgen
     shell:
       """
@@ -25,11 +27,12 @@ rule roh_calling_bcftools:
           roh {input.vcf} \
           -e - \
           -s {params.samples} \
-          -O rz > {output.roh}
+          -O rz > {output.roh} 2> {log}
     
+      echo -e "-----------------" >> {log} 
       bcftools \
           roh {input.vcf} \
           -e - \
           -s {params.samples} \
-          -O sz > {output.roh_snps}
+          -O sz > {output.roh_snps} 2>> {log}
       """
