@@ -51,7 +51,8 @@ rule all_vcfstats:
       "../results/genotyping/raw/mirang_raw_snps_stat.txt",
       "../results/genotyping/filtered/mirang_filtered_stat.txt",
       "../results/genotyping/filtered/mirang_bi-allelic_stat.txt",
-      "../results/genotyping/filtered/mirang_mac1_stat.txt"
+      "../results/genotyping/filtered/mirang_mac1_stat.txt",
+      expand( "../results/genotyping/filtered/mirang_filtered_{subset}_stat.txt", subset = ["all", "mirang", "mirleo"])
 
 # ---  sequencing qc --------------------------------
 rule fastqc:
