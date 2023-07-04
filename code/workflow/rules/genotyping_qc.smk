@@ -176,7 +176,7 @@ rule merge_positive_coverage_mask:
     shell:
       """
       zcat {input.bed} |
-        awk '$4>({params.min_cov}-1){{print $0}} | \
+        awk '$4>({params.min_cov}-1){{print $0}}' | \
         mergeBed -i stdin -bg | \
         gzip > {output.bed}
       """
