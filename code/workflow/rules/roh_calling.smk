@@ -25,17 +25,19 @@ rule roh_calling_bcftools:
     container: c_popgen
     shell:
       """
+      SAMPLES=$(echo {params.samples} ) | sed 's/ /,/g')
+
       bcftools \
           roh {input.vcf} \
           -e - \
-          -s {params.samples} \
+          -s $SAMPLES \
           -O rz > {output.roh} 2> {log}
     
       echo -e "-----------------" >> {log} 
       bcftools \
           roh {input.vcf} \
           -e - \
-          -s {params.samples} \
+          -s $SAMPLES \
           -O sz > {output.roh_snps} 2>> {log}
       """
 
@@ -43,7 +45,7 @@ rule roh_calling_bcftools_snps_only:
     input:
       vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
     output:
-      roh = "../results/roh/snp_based/bcftools/{ref}_roh.tsv.gz",
+      roh = "../results/roh/bcftools/snp_based/{ref}_roh.tsv.gz",
       roh_snps  = "../results/roh/bcftools/snp_based/{ref}_roh_snps.tsv.gz"
     params:
       samples = expand( "{smp}", smp = SAMPLES )
@@ -56,16 +58,18 @@ rule roh_calling_bcftools_snps_only:
     container: c_popgen
     shell:
       """
+      SAMPLES=$(echo {params.samples} ) | sed 's/ /,/g')
+      
       bcftools \
           roh {input.vcf} \
           -e - \
-          -s {params.samples} \
+          -s $SAMPLES \
           -O rz > {output.roh} 2> {log}
     
       echo -e "-----------------" >> {log} 
       bcftools \
           roh {input.vcf} \
           -e - \
-          -s {params.samples} \
+          -s $SAMPLES \
           -O sz > {output.roh_snps} 2>> {log}
       """
