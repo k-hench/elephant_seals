@@ -257,3 +257,16 @@ rule plot_allelic_imbalance:
         {output.plt} \
         {params.max_n_ref} 2> {log} 1> {log}
       """
+
+rule vcfstats:
+    input:
+      vcf = "../results/genotyping/{step}/{file_base}_{spec}.vcf.gz"
+    output:
+      stats = "../results/genotyping/{step}/{file_base}_{spec}_stat.tsv"
+    conda: "popgen_basics"
+    shell:
+      """
+      vcftools --gzvcf {input.vcf} &> /dev/stdout | \
+        grep "After filtering" | \
+        sed 's/After filtering, //' > {output.stats}
+      """

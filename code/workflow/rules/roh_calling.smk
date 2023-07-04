@@ -1,7 +1,10 @@
 """
-snakemake --rerun-triggers mtime  -n ../results/roh/bcftools/mirang_02_roh.tsv.gz
+snakemake --rerun-triggers mtime  -n -R call_roh
 # >>> needs to be run on ALL BP
 """
+
+rule call_roh:
+    input: expand( "../results/roh/bcftools/{ref}_{part}_roh_snps.tsv.gz", ref = GATK_REF[0], part =  GENOME_PARTITIONS )
 
 rule roh_calling_bcftools:
     input: 
