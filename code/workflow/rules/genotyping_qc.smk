@@ -46,6 +46,13 @@ rule all_gt_qc:
                        ref = GATK_REF[0], set = ["all", "mirang", "mirleo"] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
+rule all_vcfstats:
+    input:
+      "../results/genotyping/raw/mirang_raw_snps_stat.txt",
+      "../results/genotyping/filtered/mirang_filtered_stat.txt",
+      "../results/genotyping/filtered/mirang_bi-allelic_stat.txt",
+      "../results/genotyping/filtered/mirang_mac1_stat.txt"
+
 # ---  sequencing qc --------------------------------
 rule fastqc:
     input:
@@ -260,9 +267,9 @@ rule plot_allelic_imbalance:
 
 rule vcfstats:
     input:
-      vcf = "../results/genotyping/{step}/{file_base}_{spec}.vcf.gz"
+      vcf = "../results/genotyping/{step}/{file_base}.vcf.gz"
     output:
-      stats = "../results/genotyping/{step}/{file_base}_{spec}_stat.tsv"
+      stats = "../results/genotyping/{step}/{file_base}_stat.txt"
     conda: "popgen_basics"
     shell:
       """
