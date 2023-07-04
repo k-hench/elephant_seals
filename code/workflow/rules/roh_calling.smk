@@ -25,7 +25,7 @@ rule roh_calling_bcftools:
     container: c_popgen
     shell:
       """
-      SAMPLES=$(echo {params.samples} ) | sed 's/ /,/g')
+      SAMPLES=$(echo {params.samples} | sed 's/ /,/g')
 
       bcftools \
           roh {input.vcf} \
@@ -58,8 +58,8 @@ rule roh_calling_bcftools_snps_only:
     container: c_popgen
     shell:
       """
-      SAMPLES=$(echo {params.samples} ) | sed 's/ /,/g')
-      
+      SAMPLES=$(echo {params.samples} | sed 's/ /,/g')
+
       bcftools \
           roh {input.vcf} \
           -e - \
