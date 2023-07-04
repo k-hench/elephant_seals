@@ -41,7 +41,7 @@ rule roh_calling_bcftools:
 
 rule roh_calling_bcftools_snps_only:
     input:
-      vcf = "../results/genotyping/filtered/partitions/{ref}_filtered.vcf.gz"
+      vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
     output:
       roh = "../results/roh/snp_based/bcftools/{ref}_roh.tsv.gz",
       roh_snps  = "../results/roh/bcftools/snp_based/{ref}_roh_snps.tsv.gz"

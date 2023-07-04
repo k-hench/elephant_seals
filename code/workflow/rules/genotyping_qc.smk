@@ -168,7 +168,7 @@ rule merge_positive_coverage_mask:
       bed = "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz"
     benchmark:
       'benchmark/qc/covmask_{sample_id}_on_{ref}_binary.tsv'
-    paramas:
+    params:
       min_cov = 2
     resources:
       mem_mb=40960
