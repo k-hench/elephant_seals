@@ -38,7 +38,7 @@ rule all_gt_qc:
                               "../results/qc/fastq_screen/{sample_ln}_fw_screen.txt"],
                               sample_ln = SAMPLES_LN ),
       by_sample = expand(["../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv.gz",
-                          "../results/qc/coverage/masks/{sample_id}_on_{ref}_covmask.bed.gz",
+                          "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz",
                           "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
                           "../results/het/{ref}_{sample_id}.csv"],
                          sample_id = SAMPLES, ref = GATK_REF[0]),
@@ -158,6 +158,26 @@ rule bamcov_mask:
       """
       samtools view -b {input.bam} | \
         genomeCoverageBed -ibam stdin -bg | \
+        gzip > {output.bed}
+      """
+
+rule merge_positive_coverage_mask:
+    input:
+      bed = "../results/qc/coverage/masks/{sample_id}_on_{ref}_covmask.bed.gz"
+    output:
+      bed = "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz"
+    benchmark:
+      'benchmark/qc/covmask_{sample_id}_on_{ref}_binary.tsv'
+    paramas:
+      min_cov = 2
+    resources:
+      mem_mb=40960
+    container: c_popgen
+    shell:
+      """
+      zcat {input.bed} |
+        awk '$4>({params.min_cov}-1){{print $0}} | \
+        mergeBed -i stdin -bg | \
         gzip > {output.bed}
       """
 
