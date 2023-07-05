@@ -20,7 +20,7 @@ code/sh/cactus
 
 # exclude results by default
 results/*
-!results/img
+results/img
 results/img/control
 results/img/*pdf
 results/img/qc/*
