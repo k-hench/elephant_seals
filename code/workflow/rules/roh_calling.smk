@@ -46,7 +46,7 @@ rule roh_to_bed:
     input:
       roh = expand("../results/roh/bcftools/{{ref}}_{part}_roh.tsv.gz", part =  GENOME_PARTITIONS )
     output:
-      bed = "../results/roh/bcftools/bed/roh_{sample}_on_{ref}.bed"
+      bed = "../results/roh/bcftools/bed/max_callable/roh_max_{sample}_on_{ref}.bed"
     shell:
       """
       for k in {input.roh}; do
