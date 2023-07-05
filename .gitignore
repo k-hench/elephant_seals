@@ -23,6 +23,7 @@ results/*
 !results/img
 results/img/control
 results/img/*pdf
+results/img/qc/*
 
 # exclude large data 
 # (explicitly define tracked files)
