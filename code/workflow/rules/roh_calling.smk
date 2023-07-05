@@ -57,7 +57,7 @@ rule roh_to_bed:
 rule roh_max_certain:
     input:
       roh = "../results/roh/bcftools/bed/max_callable/roh_max_{sample}_on_{ref}.bed",
-      cov_mask = "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz"
+      cov_mask = "../results/qc/coverage/masks/{sample}_on_{ref}_binary_covmask.bed.gz"
     output:
       roh = "../results/roh/bcftools/bed/max_certain/roh_cert_{sample}_on_{ref}.bed",
     benchmark:
