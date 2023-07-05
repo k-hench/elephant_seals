@@ -7,7 +7,7 @@ rule call_roh:
     input:
       expand( "../results/roh/bcftools/{ref}_{part}_roh_snps.tsv.gz", ref = GATK_REF[0], part =  GENOME_PARTITIONS ),
       expand( "../results/roh/bcftools/snp_based/{ref}_roh_snps.tsv.gz", ref = GATK_REF[0] ),
-      expand( "../results/roh/bcftools/bed/roh_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES )
+      expand( "../results/roh/bcftools/bed/max_callable/roh_max_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES )
 
 rule roh_calling_bcftools:
     input:
