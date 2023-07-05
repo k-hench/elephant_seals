@@ -50,7 +50,7 @@ rule roh_to_bed:
     shell:
       """
       for k in {input.roh}; do
-        zcat $k | awk '$2=="{wildcards.sample}"{print $3"\t"$4-1"\t"$5}' >> {output.bed};
+        zcat $k | awk '$2=="{wildcards.sample}"{{print $3"\t"$4-1"\t"$5}}' >> {output.bed};
       done
       """
 
