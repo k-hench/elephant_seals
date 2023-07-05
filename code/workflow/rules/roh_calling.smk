@@ -70,8 +70,7 @@ rule roh_max_certain:
     shell:
       """
       zcat {input.cov_mask} |
-        intersectBed -a stdin -b {input.roh} | \
-        gzip > {output.roh}
+        intersectBed -a stdin -b {input.roh} > {output.roh}
       """
 
 # legacy --------
