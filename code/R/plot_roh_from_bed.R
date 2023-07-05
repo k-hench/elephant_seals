@@ -55,19 +55,19 @@ data <- samples$sample |>
   mutate(on_x = chr %in% on_x$chr)
 
 genome_mirang <- genomes |> filter(spec == "mirang") |> mutate(mid_pos = (start_pos + end_pos) / 2)
-ggplot() +
-  geom_rect(data =genome_mirang , 
-            aes(xmin = start_pos,
-                xmax = end_pos, 
-                ymin = -Inf,
-                ymax = Inf, 
-                fill = as.character(eo)),
-            color = "transparent") +
-  scale_x_continuous(breaks = genome_mirang$mid_pos[1:17],
-                     label = genome_mirang$chr[1:17] |> str_remove("N[CW]_0723")) +
-  scale_fill_manual(values = c(`0` = rgb(0,0,0,.1), `1` = rgb(0,0,0,0)), guide = 'none') +
-  coord_cartesian(ylim = c(-1, 1)) +
-  theme_minimal()
+# ggplot() +
+#   geom_rect(data =genome_mirang , 
+#             aes(xmin = start_pos,
+#                 xmax = end_pos, 
+#                 ymin = -Inf,
+#                 ymax = Inf, 
+#                 fill = as.character(eo)),
+#             color = "transparent") +
+#   scale_x_continuous(breaks = genome_mirang$mid_pos[1:17],
+#                      label = genome_mirang$chr[1:17] |> str_remove("N[CW]_0723")) +
+#   scale_fill_manual(values = c(`0` = rgb(0,0,0,.1), `1` = rgb(0,0,0,0)), guide = 'none') +
+#   coord_cartesian(ylim = c(-1, 1)) +
+#   theme_minimal()
 
 p1 <- data |> 
   filter(!on_x) |> 
@@ -120,6 +120,7 @@ p2 <- data_summary |>
 
 p3 <- data |>
   filter(Length_bp > roh_length_threshold) |>
+  filter(!on_x) |> 
   ggplot(aes(x = log10(Length_bp),
              y = sample,
              color = spec)) +
@@ -183,7 +184,7 @@ p4 <- roh_summary_by_sample |>
 p_out <- p1  + p3 + p2 + p4 + 
   plot_layout(widths = c(1, .6, .3, .3), nrow = 1, guides = "collect") +
   plot_annotation(title = glue("ROH sumary (max {roh_version})"),
-                  caption = glue("only ROH larger {sprintf('%.0f',roh_length_threshold)} bp are included")) & 
+                  caption = glue("only ROH larger {sprintf('%.0f',roh_length_threshold)} bp on autosomes are included")) & 
   scale_color_manual(values = clrs) &
   theme(panel.grid = element_blank(),
         legend.position = "bottom",
