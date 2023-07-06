@@ -72,16 +72,7 @@ rule run_fastsimcoal:
       # n: number of simulations, m: minor sfs, M: max.likelihood, L: number of ECM cycles (loops)
       # q: quiet, w: tolerance for brent optimization, x: no arlequin output
       # C: min. observed SFS count, c: cores
-      fsc27093 \
-        -t {params.prefix}.tpl \
-        -n 100000 \        
-        -m \
-        -e {params.prefix}.est \
-        -M -L 40 -q -w 0.01 \ 
-        --foldedSFS \
-        -x -C 5 \
-        --nosingleton \
-        -c 4
+      fsc27093 -t {params.prefix}.tpl -n 100000 -m -e {params.prefix}.est -M -L 40 -q -w 0.01 --foldedSFS -x -C 5 --nosingleton -c 4
       
       rm {params.prefix}_MAFpop0.obs {params.prefix}.tpl {params.prefix}.est
       """
