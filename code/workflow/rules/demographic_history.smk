@@ -2,11 +2,14 @@
 snakemake --rerun-triggers mtime  -n all_demography
 """
 
+DEM_TYPES = [ "bot06-lgm", "bot06-nes", "bot10-lgm", "bot10-nes", "null-lgm", "null-nes" ]
+DEM_N = [ str(x + 1).zfill(3) for x in np.arange(2) ]
 
 rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
-      sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" )
+      sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
+      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/{fs_run}_{iter}", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, iter = DEM_N )
 
 rule create_pop2_files:
     input:
@@ -42,4 +45,43 @@ rule create_sfs:
     shell:
       """
       easySFS.py -i {input.vcf} -p {input.pp} -a -f --proj {params.n_haplo} -o {output.sfs_dir}
+      """
+
+rule run_fastsimcoal:
+    input:
+      sfs_dir = "../results/demography/sfs/{spec}_on_{ref}",
+      tpl = "../data/templates/tpl/{fs_run}.tpl",
+      est =  "../data/templates/est/{fs_run}.est"
+    output:
+      fs_dir = directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/{fs_run}_{iter}" )
+    params:
+      obs = "../results/demography/sfs/{spec}_on_{ref}/fastsimcoal2/{spec}_MAFpop0.obs",
+      prefix = "{spec}_on_{ref}_{fs_run}"
+    resources:
+      mem_mb=15360
+    threads: 4
+    container: c_sim
+    shell:
+      """
+      mkdir -p {output.fs_dir}
+      cp {params.obs} {output.fs_dir}/{params.prefix}_MAFpop0.obs
+      cp {input.tpl} {output.fs_dir}/{params.prefix}.tpl
+      cp {input.est} {output.fs_dir}/{params.prefix}.est
+      cd {output.fs_dir}
+
+      # n: number of simulations, m: minor sfs, M: max.likelihood, L: number of ECM cycles (loops)
+      # q: quiet, w: tolerance for brent optimization, x: no arlequin output
+      # C: min. observed SFS count, c: cores
+      fsc27093 \
+        -t {params.prefix}.tpl \
+        -n 100000 \        
+        -m \
+        -e {params.prefix}.est \
+        -M -L 40 -q -w 0.01 \ 
+        --foldedSFS \
+        -x -C 5 \
+        --nosingleton \
+        -c 4
+      
+      rm {params.prefix}_MAFpop0.obs {params.prefix}.tpl {params.prefix}.est
       """

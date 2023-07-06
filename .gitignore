@@ -31,3 +31,4 @@ data/*
 !data/carnivora_ref_genomes.tsv
 !data/carnivora_list.nwk
 !data/file_info.tsv
+!data/templates
