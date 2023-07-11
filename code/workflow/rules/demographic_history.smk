@@ -94,10 +94,10 @@ rule collect_best_fsc_run:
       echo -e "RUN\tNCUR\tNANC\tNBOT\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
       for k in $FLS; do
         RUNNR=$(echo $k | sed "s=/.*==g; s/{params.runs}_//")
-        awk -v r="$RUNNR" 'NR==2{{print r"\t"$0"\t"$4-$5}}' $k >> all_lhoods.tsv
+        awk -v r="$RUNNR" 'NR==2{{print r"\t"$(NF-1)"\t"$NF"\t"$(NF-1)-$NF}}' $k >> all_lhoods.tsv
       done
 
-      BEST_RUN=$(sort -k 7 all_lhoods.tsv  | head -n 1 | cut -f 1)
+      BEST_RUN=$(sort -k 4 all_lhoods.tsv  | head -n 1 | cut -f 1)
 
       cp -r {params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
       """
