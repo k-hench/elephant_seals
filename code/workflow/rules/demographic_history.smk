@@ -91,7 +91,7 @@ rule collect_best_fsc_run:
       cd {params.basedir}
       FLS=$( ls {params.runs}_*/{params.prefix}/{params.prefix}.bestlhoods )
 
-      echo -e "RUN\tNCUR\tNANC\tNBOT\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
+      echo -e "RUN\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
       for k in $FLS; do
         RUNNR=$(echo $k | sed "s=/.*==g; s/{params.runs}_//")
         awk -v r="$RUNNR" 'NR==2{{print r"\t"$(NF-1)"\t"$NF"\t"$(NF-1)-$NF}}' $k >> all_lhoods.tsv
