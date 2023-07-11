@@ -486,14 +486,14 @@ rule consolidate_gather_all_bp:
     container: c_gatk
     shell:
       """
-      gatk --java-options "-Xmx135g" \
-        GenotypeGVCFs \
-        -R {input.ref} \
-        -V gendb://{input.db} \
-        -O {output.vcf_raw} \
-        --tmp-dir tmp/ \
-        -L {input.intervals} \
-        --include-non-variant-sites true 2> {log} 1> {log}
+        gatk --java-options "-Xmx135g" \
+          GenotypeGVCFs \
+          -R {input.ref} \
+          -V gendb://{input.db} \
+          -O {output.vcf_raw} \
+          --tmp-dir tmp/ \
+          -L {input.intervals} \
+          --include-non-variant-sites true 2> {log} 1> {log}
       """
 
 rule select_var_all_bp:

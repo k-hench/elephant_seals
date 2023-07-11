@@ -9,7 +9,7 @@ rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
-      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/{fs_run}_{iter}", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, iter = DEM_N )
+      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
 
 rule create_pop2_files:
     input:
@@ -75,4 +75,29 @@ rule run_fastsimcoal:
       fsc27093 -t {params.prefix}.tpl -n 100000 -m -e {params.prefix}.est -M -L 40 -q -w 0.01 --foldedSFS -x -C 5 --nosingleton -c 4
       
       rm {params.prefix}_MAFpop0.obs {params.prefix}.tpl {params.prefix}.est
+      """
+
+rule collect_best_fsc_run:
+    input:
+      all_runs = expand( "../results/demography/fastsimcoal/{{spec}}_on_{{ref}}/{{fs_run}}/{{fs_run}}_{iter}", iter = DEM_N )
+    output:
+      bestrun = directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun" )
+    params:
+      runs = "{fs_run}",
+      prefix = "{spec}_on_{ref}_{fs_run}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}"
+    shell:
+      """
+      cd {params.basedir}
+      FLS=$( ls {params.runs}_*/{params.prefix}/{params.prefix}.bestlhoods )
+
+      echo -e "RUN\tNCUR\tNANC\tNBOT\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
+      for k in $FLS; do
+        RUNNR=$(echo $k | sed "s=/.*==g; s/{params.runs}_//")
+        awk -v r="$RUNNR" 'NR==2{{print r"\t"$0"\t"$4-$5}}' $k >> all_lhoods.tsv
+      done
+
+      BEST_RUN=$(sort -k 7 all_lhoods.tsv  | head -n 1 | cut -f 1)
+
+      cp -r {params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
       """
