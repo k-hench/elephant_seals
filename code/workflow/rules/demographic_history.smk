@@ -9,7 +9,7 @@ rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
-      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
+      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
 
 rule create_pop2_files:
     input:
@@ -73,15 +73,13 @@ rule run_fastsimcoal:
       # q: quiet, w: tolerance for brent optimization, x: no arlequin output
       # C: min. observed SFS count, c: cores
       fsc27093 -t {params.prefix}.tpl -n 100000 -m -e {params.prefix}.est -M -L 40 -q -w 0.01 --foldedSFS -x -C 5 --nosingleton -c 4
-      
-      rm {params.prefix}_MAFpop0.obs {params.prefix}.tpl {params.prefix}.est
       """
 
 rule collect_best_fsc_run:
     input:
       all_runs = expand( "../results/demography/fastsimcoal/{{spec}}_on_{{ref}}/{{fs_run}}/{{fs_run}}_{iter}", iter = DEM_N )
     output:
-      bestrun = directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun" )
+      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/all_lhoods.tsv"
     params:
       runs = "{fs_run}",
       prefix = "{spec}_on_{ref}_{fs_run}",
@@ -100,4 +98,20 @@ rule collect_best_fsc_run:
       BEST_RUN=$(sort -k 4 all_lhoods.tsv  | head -n 1 | cut -f 1)
 
       cp -r {params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
+      """
+
+rule calculate_aic:
+    input:
+      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/all_lhoods.tsv"
+    output:
+      aic = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC"
+    params:
+      runs = "{fs_run}",
+      prefix = "{spec}_on_{ref}_{fs_run}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}"
+    conda: "r_tidy"
+    shell:
+      """
+      cd {params.basedir}/bestrun
+      Rscript {base_dir}/code/R/calculateAIC_kh.R {params.prefix}
       """
