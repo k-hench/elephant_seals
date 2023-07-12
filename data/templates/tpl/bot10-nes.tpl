@@ -17,4 +17,4 @@ NCUR
 //Per chromosome: Number of linkage blocks  
 1 
 //per Block: data type, num loci, rec. rate and mut rate + optional parameters
-FREQ 1 0 2.5e-8
+FREQ 1 0 2.5e-8 OUTEXP

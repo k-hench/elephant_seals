@@ -53,7 +53,7 @@ rule run_fastsimcoal:
       tpl = "../data/templates/tpl/{fs_run}.tpl",
       est =  "../data/templates/est/{fs_run}.est"
     output:
-      fs_dir = directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/{fs_run}_{iter}" )
+      fs_dir = temp( directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/{fs_run}_{iter}" ) )
     params:
       obs = "../results/demography/sfs/{spec}_on_{ref}/fastsimcoal2/{spec}_MAFpop0.obs",
       prefix = "{spec}_on_{ref}_{fs_run}"
