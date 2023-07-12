@@ -102,7 +102,9 @@ rule collect_best_fsc_run:
 
 rule calculate_aic:
     input:
-      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/all_lhoods.tsv"
+      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/all_lhoods.tsv",
+      tpl = "../data/templates/tpl/{fs_run}.tpl",
+      est =  "../data/templates/est/{fs_run}.est"
     output:
       aic = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC"
     params:
@@ -112,6 +114,8 @@ rule calculate_aic:
     conda: "r_tidy"
     shell:
       """
+      cp {input.tpl} {params.basedir}/bestrun/{params.prefix}.tpl
+      cp {input.est} {params.basedir}/bestrun/{params.prefix}.est
       cd {params.basedir}/bestrun
       Rscript {base_dir}/code/R/calculateAIC_kh.R {params.prefix}
       """
