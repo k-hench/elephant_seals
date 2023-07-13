@@ -14,7 +14,8 @@ rule all_demography:
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
       fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES ),
-      bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N )
+      bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N ),
+      bs_best = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/all_lhoods.tsv", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, idx = BOOTSTRAP_N )
 
 rule create_pop2_files:
     input:
@@ -213,4 +214,57 @@ rule bootstrap_sfs:
       """
       # Make an SFS from the new bootstrapped file
       easySFS.py -i {input.vcf_bs} -p {input.pp} -a -f --proj {params.n_haplo} -o {output.sfs_dir}
+      """
+
+rule bootstrap_fastsimcoal:
+    input:
+      sfs_dir = "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}",
+      tpl = "../data/templates/tpl/{fs_run}.tpl",
+      est =  "../data/templates/est/{fs_run}.est"
+    output:
+      fs_dir = temp( directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/bs_{fs_run}_{iter}" ) )
+    params:
+      runs = "{fs_run}",
+      prefix = "{spec}_on_{ref}_{fs_run}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}",
+      obs = "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}/fastsimcoal2/{spec}_MAFpop0.obs"
+    shell:
+      """
+      mkdir -p {output.fs_dir}
+      # this time SFS from bootsraped file
+      cp {params.obs} {output.fs_dir}/{params.prefix}_MAFpop0.obs
+      # double check that these remain the same
+      cp {input.tpl} {output.fs_dir}/{params.prefix}.tpl
+      cp {input.est} {output.fs_dir}/{params.prefix}.est
+      cd {output.fs_dir}
+
+      # n: number of simulations, m: minor sfs, M: max.likelihood, L: number of ECM cycles (loops)
+      # q: quiet, w: tolerance for brent optimization, x: no arlequin output
+      # C: min. observed SFS count, c: cores
+      fsc27093 -t {params.prefix}.tpl -n 100000 -m -e {params.prefix}.est -M -L 40 -q -w 0.01 --foldedSFS -x -C 5 --nosingleton -c 4
+      """
+
+rule bootrap_best_run:
+    input:
+      all_runs = expand( "../results/demography/fastsimcoal/{{spec}}_on_{{ref}}/{{fs_run}}/bootstrap_{{idx}}/bs_{{fs_run}}_{iter}", iter = DEM_N )
+    output:
+      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/all_lhoods.tsv"
+    params:
+      runs = "{fs_run}",
+      prefix = "{spec}_on_{ref}_{fs_run}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}"
+    shell:
+      """
+      cd {params.basedir}
+      FLS=$( ls bs_{params.runs}_*/{params.prefix}/{params.prefix}.bestlhoods )
+
+      echo -e "RUN\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
+      for k in $FLS; do
+        RUNNR=$(echo $k | sed "s=/.*==g; s/{params.runs}_//")
+        awk -v r="$RUNNR" 'NR==2{{print r"\t"$(NF-1)"\t"$NF"\t"$(NF-1)-$NF}}' $k >> all_lhoods.tsv
+      done
+
+      BEST_RUN=$(sort -k 4 all_lhoods.tsv  | head -n 1 | cut -f 1)
+
+      cp -r bs_{params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
       """
