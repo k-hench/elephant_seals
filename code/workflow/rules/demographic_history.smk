@@ -9,7 +9,7 @@ rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
-      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
+      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
 
 rule create_pop2_files:
     input:
@@ -141,7 +141,7 @@ rule likelihood_ditributions_bestrun:
       cd {params.basedir}/bestrun
 
       # Run fastsimcoal 20 times (in reality better 100 times) to get the likelihood of the observed SFS under the best parameter values with 1 mio simulated SFS.
-      for i in {1..100}; do
+      for i in {{1..100}}; do
         echo $i >> loop.log
         fsc27093 -i {params.prefix}_maxL.par -n 1000000 -m -q -0
         # Fastsimcoal will generate a new folder called {params.prefix}_maxL and write files in there
