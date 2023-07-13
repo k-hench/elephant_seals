@@ -1,15 +1,20 @@
 """
 snakemake --rerun-triggers mtime  -n all_demography
+very much based upon the workshop "speciation genomics"
+by Joana Meier and Mark Ravinet
+https://speciationgenomics.github.io/fastsimcoal2/
 """
 
 DEM_TYPES = [ "bot06-lgm", "bot06-nes", "bot10-lgm", "bot10-nes", "null-lgm", "null-nes" ]
 DEM_N = [ str(x + 1).zfill(3) for x in np.arange(100) ]
+BOOTSTRAP_N = [ str(x + 1).zfill(2) for x in np.arange(50) ]
 
 rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
-      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES )
+      fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES ),
+      bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N )
 
 rule create_pop2_files:
     input:
@@ -151,4 +156,61 @@ rule likelihood_ditributions_bestrun:
         # delete the folder with results
         rm -r {params.prefix}_maxL/
       done
+      """
+
+rule bootstrap_prep:
+    input:
+      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
+    output:
+      head = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.header",
+      all_sites = temp( "../results/genotyping/bootstrap/{ref}_filtered_{spec}.allSites" )
+    params:
+      n_sites = 11933,
+      block_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.sites."
+    shell:
+      """
+      zgrep -v "^#" {input.vcf} > {output.all_sites}
+
+      # Get the header
+      zgrep "^#" {input.vcf} > {output.head}
+
+      # get 100 files with {params.n_sites} sites each
+      split -l {params.n_sites} {output.all_sites} {params.block_base}
+      """
+
+rule bootstrap_vcf:
+    input:
+      head =  "../results/genotyping/bootstrap/{ref}_filtered_{spec}.header"
+    output:
+      vcf_bs = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
+    params:
+      block_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.sites.",
+      vcf_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf"
+    container: c_popgen
+    shell:
+      """
+      cp {input.head} {params.vcf_base}
+      
+      # Randomly add 100 blocks
+        for r in {{1..100}}; do
+          cat `shuf -n1 -e {params.block_base}*` >> {params.vcf_base}
+        done
+      
+      # Compress the vcf file again
+      bgzip {params.vcf_base}
+      """
+
+rule bootstrap_sfs:
+    input:
+      pp = "../results/pop/inds_{spec}.pop2",
+      vcf_bs = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
+    output:
+      sfs_dir = directory( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}" )
+    params:
+      n_haplo = 40
+    container: c_sim
+    shell:
+      """
+      # Make an SFS from the new bootstrapped file
+      easySFS.py -i {input.vcf_bs} -p {input.pp} -a -f --proj {params.n_haplo} -o {output.sfs_dir}
       """
