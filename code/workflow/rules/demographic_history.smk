@@ -119,3 +119,37 @@ rule calculate_aic:
       cd {params.basedir}/bestrun
       Rscript {base_dir}/code/R/calculateAIC_kh.R {params.prefix}
       """
+
+rule likelihood_ditributions_bestrun:
+    input:
+      aic = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC",
+      sfs_dir = "../results/demography/sfs/{spec}_on_{ref}"
+    output:
+      obs = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}_maxL_MAFpop0.obs",
+      lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods",
+      looplog = temp("../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/loop.log" )
+    params:
+      runs = "{fs_run}",
+      prefix = "{spec}_on_{ref}_{fs_run}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}",
+      obs = "../results/demography/sfs/{spec}_on_{ref}/fastsimcoal2/{spec}_MAFpop0.obs"
+    threads: 4
+    container: c_sim
+    shell:
+      """
+      cp {params.obs} {output.obs}
+      cd {params.basedir}/bestrun
+
+      # Run fastsimcoal 20 times (in reality better 100 times) to get the likelihood of the observed SFS under the best parameter values with 1 mio simulated SFS.
+      for i in {1..100}; do
+        echo $i >> loop.log
+        fsc27093 -i {params.prefix}_maxL.par -n 1000000 -m -q -0
+        # Fastsimcoal will generate a new folder called {params.prefix}_maxL and write files in there
+
+        # collect the lhood values
+        sed -n '2,3p' {params.prefix}_maxL/{params.prefix}_maxL.lhoods  >> {params.prefix}.lhoods
+
+        # delete the folder with results
+        rm -r {params.prefix}_maxL/
+      done
+      """
