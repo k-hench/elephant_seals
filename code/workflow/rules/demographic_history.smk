@@ -228,6 +228,10 @@ rule bootstrap_fastsimcoal:
       prefix = "{spec}_on_{ref}_{fs_run}",
       basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}",
       obs = "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}/fastsimcoal2/{spec}_MAFpop0.obs"
+    resources:
+      mem_mb=15360
+    threads: 4
+    container: c_sim
     shell:
       """
       mkdir -p {output.fs_dir}
