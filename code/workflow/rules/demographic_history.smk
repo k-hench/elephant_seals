@@ -15,7 +15,7 @@ rule all_demography:
       sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
       fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES ),
       bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N ),
-      bs_best = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/all_lhoods.tsv", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, idx = BOOTSTRAP_N )
+      bs_best = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}/all_lhoods.tsv", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, idx = BOOTSTRAP_N )
 
 rule create_pop2_files:
     input:
@@ -222,11 +222,11 @@ rule bootstrap_fastsimcoal:
       tpl = "../data/templates/tpl/{fs_run}.tpl",
       est =  "../data/templates/est/{fs_run}.est"
     output:
-      fs_dir = temp( directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/bs_{fs_run}_{iter}" ) )
+      fs_dir = temp( directory( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}/bs{idx}_{fs_run}_{iter}" ) )
     params:
       runs = "{fs_run}",
       prefix = "{spec}_on_{ref}_{fs_run}",
-      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}",
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}",
       obs = "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}/fastsimcoal2/{spec}_MAFpop0.obs"
     resources:
       mem_mb=15360
@@ -250,25 +250,28 @@ rule bootstrap_fastsimcoal:
 
 rule bootrap_best_run:
     input:
-      all_runs = expand( "../results/demography/fastsimcoal/{{spec}}_on_{{ref}}/{{fs_run}}/bootstrap_{{idx}}/bs_{{fs_run}}_{iter}", iter = DEM_N )
+      all_runs = expand( "../results/demography/fastsimcoal/{{spec}}_on_{{ref}}/{{fs_run}}/bootstrap/bs_{{idx}}/bs{{idx}}_{{fs_run}}_{iter}", iter = DEM_N )
     output:
-      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}/all_lhoods.tsv"
+      all_lhoods = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}/all_lhoods.tsv"
     params:
       runs = "{fs_run}",
       prefix = "{spec}_on_{ref}_{fs_run}",
-      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap_{idx}"
+      basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}"
     shell:
       """
       cd {params.basedir}
-      FLS=$( ls bs_{params.runs}_*/{params.prefix}/{params.prefix}.bestlhoods )
+      FLS=$( ls bs{wildcards.idx}_{params.runs}_*/{params.prefix}/{params.prefix}.bestlhoods )
 
       echo -e "RUN\tMaxEstLhood\tMaxObsLhood\tDELTA_OBS_EST" > all_lhoods.tsv
       for k in $FLS; do
-        RUNNR=$(echo $k | sed "s=/.*==g; s/{params.runs}_//")
+        RUNNR=$(echo $k | sed "s=/.*==g; s/bs{wildcards.idx}_{params.runs}_//")
         awk -v r="$RUNNR" 'NR==2{{print r"\t"$(NF-1)"\t"$NF"\t"$(NF-1)-$NF}}' $k >> all_lhoods.tsv
       done
 
       BEST_RUN=$(sort -k 4 all_lhoods.tsv  | head -n 1 | cut -f 1)
 
-      cp -r bs_{params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
+      cp -r bs{wildcards.idx}_{params.runs}_${{BEST_RUN}}/{params.prefix} ./bestrun
       """
+
+wildcard_constraints:
+    fs_run="[^_]*"
