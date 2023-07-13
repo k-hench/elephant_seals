@@ -133,7 +133,6 @@ rule likelihood_ditributions_bestrun:
       prefix = "{spec}_on_{ref}_{fs_run}",
       basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}",
       obs = "../results/demography/sfs/{spec}_on_{ref}/fastsimcoal2/{spec}_MAFpop0.obs"
-    threads: 4
     container: c_sim
     shell:
       """
