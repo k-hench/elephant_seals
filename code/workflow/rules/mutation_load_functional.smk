@@ -28,7 +28,7 @@ rule create_snpeff_config:
 rule create_snpeff_db:
     input:
       fa = "../data/genomes/mirang.fa",
-      gtf = GTF_FILE
+      gtf = GTF_FILE,
       conf = "../results/mutation_load/snp_eff/snpEff.config"
     params:
       snpeff_path = "../results/mutation_load/snp_eff"
