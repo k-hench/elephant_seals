@@ -12,5 +12,6 @@ rule download_gtf:
       gtf = GTF_FILE
     shell:
       """
-      wget https://ftp.ncbi.nih.gov/genomes/refseq/vertebrate_mammalian/Mirounga_angustirostris/annotation_releases/current/GCF_021288785.2-RS_2023_03/GCF_021288785.2_ASM2128878v3_genomic.gtf.gz -o {output.gtf}
+      wget https://ftp.ncbi.nih.gov/genomes/refseq/vertebrate_mammalian/Mirounga_angustirostris/annotation_releases/current/GCF_021288785.2-RS_2023_03/GCF_021288785.2_ASM2128878v3_genomic.gtf.gz
+      mv GCF_021288785.2_ASM2128878v3_genomic.gtf.gz {output.gtf}
       """
