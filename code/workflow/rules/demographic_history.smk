@@ -3,6 +3,25 @@ snakemake --rerun-triggers mtime  -n all_demography
 very much based upon the workshop "speciation genomics"
 by Joana Meier and Mark Ravinet
 https://speciationgenomics.github.io/fastsimcoal2/
+
+snakemake --jobs 100 \
+  --latency-wait 30 \
+  -p \
+  --default-resources mem_mb=51200 threads=1 \
+  --use-singularity \
+  --singularity-args "--bind $CDATA" \
+  --use-conda \
+  --rerun-triggers mtime \
+  --cluster '
+    qsub \
+      -V -cwd \
+      -P fair_share \
+      -l idle=1 \
+      -l si_flag=1 \
+      -pe multislot {threads} \
+      -l vf={resources.mem_mb}' \
+  --jn job_fs.{name}.{jobid}.sh \
+  -R all_demography
 """
 
 DEM_TYPES = [ "bot06-lgm", "bot06-nes", "bot10-lgm", "bot10-nes", "null-lgm", "null-nes" ]

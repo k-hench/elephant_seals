@@ -75,6 +75,7 @@ include: "./rules/genotyping_qc.smk"
 include: "./rules/genotype_conversions.smk"
 include: "./rules/roh_calling.smk"
 include: "./rules/demographic_history.smk"
+include: "./rules/mutation_load_functional.smk"
 
 # conditional inclusion of repeat masking part
 if config[ 'need_masking' ] != None:
