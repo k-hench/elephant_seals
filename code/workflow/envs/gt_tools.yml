@@ -1,0 +1,7 @@
+# mamba env create -f gt_tools.yml
+name: gt_tools
+channels:
+ - defaults
+ - bioconda
+dependencies:
+ - genometools-genometools=1.6.2

@@ -36,6 +36,17 @@ rule download_gtf:
       mv GCF_021288785.2_ASM2128878v3_genomic.gtf.gz {output.gtf}
       """
 
+rule convert_gtf_gff:
+    input:
+      gtf = GTF_FILE
+    output:
+      gff = "../data/genomes/annotation/mirang.gff3.gz"
+    conda: "gt_tools"
+    shell:
+      """
+      gt gtf_to_gff3 {input.gtf} -o {output.gff} -gzip
+      """
+
 rule create_snpeff_config:
     output:
       conf = "../results/mutation_load/snp_eff/snpEff.config"
@@ -48,7 +59,7 @@ rule create_snpeff_config:
 rule extract_cds:
     input:
       fa = "../data/genomes/mirang.fa",
-      gtf = GTF_FILE,
+      gff = "../data/genomes/annotation/mirang.gff3.gz",
     output:
       cds = "../results/mutation_load/snp_eff/data/mirang/cds.fa.gz"
     params:
@@ -57,7 +68,7 @@ rule extract_cds:
     shell:
       """
       gff3_to_fasta \
-        -g {input.gtf} \
+        -g {input.gff} \
         -f {input.fa} \
         -st cds \
         -d complete \
