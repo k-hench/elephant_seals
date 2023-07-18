@@ -1,5 +1,6 @@
 """
-snakemake --rerun-triggers mtime -n download_gtf
+snakemake --rerun-triggers mtime -n create_snpeff_db
+snakemake --dag  --rerun-triggers mtime -R create_snpeff_db | dot -Tsvg > ../results/img/control/dag_snpeff_db.svg
 
 snakemake --jobs 60 \
   --latency-wait 30 \
@@ -44,10 +45,33 @@ rule create_snpeff_config:
       echo "mirang.genome : mirang" >> {output.conf}
       """
 
+rule extract_cds:
+    input:
+      fa = "../data/genomes/mirang.fa",
+      gtf = GTF_FILE,
+    output:
+      cds = "../results/mutation_load/snp_eff/data/mirang/cds.fa.gz"
+    params:
+      cds_prefix = "../results/mutation_load/snp_eff/data/mirang/"
+    conda: "gff3toolkit"
+    shell:
+      """
+      gff3_to_fasta \
+        -g {input.gtf} \
+        -f {input.fa} \
+        -st cds \
+        -d complete \
+        -o {params.cds_prefix}/mirang
+      
+      mv {params.cds_prefix}/mirang_cds.fa {params.cds_prefix}/cds.fa
+      gzip {params.cds_prefix}/cds.fa
+      """
+
 rule create_snpeff_db:
     input:
       fa = "../data/genomes/mirang.fa",
       gtf = GTF_FILE,
+      cds = "../results/mutation_load/snp_eff/data/mirang/cds.fa.gz",
       conf = "../results/mutation_load/snp_eff/snpEff.config"
     output:
       snp_fa = "../results/mutation_load/snp_eff/data/genomes/mirang.fa",
