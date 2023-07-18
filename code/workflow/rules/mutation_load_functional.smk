@@ -44,7 +44,7 @@ rule convert_gtf_gff:
     conda: "gt_tools"
     shell:
       """
-      gt gtf_to_gff3 {input.gtf} -o {output.gff} -gzip
+      gt gtf_to_gff3 -o {output.gff} -gzip {input.gtf}
       """
 
 rule create_snpeff_config:
