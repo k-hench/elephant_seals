@@ -55,7 +55,7 @@ rule create_snpeff_db:
     params:
       snpeff_path = "../results/mutation_load/snp_eff"
     resources:
-      mem_mb=15360
+      mem_mb=25600
     container: c_ml
     shell:
       """
@@ -65,5 +65,5 @@ rule create_snpeff_db:
       cd {code_dir}/{params.snpeff_path}/data/genomes
       ln -s {code_dir}/{input.fa} ./mirang.fa
       cd {code_dir}/{params.snpeff_path}
-      snpEff build  -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v mirang
+      snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v mirang
       """
