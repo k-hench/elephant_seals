@@ -23,6 +23,7 @@ snakemake --jobs 60 \
 """
 
 GTF_FILE = "../data/genomes/annotation/mirang.gtf.gz"
+GFF_FILE = "../data/genomes/annotation/mirang.gff3.gz"
 
 rule all_ml_snpeff:
     input: ""
@@ -36,16 +37,15 @@ rule download_gtf:
       mv GCF_021288785.2_ASM2128878v3_genomic.gtf.gz {output.gtf}
       """
 
-rule convert_gtf_gff:
-    input:
-      gtf = GTF_FILE
+rule download_gff:
     output:
-      gff = "../data/genomes/annotation/mirang.gff3.gz"
-    conda: "gt_tools"
+      gtf = GFF_FILE
     shell:
       """
-      gt gtf_to_gff3 -o {output.gff} -gzip {input.gtf}
+      wget https://ftp.ncbi.nih.gov/genomes/refseq/vertebrate_mammalian/Mirounga_angustirostris/annotation_releases/current/GCF_021288785.2-RS_2023_03/GCF_021288785.2_ASM2128878v3_genomic.gff.gz
+      mv GCF_021288785.2_ASM2128878v3_genomic.gff.gz {output.gff}
       """
+
 
 rule create_snpeff_config:
     output:
