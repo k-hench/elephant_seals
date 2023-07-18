@@ -9,11 +9,12 @@ import pandas as pd
 
 configfile: "workflow/config.yml"
 
-base_dir = os.getcwd() + "/.."
+code_dir = os.getcwd()
+base_dir = code_dir + "/.."
 
 rule all:
     params:
-      wd = os.getcwd(),
+      wd = code_dir,
       base_dir = base_dir
     message:
       '''

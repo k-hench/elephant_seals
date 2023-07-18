@@ -1,5 +1,24 @@
 """
 snakemake --rerun-triggers mtime -n download_gtf
+
+snakemake --jobs 60 \
+  --latency-wait 30 \
+  -p \
+  --default-resources mem_mb=51200 threads=1 \
+  --use-singularity \
+  --singularity-args "--bind $CDATA" \
+  --use-conda \
+  --rerun-triggers mtime \
+  --cluster '
+    qsub \
+      -V -cwd \
+      -P fair_share \
+      -l idle=1 \
+      -l si_flag=1 \
+      -pe multislot {threads} \
+      -l vf={resources.mem_mb}' \
+  --jn job_ml.{name}.{jobid}.sh \
+  -R create_snpeff_db
 """
 
 GTF_FILE = "../data/genomes/annotation/mirang.gtf.gz"
@@ -38,10 +57,10 @@ rule create_snpeff_db:
     shell:
       """
       mkdir -p {params.snpeff_path}/data/mirang {params.snpeff_path}/data/genomes
-      cd {params.snpeff_path}/data/mirang
-      ln -s {input.gtf} ./genes.gtf.gz
-      cd {params.snpeff_path}/data/genomes
-      ln -s {input.fa} ./mirang.fa
-      cd {params.snpeff_path}
+      cd {code_dir}/{params.snpeff_path}/data/mirang
+      ln -s {code_dir}/{input.gtf} ./genes.gtf.gz
+      cd {code_dir}/{params.snpeff_path}/data/genomes
+      ln -s {code_dir}/{input.fa} ./mirang.fa
+      cd {code_dir}/{params.snpeff_path}
       snpEff build  -c {input.conf} -dataDir $(pwd) -gtf22 -v mirang
       """
