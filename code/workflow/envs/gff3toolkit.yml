@@ -1,0 +1,10 @@
+# mamba env create -f gff3toolkit.yml
+name: gff3toolkit
+channels:
+ - defaults
+dependencies:
+ - python=3.11
+ - pip
+ - pip:
+  # works for regular pip packages
+   - gff3tool
