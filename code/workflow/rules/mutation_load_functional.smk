@@ -39,7 +39,7 @@ rule download_gtf:
 
 rule download_gff:
     output:
-      gtf = GFF_FILE
+      gff = GFF_FILE
     shell:
       """
       wget https://ftp.ncbi.nih.gov/genomes/refseq/vertebrate_mammalian/Mirounga_angustirostris/annotation_releases/current/GCF_021288785.2-RS_2023_03/GCF_021288785.2_ASM2128878v3_genomic.gff.gz
