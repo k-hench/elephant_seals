@@ -49,6 +49,9 @@ rule create_snpeff_db:
       fa = "../data/genomes/mirang.fa",
       gtf = GTF_FILE,
       conf = "../results/mutation_load/snp_eff/snpEff.config"
+    output:
+      snp_fa = "../results/mutation_load/snp_eff/data/genomes/mirang.fa",
+      snp_gff = "../results/mutation_load/snp_eff/data/mirang/genes.gtf.gz"
     params:
       snpeff_path = "../results/mutation_load/snp_eff"
     resources:
