@@ -46,7 +46,6 @@ rule download_gff:
       mv GCF_021288785.2_ASM2128878v3_genomic.gff.gz {output.gff}
       """
 
-
 rule create_snpeff_config:
     output:
       conf = "../results/mutation_load/snp_eff/snpEff.config"
@@ -78,11 +77,34 @@ rule extract_cds:
       gzip {params.cds_prefix}/cds.fa
       """
 
+rule extract_prot:
+    input:
+      fa = "../data/genomes/mirang.fa",
+      gff = "../data/genomes/annotation/mirang.gff3.gz"
+    output:
+      cds = "../results/mutation_load/snp_eff/data/mirang/protein.fa.gz"
+    params:
+      cds_prefix = "../results/mutation_load/snp_eff/data/mirang/"
+    conda: "gff3toolkit"
+    shell:
+      """
+      gff3_to_fasta \
+        -g {input.gff} \
+        -f {input.fa} \
+        -st cds \
+        -d complete \
+        -o {params.cds_prefix}/mirang
+      
+      mv {params.cds_prefix}/mirang_pep.fa {params.cds_prefix}/protein.fa
+      gzip {params.cds_prefix}/protein.fa
+      """
+
 rule create_snpeff_db:
     input:
       fa = "../data/genomes/mirang.fa",
       gtf = GTF_FILE,
       cds = "../results/mutation_load/snp_eff/data/mirang/cds.fa.gz",
+      prot = "../results/mutation_load/snp_eff/data/mirang/protein.fa.gz",
       conf = "../results/mutation_load/snp_eff/snpEff.config"
     output:
       snp_fa = "../results/mutation_load/snp_eff/data/genomes/mirang.fa",
