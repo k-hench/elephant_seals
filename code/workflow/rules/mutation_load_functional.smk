@@ -82,21 +82,21 @@ rule extract_prot:
       fa = "../data/genomes/mirang.fa",
       gff = "../data/genomes/annotation/mirang.gff3.gz"
     output:
-      cds = "../results/mutation_load/snp_eff/data/mirang/protein.fa.gz"
+      pep = "../results/mutation_load/snp_eff/data/mirang/protein.fa.gz"
     params:
-      cds_prefix = "../results/mutation_load/snp_eff/data/mirang/"
+      pep_prefix = "../results/mutation_load/snp_eff/data/mirang"
     conda: "gff3toolkit"
     shell:
       """
       gff3_to_fasta \
         -g {input.gff} \
         -f {input.fa} \
-        -st cds \
+        -st pep \
         -d complete \
-        -o {params.cds_prefix}/mirang
+        -o {params.pep_prefix}/mirang
       
-      mv {params.cds_prefix}/mirang_pep.fa {params.cds_prefix}/protein.fa
-      gzip {params.cds_prefix}/protein.fa
+      mv {params.pep_prefix}/mirang_pep.fa {params.pep_prefix}/protein.fa
+      gzip {params.pep_prefix}/protein.fa
       """
 
 rule create_snpeff_db:
