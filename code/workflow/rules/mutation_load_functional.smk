@@ -1,6 +1,6 @@
 """
-snakemake --rerun-triggers mtime -n create_snpeff_db
-snakemake --dag  --rerun-triggers mtime -R create_snpeff_db | dot -Tsvg > ../results/img/control/dag_snpeff_db.svg
+snakemake --rerun-triggers mtime -n all_ml_snpeff
+snakemake --dag  --rerun-triggers mtime -R all_ml_snpeff | dot -Tsvg > ../results/img/control/dag_snpeff_db.svg
 
 snakemake --jobs 60 \
   --latency-wait 30 \
@@ -19,14 +19,15 @@ snakemake --jobs 60 \
       -pe multislot {threads} \
       -l vf={resources.mem_mb}' \
   --jn job_ml.{name}.{jobid}.sh \
-  -R create_snpeff_db
+  -R all_ml_snpeff
 """
 
 GTF_FILE = "../data/genomes/annotation/mirang.gtf.gz"
 GFF_FILE = "../data/genomes/annotation/mirang.gff3.gz"
 
 rule all_ml_snpeff:
-    input: ""
+    input: 
+      vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" )
 
 rule download_gtf:
     output:
@@ -123,4 +124,43 @@ rule create_snpeff_db:
       ln -s {code_dir}/{input.fa} ./mirang.fa
       cd {code_dir}/{params.snpeff_path}
       snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v mirang
+      """
+
+rule run_snpeff:
+    input:
+      snpeff_gff = "../results/mutation_load/snp_eff/data/mirang/genes.gtf.gz",
+      vcf = "../results/genotyping/filtered/{vcf_pre}.vcf.gz"
+    output:
+      snpef_vcf = "../results/genotyping/annotated/{vcf_pre}_ann.vcf",
+      report = "../results/mutation_load/snp_eff/{vcf_pre}_stats.html"
+    params:
+      snpeff_path = "../results/mutation_load/snp_eff"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      cd {code_dir}/{params.snpeff_path}
+      ln -s {code_dir}/{input.vcf} ./
+      snpEff ann -stats {wildcards.vcf_pre}_stats.html \
+          -no-downstream \
+          -no-intergenic \
+          -no-intron \
+          -no-upstream \
+          -no-utr \
+          -v \
+          mirang {wildcards.vcf_pre}.vcf.gz > {code_dir}/{output.snpef_vcf}
+      """
+
+rule bgzip_vcf:
+    input:
+      vcf = "../results/genotyping/annotated/{vcf_pre}_ann.vcf"
+    output:
+      vcf = "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz",
+      vcf_idx = "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz.tbi"
+    conda: "popgen_basics"
+    shell:
+      """
+      bgzip {input.vcf}
+      tabix -p vcf {output.vcf}
       """
