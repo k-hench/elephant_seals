@@ -3,11 +3,20 @@ snakemake --rerun-triggers mtime -n -R call_roh
 # >>> needs to be run on ALL BP
 """
 
+wildcard_constraints:
+    het = "[0-9]*",
+    whet = "[0-9]*",
+    nsnp = "[0-9]*",
+    wnsnp = "[0-9]*",
+    leng = "[0-9]*",
+    gap = "[0-9]*"
+
 rule call_roh:
     input:
       expand( "../results/roh/bcftools/{ref}_{part}_roh_snps.tsv.gz", ref = GATK_REF[0], part =  GENOME_PARTITIONS ),
       expand( "../results/roh/bcftools/snp_based/{ref}_roh_snps.tsv.gz", ref = GATK_REF[0] ),
-      expand( "../results/roh/bcftools/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES )
+      expand( "../results/roh/bcftools/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES ),
+      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}", file_base = "mirang_filtered_all", het = [0], whet = [2], nsnp = [10], wnsnp = [50], leng = [10], gap = [1] )
 
 rule roh_calling_bcftools:
     input:
@@ -71,6 +80,38 @@ rule roh_max_certain:
       """
       zcat {input.cov_mask} |
         intersectBed -a stdin -b {input.roh} > {output.roh}
+      """
+
+rule roh_plink:
+    input:
+      pl_bed = "../results/genotyping/plink/{file_base}.bed",
+      pl_bim = "../results/genotyping/plink/{file_base}.bim",
+      pl_fam = "../results/genotyping/plink/{file_base}.fam",
+      pl_map = "../results/genotyping/plink/{file_base}.map",
+      pl_nosex = "../results/genotyping/plink/{file_base}.nosex",
+      pl_ped = "../results/genotyping/plink/{file_base}.ped"
+    output:
+      plink_dir = directory( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}" )
+    params:
+      pl_base = "../results/genotyping/plink/{file_base}",
+      out_prefix = "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}"
+      #            "../results/roh/plink/{file_base}_h0_wh2_n10_wn50_l10_g1"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      plink --bfile {params.pl_base} \
+        --out {params.out_prefix} \
+        --homozyg \
+        --homozyg-window-snp {wildcards.wnsnp} \
+        --homozyg-snp {wildcards.nsnp} \
+        --homozyg-kb {wildcards.leng} \
+        --homozyg-gap {wildcards.gap} \
+        --homozyg-density 1 \
+        --homozyg-window-missing 1 \
+        --homozyg-het {wildcards.whet} \
+        --homozyg-window-het {wildcards.het}
       """
 
 # legacy --------

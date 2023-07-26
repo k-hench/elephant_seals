@@ -28,14 +28,14 @@ rule vcf_to_plink:
     input: 
       vcf = "../results/genotyping/filtered/{file_base}.vcf.gz"
     output:
-      pl_bed = "../results/genotyping/filtered/{file_base}.bed",
-      pl_bim = "../results/genotyping/filtered/{file_base}.bim",
-      pl_fam = "../results/genotyping/filtered/{file_base}.fam",
-      pl_map = "../results/genotyping/filtered/{file_base}.map",
-      pl_nosex = "../results/genotyping/filtered/{file_base}.nosex",
-      pl_ped = "../results/genotyping/filtered/{file_base}.ped"
+      pl_bed = "../results/genotyping/plink/{file_base}.bed",
+      pl_bim = "../results/genotyping/plink/{file_base}.bim",
+      pl_fam = "../results/genotyping/plink/{file_base}.fam",
+      pl_map = "../results/genotyping/plink/{file_base}.map",
+      pl_nosex = "../results/genotyping/plink/{file_base}.nosex",
+      pl_ped = "../results/genotyping/plink/{file_base}.ped"
     params:
-      geno_base = "../results/genotyping/filtered/"
+      geno_base = "../results/genotyping/plink/"
     benchmark:
       "benchmark/conversion/vcf_to_plink_{file_base}.tsv"
     resources:
