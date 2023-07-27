@@ -37,3 +37,44 @@ rule extract_ancestral_hals:
       cp {input.hal_anc} {output.hal_anc}
       cp {input.hal_mir} {output.hal_mir}
       """
+
+rule merge_ancestral_hals:
+    input:
+      hal_anc = "../results/ancestral_allele/Anc52.hal",
+      hal_mir = "../results/ancestral_allele/Anc56.hal"
+    output:
+      hal = "../results/ancestral_allele/mir_ancestral.hal",
+      check = "../results/ancestral_allele/mir_ancestral_summary.txt"
+    resources:
+      mem_mb=15360
+    container: c_cactus
+    shell:
+      """
+      cp {input.hal_anc} {output.hal}
+      halAppendSubtree {output.hal} {input.hal_mir} Anc56 Anc56 --merge --hdf5InMemory --hdf5InMemory
+      halStats mir_ancestral.hal > {output.check}
+      """
+
+rule anc_allele_tsv:
+    input:
+      hal = "../results/ancestral_allele/mir_ancestral.hal"
+    output:
+      tsv = "../results/ancestral_allele/mirang_anc52_snps.tsv"
+    resources:
+      mem_mb=15360
+    container: c_cactus
+    shell:
+      """
+      halSnps {input.hal} mirang Anc52 --tsv {output.tsv}
+      """
+
+rule anc_tree:
+    input:
+      hal = "../results/ancestral_allele/mir_ancestral.hal"
+    output:
+      nwk = "../results/ancestral_allele/mirang_anc_tree.nwk"
+    container: c_cactus
+    shell:
+      """
+      halStats {input.hal} --tree  > {output.nwk}
+      """
