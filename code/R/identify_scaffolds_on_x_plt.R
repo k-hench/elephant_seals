@@ -1,5 +1,7 @@
 library(tidyverse)
 library(here)
+library(patchwork)
+library(ggnewscale)
 
 get_psl <- \(file){
   vroom::vroom(here::here("results","psl", file),
@@ -39,6 +41,17 @@ data_check <- data_algn <- get_psl("slim_mirang_on_zalcal.psl.gz")
 data_check <- data_algn |> 
   filter(qName == "NC_072356.1")
 
+data_check |> 
+  group_by(tName, qName) |> 
+  summarise(sum_length_t = sum(tSize),
+            sum_length_q = sum(qSize),
+            tSize = tSize[1],
+            qSize = qSize[1],
+            n_al = length(qSize)) |> 
+  ggplot(aes(x = tName, y = sum_length_q/qSize)) +
+  geom_point(aes(color = tName == "NC_045612.1"))
+
+
 data_algn_x <- data_algn |> 
   filter(tName == "NC_045612.1")
 
@@ -70,7 +83,47 @@ data_summary_x <- data_summary |>
          x_log_ratio = if_else(x_log_ratio == Inf, 3.5, x_log_ratio)) |> 
   ungroup()
 
+data_summary_x |> 
+  filter(qName == "NC_072356.1")
+
+# p1 <- data_summary_x |> 
+#   ggplot(aes(x = q_x, y = q_max_alt, color = log10(q_x / q_max_alt))) +
+#   scico::scale_color_scico(limits = c(-3.5, 3.5), palette = "vanimo") +
+#   geom_point(size = .2) +
+#   theme_minimal()
+
 treshold <- log10(2/1)
+
+p1 <- ggplot(mapping = aes(x = q_x,
+             y = q_max_alt)) +
+  scico::scale_color_scico(limits = c(-3.5, 3.5), palette = "vanimo") +
+  geom_point(data = data_summary_x |>
+               filter(x_log_ratio > treshold),
+             size = .2,
+             aes(color = log10(q_x / q_max_alt))) +
+  new_scale_color() +
+  geom_point(data = data_summary_x |>
+               filter(x_log_ratio < treshold),
+             size = .2,
+             aes(color = log10(q_x / q_max_alt))) + 
+  scale_color_distiller(palette = "Greys", limits = c(-3.5, treshold)) +
+  coord_equal(xlim = 0:1, ylim = 0:1) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+p2 <- data_summary_x  |> 
+  filter(x_log_ratio > treshold) |>
+  arrange(-x_log_ratio) |> 
+  mutate(q_f = fct_reorder(qName, -x_log_ratio),
+         t_f = factor(tName)) |> 
+  ggplot(aes(x = as.numeric(q_f),
+             y = tName)) +
+  geom_tile(aes(fill = x_log_ratio,
+                color = tName == "NC_045612.1")) +
+  scico::scale_fill_scico(limits = c(-3.5, 3.5), palette = "vanimo") +
+  scale_color_manual(values = c(`TRUE` = "black", `FALSE` = "white")) +
+  # coord_equal(xlim = c(0, 350)) +
+  theme(legend.position = "bottom")
 
 dir.create(here("results/genomes/sex_chrom"), showWarnings = FALSE)
 data_summary_x  |> 
@@ -79,3 +132,6 @@ data_summary_x  |>
   mutate(start = 0) |> 
   select(chr = qName, start, end = qSize) |> 
   write_tsv(here("results/genomes/sex_chrom/mirang_sex_chrom.bed"))
+
+read_size("mirang") |> 
+   filter(chr == "NW_025578803.1")

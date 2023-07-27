@@ -88,3 +88,16 @@ rule vcf_subset_species:
       
       tabix -p vcf {output.vcf} &>> {log}
       """
+
+rule identify_chrX_scaffolds:
+    input:
+      size_m = "../results/genomes/mirang.size",
+      size_z = "../results/genomes/zalcal.size",
+      psl = "../results/psl/slim_mirang_on_zalcal.psl.gz"
+    output:
+      bed = "../results/genomes/sex_chrom/mirang_sex_chrom.bed"
+    conda: "r_tidy"
+    shell:
+      """
+      Rscript R/identify_scaffolds_on_x.R 
+      """
