@@ -49,7 +49,7 @@ rule create_pop2_files:
 rule estimate_projections:
     input:
       pp = "../results/pop/inds_{spec}.pop2",
-      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
+      vcf = "../results/genotyping/autosome/{ref}_filtered_{spec}_autosome.vcf.gz"
     output:
       prev = "../results/demography/preview/prev_{spec}_on_{ref}.txt"
     container: c_sim
@@ -61,7 +61,7 @@ rule estimate_projections:
 rule create_sfs:
     input:
       pp = "../results/pop/inds_{spec}.pop2",
-      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
+      vcf = "../results/genotyping/autosome/{ref}_filtered_{spec}_autosome.vcf.gz"
     output:
       sfs_dir = directory( "../results/demography/sfs/{spec}_on_{ref}/" )
     params:
