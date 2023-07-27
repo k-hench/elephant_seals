@@ -101,3 +101,26 @@ rule identify_chrX_scaffolds:
       """
       Rscript R/identify_scaffolds_on_x.R 
       """
+
+rule vcf_filter_autosome:
+    input:
+      vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
+      bed = "../results/genomes/sex_chrom/mirang_sex_chrom.bed"
+    output:
+      vcf = "../results/genotyping/autosome/{file_base}_autosome.vcf.gz"
+    log:
+      "logs/conversion/subset_{file_base}_autosome.log"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      vcftools \
+          --gzvcf {input.vcf} \
+          --exclude-bed {input.bed} \
+          --recode \
+          --stdout | \
+          bgzip > {output.vcf} 2> {log}
+      
+      tabix -p vcf {output.vcf} &>> {log}
+      """
