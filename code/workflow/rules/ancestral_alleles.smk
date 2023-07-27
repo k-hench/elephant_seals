@@ -52,7 +52,7 @@ rule merge_ancestral_hals:
       """
       cp {input.hal_anc} {output.hal}
       halAppendSubtree {output.hal} {input.hal_mir} Anc56 Anc56 --merge --hdf5InMemory --hdf5InMemory
-      halStats mir_ancestral.hal > {output.check}
+      halStats {output.hal} > {output.check}
       """
 
 rule anc_allele_tsv:
