@@ -91,6 +91,6 @@ need_masking:
 # local paths to stored sif files for offline usage:
 sif_gatk: '$CDATA/apptainer_local/genotyping_suite_v0.3.sif'
 sif_qc: '$CDATA/apptainer_local/qc_suite_v0.3.sif'
-sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.1.sif'
+sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.2.sif'
 sif_sim: '$CDATA/apptainer_local/popsim_suite_v0.2.sif'
 sif_ml: '$CDATA/apptainer_local/re_load_v0.1.sif'
