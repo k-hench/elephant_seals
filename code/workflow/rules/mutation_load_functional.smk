@@ -126,10 +126,24 @@ rule create_snpeff_db:
       snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v mirang
       """
 
-rule run_snpeff:
+rule snpeff_link_vcf:
     input:
       snpeff_gff = "../results/mutation_load/snp_eff/data/mirang/genes.gtf.gz",
       vcf = "../results/genotyping/filtered/{vcf_pre}.vcf.gz"
+    output:
+      vcf_ln = "../results/mutation_load/snp_eff/{vcf_pre}.vcf.gz"
+    params:
+      snpeff_path = "../results/mutation_load/snp_eff"
+    shell:
+      """
+      cd {code_dir}/{params.snpeff_path}
+      ln -s {code_dir}/{input.vcf} ./
+      """
+
+rule run_snpeff:
+    input:
+      snpeff_gff = "../results/mutation_load/snp_eff/data/mirang/genes.gtf.gz",
+      vcf = "../results/mutation_load/snp_eff/{vcf_pre}.vcf.gz"
     output:
       snpef_vcf = "../results/genotyping/annotated/{vcf_pre}_ann.vcf",
       report = "../results/mutation_load/snp_eff/{vcf_pre}_stats.html"
@@ -141,7 +155,6 @@ rule run_snpeff:
     shell:
       """
       cd {code_dir}/{params.snpeff_path}
-      ln -s {code_dir}/{input.vcf} ./
       snpEff ann -stats {wildcards.vcf_pre}_stats.html \
           -no-downstream \
           -no-intergenic \
