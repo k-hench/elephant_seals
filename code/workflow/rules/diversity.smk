@@ -43,7 +43,6 @@ rule convert_012_by_spec:
         --keep {input.inds} \
         --mac 1 \
         --012 \
-        --recode \
         --stdout | gzip > {output.g012}
       """
 
