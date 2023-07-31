@@ -33,6 +33,8 @@ rule convert_012_by_spec:
       inds = "../results/pop/inds_{spec}.pop"
     output:
       g012 = "../results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"
+    params:
+      out_prefix = "../results/genotyping/012/mirang_filtered_{spec}_012"
     container: c_popgen
     resources:
       mem_mb=15360
@@ -43,7 +45,10 @@ rule convert_012_by_spec:
         --keep {input.inds} \
         --mac 1 \
         --012 \
-        --stdout | gzip > {output.g012}
+        --out {params.out_prefix}
+      
+      mv {params.out_prefix}.012 {params.out_prefix}.tsv 
+      gzip {params.out_prefix}.tsv
       """
 
 wildcard_constraints:
