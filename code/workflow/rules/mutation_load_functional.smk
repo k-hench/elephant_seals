@@ -155,7 +155,7 @@ rule run_snpeff:
     shell:
       """
       cd {code_dir}/{params.snpeff_path}
-      snpEff ann -stats {wildcards.vcf_pre}_stats.html \
+      snpEff ann -Xmx24G -stats {wildcards.vcf_pre}_stats.html \
           -no-downstream \
           -no-intergenic \
           -no-intron \
