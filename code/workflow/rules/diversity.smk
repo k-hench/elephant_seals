@@ -5,7 +5,8 @@ snakemake --rerun-triggers mtime -n all_diversity
 rule all_diversity:
     input: 
       het = expand( "../results/het/het_{spec}.tsv", spec = [ 'mirang', 'mirleo' ]),
-      pi = expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS )
+      pi = expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
+      snp_dens = expand( "../results/snp_density/snp_dens_{spec}.tsv.gz", spec = [ 'mirang', 'mirleo' ] )
 
 rule he_by_ind:
     input:
@@ -80,4 +81,20 @@ rule pi_and_dxy:
         -f phased \
         --writeFailedWindows \
         -T 3
+      """
+
+rule snp_density:
+    input:
+      vcf = "../results/genotyping/filtered/mirang_filtered_{spec}.vcf.gz",
+    output:
+      dens = "../results/snp_density/snp_dens_{spec}.tsv.gz"
+    container: c_popgen
+    resources:
+      mem_mb=15360
+    shell:
+      """
+      vcftools \
+        --gzvcf {input.vcf} \
+        --SNPdensity 100000 \
+        --stdout | gzip > {output.dens}
       """
