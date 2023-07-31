@@ -33,7 +33,7 @@ import_pop <- \(spec){
 
 samples <- c("mirang", "mirleo") |> 
   map_dfr(import_pop)
-"results/roh/bcftools/bed/max_callable/"
+# "results/roh/bcftools/bed/max_callable/"
 
 import_roh <- function(sample, ref){
   read_tsv(here("results", "roh", "bcftools", "bed", glue("max_{roh_version}"),glue("roh_{prefix[roh_version]}_{sample}_on_{ref}.bed")),
@@ -140,8 +140,6 @@ p3 <- data |>
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank())
 # scale_fill_manual(values = clrs |> clr_alpha() |> set_names(nm = names(clrs)))
-
-
 
 mappable_genome_length <- \(sample, ref, roh_type){
   if(roh_type == "certain"){

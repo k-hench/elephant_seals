@@ -27,6 +27,26 @@ rule he_by_ind:
         --stdout > {output.het}
       """
 
+rule convert_012_by_spec:
+    input:
+      vcf = "../results/genotyping/filtered/mirang_filtered_mirang.vcf.gz",
+      inds = "../results/pop/inds_{spec}.pop"
+    output:
+      g012 = "../results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"
+    container: c_popgen
+    resources:
+      mem_mb=15360
+    shell:
+      """
+      vcftools \
+        --gzvcf {input.vcf} \
+        --keep {input.inds} \
+        --mac 1 \
+        --012 \
+        --recode \
+        --stdout | gzip > {output.g012}
+      """
+
 wildcard_constraints:
     part="[^_]*"
 
