@@ -29,8 +29,7 @@ rule he_by_ind:
 
 rule convert_012_by_spec:
     input:
-      vcf = "../results/genotyping/filtered/mirang_filtered_mirang.vcf.gz",
-      inds = "../results/pop/inds_{spec}.pop"
+      vcf = "../results/genotyping/filtered/mirang_filtered_{spec}.vcf.gz"
     output:
       g012 = "../results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"
     params:
@@ -42,8 +41,6 @@ rule convert_012_by_spec:
       """
       vcftools \
         --gzvcf {input.vcf} \
-        --keep {input.inds} \
-        --mac 1 \
         --012 \
         --out {params.out_prefix}
       
