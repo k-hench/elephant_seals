@@ -10,7 +10,7 @@ rule all_diversity:
 
 rule he_by_ind:
     input:
-      vcf = "../results/genotyping/autosome/mirang_filtered_mirang_autosome.vcf.gz",
+      vcf = "../results/genotyping/autosome/mirang_filtered_{spec}_autosome.vcf.gz",
       inds = "../results/pop/inds_{spec}.pop"
     output:
       het = "../results/het/het_{spec}.tsv"
