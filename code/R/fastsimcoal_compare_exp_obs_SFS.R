@@ -8,7 +8,7 @@ library(ggstance)
 source(here("code/R/project_defaults.R"))
 clr1 <- "red"
 clr2 <- "gray20"
-basepath <- "results/demography/mirang_on_mirang/"
+basepath <- "results/demography/fastsimcoal/mirang_on_mirang/"
 
 import_sfs <- \(type, demtype, prefix){
   if(type == "obs"){
@@ -39,7 +39,7 @@ get_both_sfs <- \(demtype){
 }
 
 get_lhoods <- \(type){
-  read_tsv(here(glue("results/demography/mirang_on_mirang/{type}/bestrun/mirang_on_mirang_{type}.lhoods")),
+  read_tsv(here(glue("results/demography/fastsimcoal/mirang_on_mirang/{type}/bestrun/mirang_on_mirang_{type}.lhoods")),
            col_names = c("blank", "lhood"), col_types = "cd") |> 
     mutate(demtype = type) |> 
     select(lhood, demtype)
@@ -57,8 +57,8 @@ split_str_nth <- \(str, n){
 }
 
 get_model_stats <- \(type){
-  all_stats <- read_tsv(here(str_c("results/demography/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".AIC")))[,2:1] |> 
-    bind_cols(read_tsv(here(str_c("results/demography/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".bestlhoods"))))
+  all_stats <- read_tsv(here(str_c("results/demography/fastsimcoal/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".AIC")))[,2:1] |> 
+    bind_cols(read_tsv(here(str_c("results/demography/fastsimcoal/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".bestlhoods"))))
   all_labs <- str_c(str_c("<span style='color:#666666'>", names(all_stats), ":</span> "),
         round(all_stats[1,], digits = 2), collapse = ",") |> 
     split_str_nth(3) |> 
@@ -103,7 +103,7 @@ data_lhoods <- all_dem_types |>
 
 data_aic <- all_dem_types |>  
   map_dfr(\(type){ 
-  read_tsv(here(str_c("results/demography/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".AIC"))) |> 
+  read_tsv(here(str_c("results/demography/fastsimcoal/mirang_on_mirang/", type, "/bestrun/mirang_on_mirang_", type, ".AIC"))) |> 
     mutate(demtype = type)})
 
 aic_transform <- \(x){  (x * .6e-6) - 5.55 }

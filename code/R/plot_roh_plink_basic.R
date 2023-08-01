@@ -8,6 +8,14 @@ source(here("code/R/project_defaults.R"))
 
 on_x <- read_tsv(here("results/genomes/sex_chrom/mirang_sex_chrom.bed"))
 
+pl_h <- 0
+pl_wh <- 2
+pl_n <- 10
+pl_wn <- 50
+pl_l <- 10
+pl_g <- 1
+
+
 import_genomes <- function(spec){
   read_tsv(here("data", "genomes", "filtered", glue("{spec}_filt.fa.gz.fai")),
            col_names = c("chr", "length", "offset", "linebases", "linewidth")) |> 
@@ -28,7 +36,7 @@ samples <- c("mirang", "mirleo") |>
 genomes <- specs |> map_dfr(import_genomes)
 g_starts <- dplyr::select(genomes, chr, ref = spec, start_pos, eo) 
 
-plink_data <- read_table(here("results/roh/plink/mirang_filtered_all_h0_wh2_n10_wn50_l10_g1/mirang_filtered_all_h0_wh2_n10_wn50_l10_g1.hom")) |> 
+plink_data <- read_table(here(glue("results/roh/plink/mirang_filtered_all_h{pl_h}_wh{pl_wh}_n{pl_n}_wn{pl_wn}_l{pl_l}_g{pl_g}/mirang_filtered_all_h{pl_h}_wh{pl_wh}_n{pl_n}_wn{pl_wn}_l{pl_l}_g{pl_g}.hom"))) |> 
   mutate(CHR = str_remove(SNP1, ":.*"),
          autosome = !(CHR %in% on_x$chr)) |> 
   left_join(g_starts |> filter(ref == "mirang"), by = c(CHR = "chr")) |> 
@@ -96,5 +104,5 @@ p1 + p2 + p3 +
         plot.caption = element_text(),
         plot.subtitle = element_text())
 
-ggsave(here(glue("results/img/roh/mirang_roh_max_{roh_version}_bed.pdf")),
+ggsave(here(glue("results/img/roh/mirang_roh_max_plink_h{pl_h}_wh{pl_wh}_n{pl_n}_wn{pl_wn}_l{pl_l}_g{pl_g}.pdf")),
        width = 16, height = 6, device = cairo_pdf)

@@ -180,7 +180,7 @@ rule likelihood_ditributions_bestrun:
 
 rule bootstrap_prep:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
+      vcf = "../results/genotyping/autosome/{ref}_filtered_{spec}.vcf.gz"
     output:
       head = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.header",
       all_sites = temp( "../results/genotyping/bootstrap/{ref}_filtered_{spec}.allSites" )
@@ -204,8 +204,8 @@ rule bootstrap_vcf:
     output:
       vcf_bs = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
     params:
-      block_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.sites.",
-      vcf_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf"
+      block_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.sites.",
+      vcf_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}_bs_{idx}.vcf"
     container: c_popgen
     shell:
       """
@@ -223,7 +223,7 @@ rule bootstrap_vcf:
 rule bootstrap_sfs:
     input:
       pp = "../results/pop/inds_{spec}.pop2",
-      vcf_bs = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
+      vcf_bs = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
     output:
       sfs_dir = directory( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}" )
     params:

@@ -1,11 +1,12 @@
 """
-snakemake -n -R cactus_stepwise
+snakemake --rerun-triggers mtime -n -R cactus_stepwise
 snakemake --dag -R  cactus_stepwise | dot -Tsvg > ../results/img/control/dag_cactus_step.svg
 snakemake --jobs 3 -R  cactus_stepwise
 
 snakemake --jobs 30 \
   --latency-wait 30 \
   -p \
+  --rerun-triggers mtime \
   --default-resources mem_mb=51200 threads=1 \
   --cluster '
     qsub \

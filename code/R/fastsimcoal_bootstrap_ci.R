@@ -6,7 +6,7 @@ library(boot)
 source(here("code/R/project_defaults.R"))
 clr1 <- "red"
 clr2 <- "gray20"
-basepath <- "results/demography/mirang_on_mirang/"
+basepath <- "results/demography/fastsimcoal/mirang_on_mirang/"
 
 read_bs <- \(type, bs_nr){
   bs_idx <- str_pad(bs_nr, width = 2, pad = 0)
