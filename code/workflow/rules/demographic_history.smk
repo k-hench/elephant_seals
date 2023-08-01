@@ -180,13 +180,13 @@ rule likelihood_ditributions_bestrun:
 
 rule bootstrap_prep:
     input:
-      vcf = "../results/genotyping/autosome/{ref}_filtered_{spec}.vcf.gz"
+      vcf = "../results/genotyping/autosome/{ref}_filtered_{spec}_autosome.vcf.gz"
     output:
-      head = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.header",
-      all_sites = temp( "../results/genotyping/bootstrap/{ref}_filtered_{spec}.allSites" )
+      head = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.header",
+      all_sites = temp( "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.allSites" )
     params:
       n_sites = 11933,
-      block_base = "../results/genotyping/bootstrap/{ref}_filtered_{spec}.sites."
+      block_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.sites."
     shell:
       """
       zgrep -v "^#" {input.vcf} > {output.all_sites}
@@ -200,9 +200,9 @@ rule bootstrap_prep:
 
 rule bootstrap_vcf:
     input:
-      head =  "../results/genotyping/bootstrap/{ref}_filtered_{spec}.header"
+      head =  "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.header"
     output:
-      vcf_bs = "../results/genotyping/bootstrap/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
+      vcf_bs = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}_bs_{idx}.vcf.gz"
     params:
       block_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.sites.",
       vcf_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}_bs_{idx}.vcf"
