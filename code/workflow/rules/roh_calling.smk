@@ -14,7 +14,7 @@ wildcard_constraints:
 rule call_roh:
     input:
       expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES ),
-      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}", file_base = "mirang_filtered_all", het = [0], whet = [2], nsnp = [10], wnsnp = [50], leng = [10], gap = [1] )
+      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = "mirang_filtered_all", het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] )
 
 '''
 rule roh_calling_bcftools:
@@ -91,11 +91,11 @@ rule roh_plink:
       pl_nosex = "../results/genotyping/plink/{file_base}.nosex",
       pl_ped = "../results/genotyping/plink/{file_base}.ped"
     output:
-      plink_dir = directory( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}" )
+      plink_dir = directory( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}" )
     params:
       pl_base = "../results/genotyping/plink/{file_base}",
       out_dir = "../results/roh/plink",
-      out_prefix = "{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_l{leng}_g{gap}"
+      out_prefix = "{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}"
       #            "../results/roh/plink/{file_base}_h0_wh2_n10_wn50_l10_g1"
     resources:
       mem_mb=15360
@@ -110,10 +110,10 @@ rule roh_plink:
         --homozyg-snp {wildcards.nsnp} \
         --homozyg-kb {wildcards.leng} \
         --homozyg-gap {wildcards.gap} \
-        --homozyg-density 1 \
-        --homozyg-window-missing 1 \
-        --homozyg-het {wildcards.whet} \
-        --homozyg-window-het {wildcards.het}
+        --homozyg-density {wildcards.gap} \
+        --homozyg-window-missing {wildcards.wmis} \
+        --homozyg-het {wildcards.het} \
+        --homozyg-window-het {wildcards.whet}
       """
 
 rule roh_calling_bcftools_snps_only:
