@@ -5,7 +5,8 @@ snakemake --rerun-triggers mtime -n all_diversity
 rule all_diversity:
     input: 
       het = expand( "../results/het/het_{spec}.tsv", spec = [ 'mirang', 'mirleo' ]),
-      pi = expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
+      pi_spec = expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
+      pi_pheno = expand( "../results/pi/mirang_pheno_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
       snp_dens = expand( "../results/snp_density/snp_dens_{spec}.tsv.gz", spec = [ 'mirang', 'mirleo' ] )
 
 rule he_by_ind:
@@ -96,6 +97,46 @@ rule pi_and_dxy:
         -w 100000 -s 25000 \
         --popsFile {input.pops} \
         -p mirang \
+        -p mirleo \
+        -g {input.geno} \
+        -o {output.pi_wind} \
+        -f phased \
+        --writeFailedWindows \
+        -T 3
+      """
+
+rule ind_phenotype:
+    input:
+      info = "../data/file_info.tsv"
+    output:
+      pp = "../results/pop/group_pheno_labeled.pop"
+    shell:
+      """
+      cut -f 2,3 {input.info} | \
+        grep -v "sample_id" | \
+        uniq | \
+        sed -e 's/NA/mirleo/; s/\\(Trauma\\|Bacteria\\|Malnutrition\\)/control/; s/W/w/;' > {output.pp}
+      """
+
+rule pi_and_dxy_pheno:
+    input:
+      geno = "../results/genotyping/geno/partitions/mirang_all_bp_{part}.geno.gz",
+      pops = "../results/pop/group_pheno_labeled.pop"
+    output:
+      pi_wind = "../results/pi/mirang_pheno_pi_dxy_{part}.tsv.gz"
+    benchmark:
+      'benchmark/pi/windows_pi_dxy_pheno_{part}.tsv'
+    resources:
+      mem_mb=20480
+    container: c_popgen
+    threads: 3
+    shell:
+      """
+      popgenWindows \
+        -w 100000 -s 25000 \
+        --popsFile {input.pops} \
+        -p control \
+        -p worms \
         -p mirleo \
         -g {input.geno} \
         -o {output.pi_wind} \

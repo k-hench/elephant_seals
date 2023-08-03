@@ -1,6 +1,22 @@
 """
 snakemake --rerun-triggers mtime -n -R call_roh
-# >>> needs to be run on ALL BP
+
+snakemake --jobs 50 \
+  --latency-wait 30 \
+  -p \
+  --default-resources mem_mb=51200 threads=1 \
+  --use-singularity \
+  --singularity-args "--bind $CDATA" \
+  --use-conda \
+  --rerun-triggers mtime \
+  --cluster '
+    sbatch \
+      --export ALL \
+      -n {threads} \
+      -e logs/{name}.{jobid}.err \
+      -o logs/{name}.{jobid}.out \
+      --mem={resources.mem_mb}' \
+      -R call_roh
 """
 
 wildcard_constraints:

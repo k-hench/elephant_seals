@@ -62,8 +62,8 @@ summarise_bs_data <- \(data){
                        list(tibble(mean = mean(x),
                                    median = median(x),
                                    sd = sd(x),
-                                   q90 = str_c(quantile(x, c(.05, .95)), collapse = "_"),
-                                   q95 = str_c(quantile(x, c(.025, .975)), collapse = "_")))
+                                   q90 = str_c(quantile(x, c(.05, .95), na.rm = TRUE), collapse = "_"),
+                                   q95 = str_c(quantile(x, c(.025, .975), na.rm = TRUE), collapse = "_")))
                      })) |> 
     ungroup() |> 
     pivot_longer(everything(), names_to = "stat") |> 
