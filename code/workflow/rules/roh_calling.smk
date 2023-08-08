@@ -30,7 +30,9 @@ wildcard_constraints:
 rule call_roh:
     input:
       expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES ),
-      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = "mirang_filtered_all", het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] )
+      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = "mirang_filtered_all", het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] ),
+      plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = "mirang_filtered_all" ),
+      plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = "mirang_filtered_all" )
 
 '''
 rule roh_calling_bcftools:
@@ -122,6 +124,7 @@ rule roh_plink:
       plink --bfile {params.pl_base} \
         --out {params.out_dir}/{params.out_prefix}/{params.out_prefix} \
         --homozyg \
+        --allow-extra-chr \
         --homozyg-window-snp {wildcards.wnsnp} \
         --homozyg-snp {wildcards.nsnp} \
         --homozyg-kb {wildcards.leng} \
@@ -130,6 +133,61 @@ rule roh_plink:
         --homozyg-window-missing {wildcards.wmis} \
         --homozyg-het {wildcards.het} \
         --homozyg-window-het {wildcards.whet}
+      """
+
+rule roh_plink_defaults:
+    input:
+      pl_bed = "../results/genotyping/plink/{file_base}.bed",
+      pl_bim = "../results/genotyping/plink/{file_base}.bim",
+      pl_fam = "../results/genotyping/plink/{file_base}.fam",
+      pl_map = "../results/genotyping/plink/{file_base}.map",
+      pl_nosex = "../results/genotyping/plink/{file_base}.nosex",
+      pl_ped = "../results/genotyping/plink/{file_base}.ped"
+    output:
+      plink_dir = directory( "../results/roh/plink/{file_base}_defaults" )
+    params:
+      pl_base = "../results/genotyping/plink/{file_base}",
+      out_dir = "../results/roh/plink",
+      out_prefix = "{file_base}_defaults"
+      #            "../results/roh/plink/{file_base}_h0_wh2_n10_wn50_l10_g1"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      mkdir -p {params.out_dir}/{params.out_prefix}
+      plink --bfile {params.pl_base} \
+        --out {params.out_dir}/{params.out_prefix}/{params.out_prefix} \
+        --homozyg \
+        --allow-extra-chr
+      """
+
+rule roh_plink_only_kb:
+    input:
+      pl_bed = "../results/genotyping/plink/{file_base}.bed",
+      pl_bim = "../results/genotyping/plink/{file_base}.bim",
+      pl_fam = "../results/genotyping/plink/{file_base}.fam",
+      pl_map = "../results/genotyping/plink/{file_base}.map",
+      pl_nosex = "../results/genotyping/plink/{file_base}.nosex",
+      pl_ped = "../results/genotyping/plink/{file_base}.ped"
+    output:
+      plink_dir = directory( "../results/roh/plink/{file_base}_only_kb" )
+    params:
+      pl_base = "../results/genotyping/plink/{file_base}",
+      out_dir = "../results/roh/plink",
+      out_prefix = "{file_base}_only_kb"
+      #            "../results/roh/plink/{file_base}_h0_wh2_n10_wn50_l10_g1"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      mkdir -p {params.out_dir}/{params.out_prefix}
+      plink --bfile {params.pl_base} \
+        --out {params.out_dir}/{params.out_prefix}/{params.out_prefix} \
+        --homozyg \
+        --allow-extra-chr \
+        --homozyg-kb 100
       """
 
 rule roh_calling_bcftools_snps_only:

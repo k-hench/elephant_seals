@@ -18,6 +18,24 @@ snakemake --jobs 30 \
       -l vf={resources.mem_mb}' \
   --jn job_c.{name}.{jobid}.sh \
   -R cactus_stepwise && mv job.* logs/
+
+snakemake --jobs 50 \
+  --latency-wait 30 \
+  -p \
+  --default-resources mem_mb=51200 threads=1 \
+  --use-singularity \
+  --singularity-args "--bind $CDATA" \
+  --use-conda \
+  --rerun-triggers mtime \
+  --cluster '
+    sbatch \
+      --export ALL \
+      -n {threads} \
+      -e logs/{name}.{jobid}.err \
+      -o logs/{name}.{jobid}.out \
+      --mem={resources.mem_mb}' \
+      --jn job_c.{name}.{jobid}.sh \
+      -R cactus_stepwise
 """
 localrules: cactus_stepwise, round_completed, cactus_export_hal
 

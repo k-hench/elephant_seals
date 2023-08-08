@@ -11,3 +11,6 @@ clrs <- c("#282828", "#db4a32") |>
 
 clrs_n <- \(n){scales::colour_ramp(colors = clrs)((0:(n-1))/(n-1))}
 plt_lwd <- 0.15
+
+clr_pheno <- RColorBrewer::brewer.pal(3, "Set1") |> 
+  set_names(nm = c("worms", "control", "mirleo"))
