@@ -185,7 +185,9 @@ rule bootstrap_prep:
       head = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.header",
       all_sites = temp( "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.allSites" )
     params:
-      n_sites = 11933,
+      # mirang_filtered_mirang.vcf.gz:          1193224 / 100  
+      # mirang_filtered_mirang_autosome.vcf.gz: 1151260 / 100  
+      n_sites = 11513,
       block_base = "../results/genotyping/bootstrap/autosome/{ref}_filtered_{spec}.sites."
     shell:
       """

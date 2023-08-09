@@ -93,7 +93,7 @@ summarize_plink_run <- \(folder){
 plot_plink_comparison <- \(folder){
   data_plink <- summarize_plink_run(folder)
   plot_ind <- \(focal_ind = "ES2551"){
-    data_bcftools <- read_tsv(here(glue("results/roh/bcftools/bed/max_certain/roh_cert_{focal_ind}_on_mirang.bed")), col_names = c("chr", "start", "end")) |> 
+    data_bcftools <- read_tsv(here(glue("results/roh/bcftools/bed/max_callable/roh_max_{focal_ind}_on_mirang.bed")), col_names = c("chr", "start", "end")) |> 
       left_join(g_starts) |> 
       mutate(gstart = start_pos + start, 
              gend = start_pos + end,
