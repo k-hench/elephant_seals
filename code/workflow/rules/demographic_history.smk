@@ -4,7 +4,7 @@ very much based upon the workshop "speciation genomics"
 by Joana Meier and Mark Ravinet
 https://speciationgenomics.github.io/fastsimcoal2/
 
-snakemake --jobs 100 \
+snakemake --jobs 200 \
   --latency-wait 30 \
   -p \
   --default-resources mem_mb=51200 threads=1 \
@@ -13,15 +13,13 @@ snakemake --jobs 100 \
   --use-conda \
   --rerun-triggers mtime \
   --cluster '
-    qsub \
-      -V -cwd \
-      -P fair_share \
-      -l idle=1 \
-      -l si_flag=1 \
-      -pe multislot {threads} \
-      -l vf={resources.mem_mb}' \
-  --jn job_fs.{name}.{jobid}.sh \
-  -R all_demography
+    sbatch \
+      --export ALL \
+      -n {threads} \
+      -e logs/fs/{name}.{jobid}.err \
+      -o logs/fs/{name}.{jobid}.out \
+      --mem={resources.mem_mb}' \
+      -R all_demography
 """
 
 DEM_TYPES = [ "bot06-lgm", "bot06-nes", "bot10-lgm", "bot10-nes", "null-lgm", "null-nes" ]
@@ -31,7 +29,7 @@ BOOTSTRAP_N = [ str(x + 1).zfill(2) for x in np.arange(50) ]
 rule all_demography:
     input: 
       sfs_prev = expand( "../results/demography/preview/prev_{spec}_on_{ref}.txt" , ref = "mirang", spec = "mirang" ),
-      sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = "mirang" ),
+      sfs_dir = expand( "../results/demography/sfs/{spec}_on_{ref}" , ref = "mirang", spec = [ "mirang", "mirleo" ] ),
       fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES ),
       bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N ),
       bs_best = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}/all_lhoods.tsv", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, idx = BOOTSTRAP_N )

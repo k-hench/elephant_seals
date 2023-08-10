@@ -109,15 +109,15 @@ all_boots <- config_table |>
 all_estimates <- all_dem_types |> 
   map_dfr(get_estimates)
 
-# ci computed by {boot}??
-all_estimates |> 
-  left_join(all_boots |> select(demtype, stat, starts_with("ci_"))) |> 
-  ggplot(aes(y = demtype, color = demtype)) +
-  geom_linerange(aes(xmin = ci_95_l, xmax = ci_95_u), linewidth = .5) +
-  geom_linerange(aes(xmin = ci_90_l, xmax = ci_90_u), linewidth = 1.25) +
-  geom_point(aes(x = estimate, fill = after_scale(clr_lighten(color))),
-             shape = 21, size = 2) +
-  facet_wrap(stat ~ ., scales = "free")
+# # ci computed by {boot}??
+# all_estimates |> 
+#   left_join(all_boots |> select(demtype, stat, starts_with("ci_"))) |> 
+#   ggplot(aes(y = demtype, color = demtype)) +
+#   geom_linerange(aes(xmin = ci_95_l, xmax = ci_95_u), linewidth = .5) +
+#   geom_linerange(aes(xmin = ci_90_l, xmax = ci_90_u), linewidth = 1.25) +
+#   geom_point(aes(x = estimate, fill = after_scale(clr_lighten(color))),
+#              shape = 21, size = 2) +
+#   facet_wrap(stat ~ ., scales = "free")
 
 # (data_boots |> 
 #     filter(demtype == "bot10-nes") |> 
@@ -158,9 +158,9 @@ all_estimates |>
         legend.justification = c(1,0))
 
 ggsave(here("results/img/demography/parameter_ci.pdf"),
-       width = 12, height = 5, device = cairo_pdf)
+       width = 16, height = 5, device = cairo_pdf)
 
-# 
+
 # test <- data_boots |> select(demtype, data_quantiles) |> unnest(data_quantiles)
 # test_q <- "bot06-lgm"
 # test_s <- "NBOT"

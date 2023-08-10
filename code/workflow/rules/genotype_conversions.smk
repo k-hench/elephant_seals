@@ -1,7 +1,7 @@
 """
 *auxillary rules for converions*
 
-snakemake --rerun-triggers mtime  -n ../results/genotyping/filtered/mirang_filtered.ped
+snakemake --rerun-triggers mtime  -n ../results/genotyping/plink/mirang_filtered-mac2.ped
 
 # python dummy wildcards
 wc_dummy = type('MyObject', (object,), {})
@@ -118,6 +118,28 @@ rule vcf_filter_autosome:
       vcftools \
           --gzvcf {input.vcf} \
           --exclude-bed {input.bed} \
+          --recode \
+          --stdout | \
+          bgzip > {output.vcf} 2> {log}
+      
+      tabix -p vcf {output.vcf} &>> {log}
+      """
+
+rule vcf_filter_mac2:
+    input:
+      vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
+    output:
+      vcf = "../results/genotyping/filtered/{file_base}-mac2.vcf.gz"
+    log:
+      "logs/conversion/subset_{file_base}_mac2.log"
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      vcftools \
+          --gzvcf {input.vcf} \
+          --mac 2 \
           --recode \
           --stdout | \
           bgzip > {output.vcf} 2> {log}

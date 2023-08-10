@@ -25,14 +25,15 @@ wildcard_constraints:
     nsnp = "[0-9]*",
     wnsnp = "[0-9]*",
     leng = "[0-9]*",
-    gap = "[0-9]*"
+    gap = "[0-9]*",
+    spec = "[^-]*"
 
 rule call_roh:
     input:
       expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES ),
-      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = "mirang_filtered_all", het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] ),
-      plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = "mirang_filtered_all" ),
-      plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = "mirang_filtered_all" )
+      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"], het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] ),
+      plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] ),
+      plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] )
 
 '''
 rule roh_calling_bcftools:
