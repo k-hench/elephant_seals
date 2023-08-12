@@ -144,7 +144,7 @@ rule bwa_mapping:
     benchmark:
       'benchmark/genotyping/map_{sample_ln}_on_{ref}.tsv'
     resources:
-      mem_mb=15360
+      mem_mb=25600
     threads: 5
     container: c_gatk
     shell:
