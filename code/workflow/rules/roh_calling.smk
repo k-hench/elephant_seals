@@ -30,7 +30,7 @@ wildcard_constraints:
 
 rule call_roh:
     input:
-      expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES ),
+      expand( "../results/roh/bcftools/{rohtype}/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES, rohtype = ["snp_based", "mac2"] ),
       plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"], het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] ),
       plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] ),
       plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] )
@@ -224,14 +224,47 @@ rule roh_calling_bcftools_snps_only:
           -O sz > {output.roh_snps} 2>> {log}
       """
 
+rule roh_calling_bcftools_snps_only_mac2:
+    input:
+      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}-mac2.vcf.gz"
+    output:
+      roh = "../results/roh/bcftools/mac2/{spec}_on_{ref}_roh.tsv.gz",
+      roh_snps  = "../results/roh/bcftools/mac2/{spec}_on_{ref}_roh_snps.tsv.gz"
+    params:
+      samples = lambda wc: expand( "{smp}", smp = SAMPLES_SPEC[wc.spec] )
+    benchmark:
+      "benchmark/roh/bcftools_{spec}_on_{ref}_snp_mac2.tsv"
+    log:
+      "logs/roh/bcftools_{spec}_on_{ref}_snp.log"
+    resources:
+      mem_mb=35840
+    container: c_popgen
+    shell:
+      """
+      SAMPLES=$(echo {params.samples} | sed 's/ /,/g')
+
+      bcftools \
+          roh {input.vcf} \
+          -e - \
+          -s $SAMPLES \
+          -O rz > {output.roh} 2> {log}
+    
+      echo -e "-----------------" >> {log} 
+      bcftools \
+          roh {input.vcf} \
+          -e - \
+          -s $SAMPLES \
+          -O sz > {output.roh_snps} 2>> {log}
+      """
+
 def get_spec_from_sample(smpl):
     return( seq_file_data["spec"][seq_file_data["sample_id"] == smpl].values[0] )
 
 rule roh_to_bed_snps_only:
     input:
-      roh = lambda wc: expand( "../results/roh/bcftools/snp_based/{spec}_on_{{ref}}_roh.tsv.gz", spec = get_spec_from_sample(wc.sample) )
+      roh = lambda wc: expand( "../results/roh/bcftools/{{rohtype}}/{spec}_on_{{ref}}_roh.tsv.gz", spec = get_spec_from_sample(wc.sample) )
     output:
-      bed = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_{ref}.bed"
+      bed = "../results/roh/bcftools/{rohtype}/bed/max_callable/roh_max_{sample}_on_{ref}.bed"
     shell:
       """
       zcat {input.roh} | awk '$2=="{wildcards.sample}"{{print $3"\t"$4-1"\t"$5}}' >> {output.bed};
@@ -239,12 +272,12 @@ rule roh_to_bed_snps_only:
 
 rule roh_max_certain_snps_only:
     input:
-      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_{ref}.bed",
+      roh = "../results/roh/bcftools/{rohtype}/bed/max_callable/roh_max_{sample}_on_{ref}.bed",
       cov_mask = "../results/qc/coverage/masks/{sample}_on_{ref}_binary_covmask.bed.gz"
     output:
-      roh = "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed",
+      roh = "../results/roh/bcftools/{rohtype}/bed/max_certain/roh_cert_{sample}_on_{ref}.bed",
     benchmark:
-      'benchmark/roh/max_certain_roh_snps_{sample}_on_{ref}.tsv'
+      'benchmark/roh/max_certain_roh_snps_{sample}_on_{ref}_{rohtype}.tsv'
     params:
       min_cov = 2
     resources:
