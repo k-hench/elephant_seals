@@ -23,7 +23,7 @@ snakemake --jobs 100 \
 """
 
 rule all_anc_allele:
-    input: ""
+    input: "../results/ancestral_allele/mirang_anc52_snps.tsv.gz"
 
 rule extract_ancestral_hals:
     input:
@@ -66,6 +66,18 @@ rule anc_allele_tsv:
     shell:
       """
       halSnps {input.hal} mirang Anc52 --tsv {output.tsv}
+      """
+
+rule pack_anc_allele_tsv:
+    input:
+      tsv = "../results/ancestral_allele/mirang_anc52_snps.tsv"
+    output:
+      gz = "../results/ancestral_allele/mirang_anc52_snps.tsv.gz"
+    resources:
+      mem_mb=15360
+    shell:
+      """
+      gzip {input.tsv}
       """
 
 rule anc_tree:

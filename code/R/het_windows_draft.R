@@ -13,6 +13,7 @@ import_genomes <- function(spec){
            idx = row_number(),
            end_pos = cumsum(length),
            start_pos = lag(end_pos, default = 0),
+           mid_pos = (end_pos + start_pos)/2,
            eo = idx %% 2)
 }
 
@@ -89,6 +90,8 @@ run_window_het <- \(spec = "mirang", smpl_idx = 01){
   avg_hom
 }
 
+# all_windows <- read_tsv(here(glue("results/het/win_het_ind_all_w{sprintf('%.0fMb', window_width /1e6)}_s{sprintf('%.0fkb', window_step /1e3)}.tsv.gz")))
+
 all_windows <- tibble(spec = rep(c("mirang", "mirleo"), c(20, 10)),
        smpl_idx = c(1:20, 1:10)) |> 
   pmap_dfr(run_window_het)
@@ -105,7 +108,6 @@ all_windows |>
                 ymax = Inf, 
                 fill = as.character(eo)),
             color = "transparent") +
-  geom_hline(yintercept = 0:1, color = rgb(0,0,0,.1), linewidth = .2) +
   geom_line(aes(x = gpos, y = n_snps, group = seqnames, color = spec), linewidth = .25) +
   geom_point(aes(x = gpos, y = n_snps, group = seqnames, color = spec), size = .15, shape = 19, alpha = .2) +
   # scale_y_continuous(breaks = 0:1) +
@@ -114,14 +116,17 @@ all_windows |>
                   # ylim = c(-.1 , 1.1),
                   expand = 0) +
   scale_color_manual(values = clrs, guide = "none") + 
+  scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
+                     sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
   labs(subtitle = glue("snp density (w{sprintf('%.0fMb', window_width /1e6)} s{sprintf('%.0fkb', window_step /1e3)})")) +
   facet_grid(spec ~ ., switch = "y", scales = "free") +
   theme_minimal(base_family = fnt_sel, base_size = 9) +
-  theme(axis.title.y = element_blank(),
+  theme(axis.ticks.x.bottom = element_line(linewidth = .2),
+        axis.title.x = element_blank(),
         axis.ticks.y = element_blank(),
-        # axis.text.y = element_blank(),
         panel.grid = element_blank(),
         strip.placement = "outside",
+        axis.title.y = element_blank(),
         strip.text.y.left = element_text(angle = 0))
 
 ggsave(filename = here(glue("results/img/het/win_n_snps_ind_all_w{sprintf('%.0fMb', window_width /1e6)}_s{sprintf('%.0fkb', window_step /1e3)}.png")),
@@ -141,6 +146,8 @@ all_windows |>
   geom_line(aes(x = gpos, y = avg_hom, group = seqnames, color = spec), linewidth = .25)  +
   geom_point(aes(x = gpos, y = avg_hom, group = seqnames, color = spec), size = .15, shape = 19, alpha = .2) +
   scale_y_continuous(breaks = 0:1) +
+  scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
+                     sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
   scale_fill_manual(values = c(`0` = rgb(0,0,0,.1), `1` = rgb(0,0,0,0)), guide = 'none') + 
   coord_cartesian(xlim = c(0, max(genome_tib$end_pos)),
                   ylim = c(-.1 , 1.1), expand = 0) +
@@ -148,14 +155,15 @@ all_windows |>
   # labs(subtitle = glue("{inds[smpl_idx]} ({spec})")) +
   facet_grid(ind ~ ., switch = "y") +
   theme_minimal(base_family = fnt_sel, base_size = 9) +
-  theme(axis.title.y = element_blank(),
+  theme(axis.ticks.x.bottom = element_line(linewidth = .2),
+        axis.title.x = element_blank(),
         axis.ticks.y = element_blank(),
-        # axis.text.y = element_blank(),
         panel.grid = element_blank(),
         strip.placement = "outside",
+        axis.title.y = element_blank(),
         strip.text.y.left = element_text(angle = 0))
 
-ggsave(filename = here(glue("results/img/het/win_het_ind_all_w{sprintf('%.0fMb', window_width /1e6)}_s{sprintf('%.0fkb', window_step /1e3)}.png")),
+ggsave(filename = here(glue("results/img/het/win_hom_ind_all_w{sprintf('%.0fMb', window_width /1e6)}_s{sprintf('%.0fkb', window_step /1e3)}.png")),
        # plot = p,
        width = 10, height = 15, bg = "white")
 

@@ -6,8 +6,10 @@ library(glue)
 library(patchwork)
 library(ggstance)
 source(here("code/R/project_defaults.R"))
-clr1 <- "red"
-clr2 <- "gray20"
+
+c_select <- rcartocolor::carto_pal(12, "Prism") |>  color()
+clr_sfs <- c_select[c(1, 4, 2, 8, 9)] |>  set_names(nm = c("whg", "RAD", "RAD_binned", "leo", "whg_binned"))
+
 basepath <- "results/demography/mirang_on_mirang/"
 
 import_sfs <- \(type, demtype, prefix){
@@ -136,7 +138,7 @@ ggplot(mapping = aes(x = allele_freq - bin_width)) +
   geom_step(data = data_rad_binned, aes(y = snp_freq * 4e2, color = "RAD_binned")) +
   coord_cartesian(ylim = c(0,.3)) +
   scale_color_manual("SFS type",
-                     values = c(RAD = clrs[["mirleo"]], RAD_binned = clr_darken(clrs[["mirleo"]],.3), whg = "black", leo = "darkgreen")) +
+                     values = clr_sfs) +
   theme_minimal(base_family = fnt_sel) +
   theme(legend.position = c(1,1),
         legend.justification = c(1,1))
@@ -149,7 +151,7 @@ ggplot(mapping = aes(x = allele_freq - bin_width)) +
   # coord_cartesian(ylim = c(0,1e5)) +
   facet_grid(sfs_type ~ ., scales = "free_y") +
   scale_color_manual("SFS type",
-                     values = c(RAD = clrs[["mirleo"]], RAD_binned = clr_darken(clrs[["mirleo"]],.3), whg = "black", leo = "darkgreen")) +
+                     values = clr_sfs) +
   theme_minimal(base_family = fnt_sel) +
   theme(legend.position = c(1,1),
         legend.justification = c(1,1))
@@ -158,16 +160,17 @@ ggsave(filename = here("~/Dropbox/David/elephant_seals/img/demography/compare_ra
        width = 6, height = 3.5, device = cairo_pdf)
 
 ggplot(mapping = aes(x = allele_freq - bin_width)) +
-  geom_step(data = data_whg_binned_20, aes(y = snp_freq, color = "whg")) +
+  geom_step(data = data_whg_binned_20, aes(y = snp_freq, color = "whg_binned")) +
+  geom_step(data = data_whg, aes(y = snp_freq, color = "whg")) +
   geom_step(data = data_leo, aes(y = snp_freq, color = "leo")) +
   geom_step(data = data_rad_binned_20, aes(y = snp_freq, color = "RAD_binned")) +
   geom_step(data = data_rad, aes(y = snp_freq, color = "RAD")) +
   coord_cartesian(ylim = c(0,1)) +
+  facet_grid(sfs_type ~ ., scales = "free_y") +
   scale_color_manual("SFS type",
-                     values = c(RAD = clrs[["mirleo"]], RAD_binned = clr_darken(clrs[["mirleo"]],.3), whg = "black", leo = "darkgreen")) +
+                     values = clr_sfs) +
   theme_minimal(base_family = fnt_sel) +
-  theme(legend.position = c(1,1),
-        legend.justification = c(1,1))
+  theme(legend.position = "bottom")
 
 ggsave(filename = "~/Dropbox/David/elephant_seals/img/demography/compare_rad_whg_leo_SFS_binned_only.pdf",
-       width = 6, height = 3.5, device = cairo_pdf)
+       width = 6, height = 5, device = cairo_pdf)
