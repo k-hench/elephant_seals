@@ -13,10 +13,10 @@ data_joined <- left_join(data_snps,
                          by = c(`#CHROM` = "refSequence", POS = "POS")) |> 
   filter(complete.cases(refPosition))   # cases where mirang and anc are identical don't need updating
 
-# allele complement assignement (and switch to upper case)
+# allele complement assignment (and switch to upper case)
 compl <- c(a = "T", A = "T", c = "G", C = "G", g = "C", G = "C", t = "A", T = "A")
 
-# check if the orgiginal or its complementary allele is needed, based on REF:
+# check if the original or its complementary allele is needed, based on REF:
 # -> adjust Anc accordingly, THEN check if Anc == ALT or Anc %in% ALT...
 data_check_anc <- data_joined |> 
   mutate(across(c(REF, ALT, mirang, Anc52), str_to_upper)) |> 
@@ -44,7 +44,8 @@ tibble( type = c("div Anc / total SNPs", "miss Anc / div Anc", "miss Anc / total
         `n (10^6)` = str_c(sprintf("%.2f", c(nrow(data_check_anc), n_alt_non_match, n_alt_non_match)* 1e-6), 
                   "/",
                   sprintf("%.2f", c( nrow(data_snps), nrow(data_check_anc), nrow(data_snps)) * 1e-6))) |> 
-  knitr::kable(format = "latex")
+  knitr::kable(format = "latex") |> 
+  write_lines(here("results/tab/ancestral_allele_mismatches.tex"))
 
 # assign new ref (available ancestral allele) for vcf updating
 data_new_ref <- data_snps |> 
@@ -54,8 +55,7 @@ data_new_ref <- data_snps |>
               select(`#CHROM`, POS, new_ref = anc_corrected),
             by = c("#CHROM", "POS")) |> 
   # if allele is not diverging in Anc, keep REF
-  mutate(new_ref = if_else(is.na(new_ref), REF, new_ref)) |> 
-  write_lines(here("results/tab/ancestral_allele_mismatches.tex"))
+  mutate(new_ref = if_else(is.na(new_ref), REF, new_ref))
 
 data_new_ref |> 
   write_tsv(here("results/ancestral_allele/new_ref_assignment.tsv.gz"))
