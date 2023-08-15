@@ -157,6 +157,10 @@ all_estimates |>
         legend.position = c(1,0),
         legend.justification = c(1,0))
 
+all_estimates |> 
+  left_join(data_boots |> select(demtype, data_quantiles) |> unnest(data_quantiles)) |> 
+  write_tsv("~/Dropbox/David/elephant_seals/data/mirang_fastsimcoal_estimates.tsv")
+
 ggsave(here("results/img/demography/parameter_ci.pdf"),
        width = 16, height = 5, device = cairo_pdf)
 
@@ -176,3 +180,44 @@ ggsave(here("results/img/demography/parameter_ci.pdf"),
 #   geom_jitter(aes(y = -2e-5), size = .5, color = clr_alpha("red"),width = .5, height = .01) +
 #   geom_point(data = all_estimates |> filter(stat == test_s, demtype == test_q),
 #              aes(y = 0, x = estimate), size = 3, shape = 1, color = "red")
+
+# ================
+#  comparison rad
+# ================
+
+estimates_rad <- tribble(
+  ~stat,	~Estimate,	~lowerCI, ~upperCI,
+  "NGM",	266.5,	226.5,	1721.5,
+  "T1",	1222,	350,	1570,
+  "NANC",	12855.5,	2827.5,	20274.5,
+  "NBOT",	5.5,	5,	7.5,
+  "NCUR",	2624,	2506.5,	2773 ) |> 
+  mutate(demtype = "RAD")
+
+all_estimates |> 
+  left_join(data_boots |> select(demtype, data_quantiles) |> unnest(data_quantiles)) |> 
+  mutate(across(c(estimate, mean:ci_95_u), ~ if_else(grepl("N", stat), .x / 2, .x) )) |> 
+  ggplot(aes(y = demtype, color = demtype)) +
+  geom_linerange(aes(xmin = ci_95_l, xmax = ci_95_u), linewidth = .5) +
+  geom_linerange(aes(xmin = ci_90_l, xmax = ci_90_u), linewidth = 1.25) +
+  geom_linerange(data = estimates_rad, aes(xmin = lowerCI, xmax = upperCI), linewidth = .5) +
+  geom_point(data = estimates_rad, aes(x = Estimate, fill = after_scale(clr_lighten(color))),
+             shape = 21, size = 2) +
+  # geom_linerange(aes(xmin = ci_95_l, xmax = ci_95_u), linewidth = .5) +
+  # geom_linerange(aes(xmin = mean - sd, xmax = mean + sd), linewidth = 1.25) +
+  geom_point(aes(x = estimate, fill = after_scale(clr_lighten(color))),
+             shape = 21, size = 2) +
+  guides(color = guide_legend(ncol = 3)) +
+  facet_wrap(stat ~ ., scales = "free") +
+  theme_linedraw(base_family = fnt_sel) +
+  theme(strip.background = element_rect(fill = clr_ano, color = clr_ano),
+        panel.background = element_rect(fill = "transparent", color = clr_ano),
+        panel.grid = element_line(color = clr_ano, linetype = 3, linewidth = .5),
+        panel.border = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = c(1,0),
+        legend.justification = c(1,0))
+
+ggsave(here("results/img/demography/parameter_ci_with_RAD.pdf"),
+       width = 16, height = 5, device = cairo_pdf)
+

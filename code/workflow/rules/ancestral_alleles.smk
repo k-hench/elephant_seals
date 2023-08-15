@@ -23,7 +23,7 @@ snakemake --jobs 100 \
 """
 
 rule all_anc_allele:
-    input: "../results/ancestral_allele/mirang_anc52_snps.tsv.gz"
+    input: "../results/ancestral_allele/new_ref_assignment.tsv.gz"
 
 rule extract_ancestral_hals:
     input:
@@ -89,4 +89,19 @@ rule anc_tree:
     shell:
       """
       halStats {input.hal} --tree  > {output.nwk}
+      """
+
+rule determine_anc_ref:
+    input:
+      tsv = "../results/ancestral_allele/mirang_anc52_snps.tsv.gz",
+      vcf = "../results/genotyping/filtered/mirang_filtered.vcf.gz"
+    output:
+      snps_tsv = "../results/ancestral_allele/snps_vcf.tsv.gz",
+      anc_tsv = "../results/ancestral_allele/new_ref_assignment.tsv.gz",
+      tex_miss = "../results/tab/ancestral_allele_mismatches.tex"
+    conda: "r_tidy"
+    shell:
+      """
+      zgrep -v "^##" {input.vcf} | cut -f 1,2,4,5 | gzip > {output.snps_tsv}
+      Rscript --vanilla R/ancient_alleles_assignment.R 2> {log} 1> {log}
       """

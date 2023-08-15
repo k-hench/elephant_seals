@@ -140,7 +140,6 @@ p <- p1 + p2 +
         panel.grid = element_blank(),
         panel.background = element_rect(linewidth = .3, color = "gray50"))
 
-
 ggsave(filename = here("results/img/demography/compare_exp_obs_SFS.pdf"),
        plot = p, width = 18, height = 9, device = cairo_pdf)
 
