@@ -107,6 +107,8 @@ rule determine_anc_ref:
     output:
       anc_tsv = "../results/ancestral_allele/new_ref_assignment.tsv.gz",
       tex_miss = "../results/tab/ancestral_allele_mismatches.tex"
+    log:
+      "logs/r_ancestral_ref_proposal.log"
     conda: "r_tidy"
     shell:
       """
