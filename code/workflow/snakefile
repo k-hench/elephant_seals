@@ -58,6 +58,7 @@ c_popgen = config[ 'sif_popgen' ]
 c_sim = config[ 'sif_sim' ]
 c_ml = config[ 'sif_ml' ]
 c_cactus = config[ 'cactus_sif' ]
+c_jvar = config[ 'sif_jvar' ]
 
 P_NAME = config[ 'alignment_name' ]
 SPEC_REF = config[ 'refName' ]

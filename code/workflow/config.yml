@@ -79,7 +79,8 @@ species:
 speciesTree: "((((((((pumcon,pumyag),acijub),(lynruf,(lyncan,lynpar))),((((priiri,priben),priviv),carcar),(felnig,(felcat,felcha)))),leogeo),(pantig,(((panleo,panpar),panonc),panunc))),(parher,((cryfer,((munmun,helpar),sursur)),(hyahya,crocro)))),((((canlup,lycpic),(chrbra,speven)),(nycpro,((vulvul,vulfer),vullag))),(((((taxtax,(((((((lutlut,enhlut),loncan),ptebra),((musniv,(musput,musnig)),muserm)),(eirbar,marzib)),melmel),melcap)),(potfla,prolot)),spigra),((odoros,(calurs,(arcgaz,(eumjub,zalcal)))),(((lepwed,(mirleo,mirang)),neosch),(phovit,halgry)))),(ailmel,(treorn,((ursame,ursthi),(ursmar,ursarc)))))));"
 
 # technical parameters
-# cactus_sif: 'docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1'
+# cactus_sif:
+# apptainer pull docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1
 cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
 cactus_cores: "8"
 
@@ -89,8 +90,15 @@ need_masking:
 #  - name2
 
 # local paths to stored sif files for offline usage:
+# apptainer pull docker://khench/genotyping_suite:v0.3
 sif_gatk: '$CDATA/apptainer_local/genotyping_suite_v0.3.sif'
+# apptainer pull docker://khench/qc_suite:v0.3
 sif_qc: '$CDATA/apptainer_local/qc_suite_v0.3.sif'
+# apptainer pull docker://khench/popgen_suite:v0.2
 sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.2.sif'
+# apptainer pull docker://khench/popsim_suite:v0.2
 sif_sim: '$CDATA/apptainer_local/popsim_suite_v0.2.sif'
+# apptainer pull docker://khench/re_load:v0.1
 sif_ml: '$CDATA/apptainer_local/re_load_v0.1.sif'
+# apptainer pull docker://lindenb/jvarkit:1b2aedf24
+sif_jvar: '$CDATA/apptainer_local/jvarkit_1b2aedf24.sif'

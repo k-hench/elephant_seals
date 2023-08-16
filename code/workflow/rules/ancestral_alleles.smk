@@ -23,7 +23,7 @@ snakemake --jobs 100 \
 """
 
 rule all_anc_allele:
-    input: "../results/ancestral_allele/new_ref_assignment.tsv.gz"
+    input: "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
 
 rule extract_ancestral_hals:
     input:
@@ -100,12 +100,14 @@ rule snp_pos_and_alleles:
       """
       zgrep -v "^##" {input.vcf} | cut -f 1,2,4,5 | gzip > {output.snps_tsv}
       """
+
 rule determine_anc_ref:
     input:
       tsv = "../results/ancestral_allele/mirang_anc52_snps.tsv.gz",
       snps_tsv = "../results/ancestral_allele/snps_vcf.tsv.gz"
     output:
-      anc_tsv = "../results/ancestral_allele/new_ref_assignment.tsv.gz",
+      anc_tsv = "../results/ancestral_allele/anc_allele_assignment.tsv.gz",
+      anc_bed = "../results/ancestral_allele/anc_allele_assignment.bed",
       tex_miss = "../results/tab/ancestral_allele_mismatches.tex"
     log:
       "logs/r_ancestral_ref_proposal.log"
@@ -114,3 +116,46 @@ rule determine_anc_ref:
       """
       Rscript --vanilla R/ancient_alleles_assignment.R 2> {log} 1> {log}
       """
+
+rule pack_aa_bed:
+    input:
+      bed = "../results/ancestral_allele/anc_allele_assignment.bed"
+    output:
+      gzbed = "../results/ancestral_allele/anc_allele_assignment.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      bgzip {input.bed}
+      tabix -s 1 -b 2 -e 3 {output.gzbed}
+      """
+
+rule annotate_vcf:
+  input:
+    vcf = "../results/genotyping/annotated/mirang_filtered_ann.vcf.gz",
+    bed = "../results/ancestral_allele/anc_allele_assignment.bed.gz"
+  output:
+    vcf = temp( "../results/ancestral_allele/mirang_filtered_ann_aa.vcf" )
+  conda: "popgen_basics"
+  shell:
+    """
+    zcat {input.vcf} | \
+      vcf-annotate -a {input.bed} \
+        -d key=INFO,ID=AA,Number=1,Type=String,Description='Ancestral Allele' \
+        -c CHROM,FROM,TO,INFO/AA > {output.vcf}
+    """
+
+rule convert_vcf_alleles:
+  input:
+    vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf"
+  output:
+    gzvcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
+  resources:
+      mem_mb=25600
+  container: c_jvar
+  shell:
+    """
+    java -jar /opt/jvarkit/dist/jvarkit.jar \
+      vcffilterjdk \
+      -f script.js {input.vcf} | \
+      bgzip > {output.gzvcf}
+    """

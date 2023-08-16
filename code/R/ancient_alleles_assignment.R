@@ -52,10 +52,14 @@ data_new_ref <- data_snps |>
   left_join(data_check_anc |> 
               # remove diverging alleles that are not in the population
               filter(anc_in_alt) |>  
-              select(`#CHROM`, POS, new_ref = anc_corrected),
+              select(`#CHROM`, POS, AA = anc_corrected),
             by = c("#CHROM", "POS")) |> 
   # if allele is not diverging in Anc, keep REF
-  mutate(new_ref = if_else(is.na(new_ref), REF, new_ref))
+  mutate(AA = if_else(is.na(AA), REF, AA))
 
 data_new_ref |> 
-  write_tsv(here("results/ancestral_allele/new_ref_assignment.tsv.gz"))
+  write_tsv(here("results/ancestral_allele/anc_allele_assignment.tsv.gz"))
+
+data_new_ref |> 
+  select(`#CHROM`, FROM = POS, TO = POS, AA = anc_corrected) |>
+  write_tsv(here("results/ancestral_allele/anc_allele_assignment.bed"))
