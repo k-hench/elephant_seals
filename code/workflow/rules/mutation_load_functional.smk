@@ -177,3 +177,6 @@ rule bgzip_vcf:
       bgzip {input.vcf}
       tabix -p vcf {output.vcf}
       """
+
+# at this point, the alleles need to be swapped to ancestral alleles
+# within ancestral_alleles.smk

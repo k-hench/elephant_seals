@@ -61,5 +61,5 @@ data_new_ref |>
   write_tsv(here("results/ancestral_allele/anc_allele_assignment.tsv.gz"))
 
 data_new_ref |> 
-  select(`#CHROM`, FROM = POS, TO = POS, AA = anc_corrected) |>
+  select(`#CHROM`, FROM = POS, TO = POS, AA) |>
   write_tsv(here("results/ancestral_allele/anc_allele_assignment.bed"))
