@@ -156,6 +156,6 @@ rule convert_vcf_alleles:
     """
     java -jar /opt/jvarkit/dist/jvarkit.jar \
       vcffilterjdk \
-      -f code/js/script.js {input.vcf} | \
+      -f js/script.js {input.vcf} | \
       bgzip > {output.gzvcf}
     """
