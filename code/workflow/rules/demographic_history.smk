@@ -24,7 +24,7 @@ snakemake --jobs 200 \
 
 DEM_TYPES = [ "bot06-lgm", "bot06-nes", "bot10-lgm", "bot10-nes", "null-lgm", "null-nes" ]
 DEM_N = [ str(x + 1).zfill(3) for x in np.arange(100) ]
-BOOTSTRAP_N = [ str(x + 1).zfill(2) for x in np.arange(50) ]
+BOOTSTRAP_N = [ str(x).zfill(2) for x in np.arange(100) ]
 
 rule all_demography:
     input: 
