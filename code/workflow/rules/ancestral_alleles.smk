@@ -23,7 +23,9 @@ snakemake --jobs 100 \
 """
 
 rule all_anc_allele:
-    input: "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
+    input: 
+      vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
+      snp_tally = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv"
 
 rule extract_ancestral_hals:
     input:
@@ -182,3 +184,44 @@ rule vcf_aa_subset_species:
       
       tabix -p vcf {output.vcf}
       """
+
+rule snp_tables:
+    input:
+      vcf_all = "../results/genotyping/filtered/mirang_filtered.vcf.gz",
+      vcf_mirang = "../results/genotyping/filtered/mirang_filtered_mirang.vcf.gz",
+      vcf_mirleo = "../results/genotyping/filtered/mirang_filtered_mirleo.vcf.gz",
+      vcf_load = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
+    output:
+      tsv_all =    "../results/mutation_load/snp_eff/snp_tally/all.tsv.gz",
+      tsv_mirang = "../results/mutation_load/snp_eff/snp_tally/mirang.tsv.gz",
+      tsv_mirleo = "../results/mutation_load/snp_eff/snp_tally/mirleo.tsv.gz",
+      tsv_load =  "../results/mutation_load/snp_eff/snp_tally/load.tsv.gz"
+    resources:
+      mem_mb=15360
+    container: c_ml
+    shell:
+      """
+      zgrep -v "^##" {input.vcf_all} | cut -f 1,2 | gzip > {output.tsv_all}
+      zgrep -v "^##" {input.vcf_mirang} | cut -f 1,2 | gzip > {output.tsv_mirang}
+      zgrep -v "^##" {input.vcf_mirleo} | cut -f 1,2 | gzip > {output.tsv_mirleo}
+
+      zcat {input.vcf_load} | \
+        SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
+        grep -v "^##" | \
+        cut -f 1,2 | gzip > {output.tsv_load}
+      """
+
+rule tally_load_snps:
+    input:
+      tsv_all =    "../results/mutation_load/snp_eff/snp_tally/all.tsv.gz",
+      tsv_mirang = "../results/mutation_load/snp_eff/snp_tally/mirang.tsv.gz",
+      tsv_mirleo = "../results/mutation_load/snp_eff/snp_tally/mirleo.tsv.gz",
+      tsv_load =  "../results/mutation_load/snp_eff/snp_tally/load.tsv.gz"
+    output:
+      tsv = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv"
+    conda: "r_tidy"
+    shell:
+      """
+      Rscript --vanilla R/load_tally.R
+      """
+      
