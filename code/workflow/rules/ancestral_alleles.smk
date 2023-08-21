@@ -174,13 +174,11 @@ rule vcf_aa_subset_species:
     container: c_popgen
     shell:
       """
-      vcftools \
-          --gzvcf {input.vcf} \
-          --keep {input.inds} \
-          --mac 1 \
-          --recode \
-          --stdout | \
-          bgzip > {output.vcf}
+      bcftools view \
+        --samples-file {input.inds} \
+        -Ov {input.vcf} \
+        --min-ac 0:minor | \
+        bgzip > {output.vcf}
       
       tabix -p vcf {output.vcf}
       """
