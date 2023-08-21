@@ -200,7 +200,8 @@ rule filter_load:
 
 rule masked_load:
     input: 
-      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) )
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
+      inds = lambda wc: expand( "../results/pop/inds_{spec}.pop", spec = get_spec_from_sample(wc.sample) )
     output:
       bed = "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz"
     resources:
@@ -208,9 +209,10 @@ rule masked_load:
     container: c_ml
     shell:
       """
+      SAMPLE_IDX=$(awk '{{if($1=={wildcards.sample}){{print NR - 1}} }}' {input.inds})
       # heterozygous (masked load)
       zcat {input.vcf} | \
-        SnpSift filter "( isHet(GEN[{wildcards.sample}].GT) )" | \
+        SnpSift filter "( isHet(GEN[${{SAMPLE_IDX}}].GT) )" | \
         grep -v "^##" | \
         awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
         sed 's/POS\tPOS/FROM\tTO/' | \
@@ -219,7 +221,8 @@ rule masked_load:
 
 rule expressed_load:
     input: 
-      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) )
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
+      inds = lambda wc: expand( "../results/pop/inds_{spec}.pop", spec = get_spec_from_sample(wc.sample) )
     output:
       bed = "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz"
     resources:
@@ -227,11 +230,12 @@ rule expressed_load:
     container: c_ml
     shell:
       """
+      SAMPLE_IDX=$(awk '{{if($1=={wildcards.sample}){{print NR - 1}} }}' {input.inds})
       # homozygous for affected allele (expressed load)
       # REF is affected allele
-      EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[{wildcards.sample}].GT)) )"
+      EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[${{SAMPLE_IDX}}].GT)) )"
       # ALT is affected allele
-      EXPR_LOAD_ALT="( ( ! (ANN[*].ALLELE = REF)) & ((isVariant(GEN[{wildcards.sample}].GT) & (isHom(GEN[{wildcards.sample}].GT))) ))"
+      EXPR_LOAD_ALT="( ( ! (ANN[*].ALLELE = REF)) & ((isVariant(GEN[${{SAMPLE_IDX}}].GT) & (isHom(GEN[${{SAMPLE_IDX}}].GT))) ))"
       zcat {input.vcf} | \
         SnpSift filter "( ${{EXPR_LOAD_REF}} | ${{EXPR_LOAD_ALT}} )" | \
         grep -v "^##" | \
