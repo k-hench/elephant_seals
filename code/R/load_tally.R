@@ -26,6 +26,9 @@ import_tsv <- \(base){
     select(-c(chr:gstart))
 }
 
+# create master-table
+# (classifying all SNPs with respect to variance within populations
+#  and load status)
 data_all <- import_tsv("all") |> 
   left_join(import_tsv("mirang"))|> 
   left_join(import_tsv("mirleo"))|> 
@@ -38,6 +41,7 @@ data_all <- import_tsv("all") |>
            !mirang & mirleo ~ "leo_only",
            !mirang & !mirleo ~ "neither"))
 
+# summaise master-table and export
 data_all |> 
   group_by(variable_in, load) |> 
   count() |> 
@@ -53,3 +57,7 @@ data_all |>
   arrange(variable_in) |> 
   as_tibble() |> 
   write_tsv(here("results", "mutation_load", "snp_eff", "snp_tally","n_snp_load_in_pop.tsv"))
+
+# export master-table
+data_all|>
+  write_tsv(here("results", "mutation_load", "snp_eff", "snp_tally","snp_load_pop_details.tsv.gz"))

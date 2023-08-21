@@ -25,7 +25,8 @@ snakemake --jobs 100 \
 rule all_anc_allele:
     input: 
       vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
-      snp_tally = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv"
+      snp_tally = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv",
+      snp_details = "../results/mutation_load/snp_eff/snp_tally/snp_load_pop_details.tsv.gz"
 
 rule extract_ancestral_hals:
     input:
@@ -216,7 +217,8 @@ rule tally_load_snps:
       tsv_mirleo = "../results/mutation_load/snp_eff/snp_tally/mirleo.tsv.gz",
       tsv_load =  "../results/mutation_load/snp_eff/snp_tally/load.tsv.gz"
     output:
-      tsv = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv"
+      tsv = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv",
+      gztsv = "../results/mutation_load/snp_eff/snp_tally/snp_load_pop_details.tsv.gz"
     conda: "r_tidy"
     shell:
       """
