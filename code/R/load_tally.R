@@ -20,6 +20,13 @@ genome <- import_genomes("mirang") |>
 import_tsv <- \(base){
   read_tsv(here("results", "mutation_load", "snp_eff", "snp_tally", glue("{base}.tsv.gz"))) |> 
     left_join(genome) |> 
+    mutate(gpos = gstart + POS) |> 
+    set_names(nm = c("chr", "pos", "gstart", "gpos"))
+}
+
+import_tsv_alt <- \(base){
+  read_tsv(here("results", "mutation_load", "snp_eff", "snp_tally", glue("{base}.tsv.gz"))) |> 
+    left_join(genome) |> 
     mutate(gpos = gstart + POS,
            new_col = TRUE) |> 
     set_names(nm = c("chr", "pos", "gstart", "gpos", base)) |> 
@@ -30,9 +37,9 @@ import_tsv <- \(base){
 # (classifying all SNPs with respect to variance within populations
 #  and load status)
 data_all <- import_tsv("all") |> 
-  left_join(import_tsv("mirang"))|> 
-  left_join(import_tsv("mirleo"))|> 
-  left_join(import_tsv("load")) |> 
+  left_join(import_tsv_alt("mirang"))|> 
+  left_join(import_tsv_alt("mirleo"))|> 
+  left_join(import_tsv_alt("load")) |> 
   mutate(across(mirang:load, \(x){replace_na(x, FALSE)}),
          both = mirang & mirleo,
          variable_in = case_when(
