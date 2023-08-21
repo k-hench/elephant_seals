@@ -30,7 +30,7 @@ rule all_ml_snpeff:
       vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" ),
       maked_load = expand( "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz", sample = SAMPLES ),
       expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES ),
-      load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed"] )
+      load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed", "fixed"] )
 
 rule download_gtf:
     output:
@@ -199,6 +199,24 @@ rule filter_load:
         bgzip > {output.vcf}
       """
 
+rule filter_fixed_load:
+    input:
+      vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
+      bed = "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz"
+    output:
+      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      bcftools view \
+        -Ov {input.vcf} \
+        --regions-file {input.bed} | \
+        SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
+        bgzip > {output.vcf}
+      """
+
 rule masked_load:
     input: 
       vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
@@ -245,6 +263,31 @@ rule expressed_load:
         gzip > {output.bed}
       """
 
+rule fixed_load:
+    input: 
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
+      inds = "../results/pop/inds_all.pop"
+    output:
+      bed = "../results/mutation_load/snp_eff/by_ind/fixed/{sample}_fixed.bed.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
+      # homozygous for affected allele
+      # REF is affected allele
+      EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[${{SAMPLE_IDX}}].GT)) )"
+      # ALT is affected allele
+      EXPR_LOAD_ALT="( ( ! (ANN[*].ALLELE = REF)) & ((isVariant(GEN[${{SAMPLE_IDX}}].GT) & (isHom(GEN[${{SAMPLE_IDX}}].GT))) ))"
+      zcat {input.vcf} | \
+        SnpSift filter "( ${{EXPR_LOAD_REF}} | ${{EXPR_LOAD_ALT}} )" | \
+        grep -v "^##" | \
+        awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
+        sed 's/POS\tPOS/FROM\tTO/' | \
+        gzip > {output.bed}
+      """
+
 # logically, THIS SHOULD be NULL
 rule masked_in_roh:
     input:
@@ -268,4 +311,16 @@ rule expressed_in_roh:
     shell:
       """
       intersectBed -a {input.roh} -b {input.expressed_load} > {output.expressed_in_roh}
+      """
+
+rule fixed_in_roh:
+    input:
+      fixed_load = "../results/mutation_load/snp_eff/by_ind/fixed/{sample}_fixed.bed.gz",
+      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_mirang.bed"
+    output:
+      fixed_in_roh = "../results/mutation_load/snp_eff/by_ind/fixed_in_roh/{sample}_fixed_in_roh.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      intersectBed -a {input.roh} -b {input.fixed_load} > {output.fixed_in_roh}
       """
