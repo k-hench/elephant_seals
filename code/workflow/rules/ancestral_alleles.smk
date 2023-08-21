@@ -189,7 +189,7 @@ rule vcf_aa_subset_species:
       bcftools view \
         --samples-file {input.inds} \
         -Ov {input.vcf} \
-        --min-ac 0:minor | \
+        --min-ac 1:minor | \
         bgzip > {output.vcf}
       
       tabix -p vcf {output.vcf}
