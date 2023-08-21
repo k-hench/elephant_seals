@@ -1,6 +1,4 @@
 library(tidyverse)
-library(prismatic)
-library(patchwork)
 library(glue)
 library(here)
 
@@ -66,5 +64,5 @@ data_all |>
   write_tsv(here("results", "mutation_load", "snp_eff", "snp_tally","n_snp_load_in_pop.tsv"))
 
 # export master-table
-data_all|>
+data_all |>
   write_tsv(here("results", "mutation_load", "snp_eff", "snp_tally","snp_load_pop_details.tsv.gz"))
