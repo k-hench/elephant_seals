@@ -98,7 +98,7 @@ sif_qc: '$CDATA/apptainer_local/qc_suite_v0.3.sif'
 sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.2.sif'
 # apptainer pull docker://khench/popsim_suite:v0.2
 sif_sim: '$CDATA/apptainer_local/popsim_suite_v0.2.sif'
-# apptainer pull docker://khench/re_load:v0.1
-sif_ml: '$CDATA/apptainer_local/re_load_v0.1.sif'
+# apptainer pull docker://khench/re_load:v0.2
+sif_ml: '$CDATA/apptainer_local/re_load_v0.2.sif'
 # apptainer pull docker://lindenb/jvarkit:1b2aedf24
 sif_jvar: '$CDATA/apptainer_local/jvarkit_1b2aedf24.sif'
