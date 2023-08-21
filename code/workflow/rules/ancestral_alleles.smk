@@ -159,3 +159,26 @@ rule convert_vcf_alleles:
       -f js/script.js {input.vcf} | \
       bgzip > {output.gzvcf}
     """
+
+# to differentiate between expressed load and fixed load
+rule vcf_aa_subset_species:
+    input:
+      vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
+      inds = "../results/pop/inds_{spec}.pop"
+    output:
+      vcf = "../results/ancestral_allele/mirang_filtered_{spec}_ann_aa.vcf.gz" 
+    resources:
+      mem_mb=15360
+    container: c_popgen
+    shell:
+      """
+      vcftools \
+          --gzvcf {input.vcf} \
+          --keep {input.inds} \
+          --mac 1 \
+          --recode \
+          --stdout | \
+          bgzip > {output.vcf}
+      
+      tabix -p vcf {output.vcf}
+      """

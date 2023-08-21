@@ -27,7 +27,9 @@ GFF_FILE = "../data/genomes/annotation/mirang.gff3.gz"
 
 rule all_ml_snpeff:
     input: 
-      vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" )
+      vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" ),
+      maked_load = expand( "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz", sample = SAMPLES ),
+      expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES )
 
 rule download_gtf:
     output:
@@ -180,3 +182,60 @@ rule bgzip_vcf:
 
 # at this point, the alleles need to be swapped to ancestral alleles
 # within ancestral_alleles.smk
+
+rule filter_load:
+    input:
+      vcf = "../results/ancestral_allele/mirang_filtered_{spec}_ann_aa.vcf.gz" 
+    output:
+      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      zcat {input.vcf} | \
+        SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
+        bgzip > {output.vcf}
+      """
+
+rule masked_load:
+    input: 
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) )
+    output:
+      bed = "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      # heterozygous (masked load)
+      zcat {input.vcf} | \
+        SnpSift filter "( isHet(GEN[{wildcards.sample}].GT) )" | \
+        grep -v "^##" | \
+        awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
+        sed 's/POS\tPOS/FROM\tTO/' | \
+        gzip > {output.bed}
+      """
+
+rule expressed_load:
+    input: 
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) )
+    output:
+      bed = "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      # homozygous for affected allele (expressed load)
+      # REF is affected allele
+      EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[{wildcards.sample}].GT)) )"
+      # ALT is affected allele
+      EXPR_LOAD_ALT="( ( ! (ANN[*].ALLELE = REF)) & ((isVariant(GEN[{wildcards.sample}].GT) & (isHom(GEN[{wildcards.sample}].GT))) ))"
+      zcat {input.vcf} | \
+        SnpSift filter "( ${{EXPR_LOAD_REF}} | ${{EXPR_LOAD_ALT}} )" | \
+        grep -v "^##" | \
+        awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
+        sed 's/POS\tPOS/FROM\tTO/' | \
+        gzip > {output.bed}
+      """
