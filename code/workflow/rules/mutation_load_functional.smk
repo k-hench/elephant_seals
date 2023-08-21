@@ -209,7 +209,7 @@ rule masked_load:
     container: c_ml
     shell:
       """
-      SAMPLE_IDX=$(awk '{{if($1=={wildcards.sample}){{print NR - 1}} }}' {input.inds})
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
       # heterozygous (masked load)
       zcat {input.vcf} | \
         SnpSift filter "( isHet(GEN[${{SAMPLE_IDX}}].GT) )" | \
@@ -230,7 +230,7 @@ rule expressed_load:
     container: c_ml
     shell:
       """
-      SAMPLE_IDX=$(awk '{{if($1=={wildcards.sample}){{print NR - 1}} }}' {input.inds})
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
       # homozygous for affected allele (expressed load)
       # REF is affected allele
       EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[${{SAMPLE_IDX}}].GT)) )"
