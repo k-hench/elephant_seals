@@ -29,7 +29,8 @@ rule all_ml_snpeff:
     input: 
       vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" ),
       maked_load = expand( "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz", sample = SAMPLES ),
-      expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES )
+      expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES ),
+      load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed"] )
 
 rule download_gtf:
     output:
@@ -242,4 +243,29 @@ rule expressed_load:
         awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
         sed 's/POS\tPOS/FROM\tTO/' | \
         gzip > {output.bed}
+      """
+
+# logically, THIS SHOULD be NULL
+rule masked_in_roh:
+    input:
+      masked_load = "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz",
+      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_mirang.bed"
+    output:
+      masked_in_roh = "../results/mutation_load/snp_eff/by_ind/masked_in_roh/{sample}_masked_in_roh.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      intersectBed -a {input.roh} -b {input.masked_load} > {output.masked_in_roh}
+      """
+
+rule expressed_in_roh:
+    input:
+      expressed_load = "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz",
+      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_mirang.bed"
+    output:
+      expressed_in_roh = "../results/mutation_load/snp_eff/by_ind/expressed_in_roh/{sample}_expressed_in_roh.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      intersectBed -a {input.roh} -b {input.expressed_load} > {output.expressed_in_roh}
       """
