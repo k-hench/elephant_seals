@@ -163,6 +163,17 @@ rule convert_vcf_alleles:
       bgzip > {output.gzvcf}
     """
 
+rule index_aa_vcf:
+    input:
+      gzvcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
+    output:
+      idx = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz.tbi"
+    conda: "popgen_basics"
+    shell:
+      """
+      tabix -p vcf {input.gzvcf}
+      """
+
 # to differentiate between expressed load and fixed load
 rule vcf_aa_subset_species:
     input:

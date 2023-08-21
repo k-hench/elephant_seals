@@ -202,6 +202,7 @@ rule filter_load:
 rule filter_fixed_load:
     input:
       vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
+      idx = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz.tbi",
       bed = "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz"
     output:
       vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz"
