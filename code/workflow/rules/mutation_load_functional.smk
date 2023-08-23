@@ -188,7 +188,8 @@ rule filter_load:
     input:
       vcf = "../results/ancestral_allele/mirang_filtered_{spec}_ann_aa.vcf.gz" 
     output:
-      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz"
+      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz",
+      sample_order = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop"
     resources:
       mem_mb=25600
     container: c_ml
@@ -197,6 +198,12 @@ rule filter_load:
       zcat {input.vcf} | \
         SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
         bgzip > {output.vcf}
+      
+      bcftools view -O v {input.vcf} | \
+        grep -v "^##" | \
+        head -n 1 | \
+        cut -f 10- | \
+        sed 's/\t/\n/g' > {output.sample_order}
       """
 
 rule filter_fixed_load:
@@ -205,7 +212,8 @@ rule filter_fixed_load:
       idx = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz.tbi",
       bed = "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz"
     output:
-      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz"
+      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz",
+      sample_order = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load_sample_order.pop"
     resources:
       mem_mb=25600
     container: c_ml
@@ -216,12 +224,18 @@ rule filter_fixed_load:
         --regions-file {input.bed} | \
         SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
         bgzip > {output.vcf}
+      
+      bcftools view -O v {output.vcf} | \
+        grep -v "^##" | \
+        head -n 1 | \
+        cut -f 10- | \
+        sed 's/\t/\n/g' > {output.sample_order}
       """
 
 rule masked_load:
     input: 
       vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
-      inds = lambda wc: expand( "../results/pop/inds_{spec}.pop", spec = get_spec_from_sample(wc.sample) )
+      sample_order = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop", spec = get_spec_from_sample(wc.sample) )
     output:
       bed = "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz"
     resources:
@@ -229,7 +243,7 @@ rule masked_load:
     container: c_ml
     shell:
       """
-      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.sample_order})
       # heterozygous (masked load)
       zcat {input.vcf} | \
         SnpSift filter "( isHet(GEN[${{SAMPLE_IDX}}].GT) )" | \
@@ -242,7 +256,7 @@ rule masked_load:
 rule expressed_load:
     input: 
       vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
-      inds = lambda wc: expand( "../results/pop/inds_{spec}.pop", spec = get_spec_from_sample(wc.sample) )
+      sample_order = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop", spec = get_spec_from_sample(wc.sample) )
     output:
       bed = "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz"
     resources:
@@ -250,7 +264,7 @@ rule expressed_load:
     container: c_ml
     shell:
       """
-      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.sample_order})
       # homozygous for affected allele (expressed load)
       # REF is affected allele
       EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[${{SAMPLE_IDX}}].GT)) )"
@@ -267,7 +281,7 @@ rule expressed_load:
 rule fixed_load:
     input: 
       vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
-      inds = "../results/pop/inds_all.pop"
+      sample_order = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load_sample_order.pop", spec = get_spec_from_sample(wc.sample) )
     output:
       bed = "../results/mutation_load/snp_eff/by_ind/fixed/{sample}_fixed.bed.gz"
     resources:
@@ -275,7 +289,7 @@ rule fixed_load:
     container: c_ml
     shell:
       """
-      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.inds})
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.sample_order})
       # homozygous for affected allele
       # REF is affected allele
       EXPR_LOAD_REF="( (ANN[*].ALLELE = REF) & (isRef(GEN[${{SAMPLE_IDX}}].GT)) )"
