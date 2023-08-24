@@ -188,8 +188,7 @@ rule filter_load:
     input:
       vcf = "../results/ancestral_allele/mirang_filtered_{spec}_ann_aa.vcf.gz" 
     output:
-      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz",
-      sample_order = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop"
+      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz"
     resources:
       mem_mb=25600
     container: c_ml
@@ -198,7 +197,20 @@ rule filter_load:
       zcat {input.vcf} | \
         SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
         bgzip > {output.vcf}
-      
+      tabix -p vcf {output.vcf}
+      """
+
+rule sample_order_load:
+    input:
+      vcf = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz"
+    output:
+      sample_order = "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop"
+    log: "logs/load_sample_order_{spec}.log"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
       bcftools view -O v {input.vcf} | \
         grep -v "^##" | \
         head -n 1 | \
@@ -212,8 +224,7 @@ rule filter_fixed_load:
       idx = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz.tbi",
       bed = "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz"
     output:
-      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz",
-      sample_order = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load_sample_order.pop"
+      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz"
     resources:
       mem_mb=25600
     container: c_ml
@@ -225,7 +236,21 @@ rule filter_fixed_load:
         SnpSift filter "((exists LOF[*].NUMTR ) | ( ANN[*].IMPACT='HIGH' ) ) " | \
         bgzip > {output.vcf}
       
-      bcftools view -O v {output.vcf} | \
+      tabix -p vcf {output.vcf}
+      """
+
+rule sample_order_fixed_load:
+    input:
+      vcf = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz",
+    output:
+      sample_order = "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load_sample_order.pop"
+    log: "logs/load_fixed_sample_order_{spec}.log"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      bcftools view -O v {input.vcf} | \
         grep -v "^##" | \
         head -n 1 | \
         cut -f 10- | \
