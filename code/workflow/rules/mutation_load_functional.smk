@@ -399,3 +399,27 @@ rule fixed_in_roh:
       """
       intersectBed -a {input.roh} -b {input.fixed_load} > {output.fixed_in_roh}
       """
+
+rule expressed_anc_in_roh:
+    input:
+      expressed_load = "../results/mutation_load/snp_eff/by_ind/expressed_anc/{sample}_expressed_anc.bed.gz",
+      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_mirang.bed"
+    output:
+      expressed_in_roh = "../results/mutation_load/snp_eff/by_ind/expressed_anc_in_roh/{sample}_expressed_anc_in_roh.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      intersectBed -a {input.roh} -b {input.expressed_load} > {output.expressed_in_roh}
+      """
+
+rule fixed_anc_in_roh:
+    input:
+      fixed_load = "../results/mutation_load/snp_eff/by_ind/fixed_anc/{sample}_fixed_anc.bed.gz",
+      roh = "../results/roh/bcftools/snp_based/bed/max_callable/roh_max_{sample}_on_mirang.bed"
+    output:
+      fixed_in_roh = "../results/mutation_load/snp_eff/by_ind/fixed_anc_in_roh/{sample}_fixed_anc_in_roh.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      intersectBed -a {input.roh} -b {input.fixed_load} > {output.fixed_in_roh}
+      """
