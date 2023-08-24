@@ -32,4 +32,8 @@ data_load |>
   ggplot(aes(x = load_type, y = n_snps, color = treatment)) +
   ggbeeswarm::geom_beeswarm(alpha = .8) +
   # geom_violin() +
-  facet_grid(snp_subset ~ spec, scales = "free")
+  facet_grid(snp_subset ~ spec, scales = "free") +
+  theme_bw()
+
+
+ggsave("~/Downloads/load_messup.pdf", width = 8, height = 8, device = cairo_pdf)

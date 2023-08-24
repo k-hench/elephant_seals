@@ -203,7 +203,7 @@ rule filter_load:
         grep -v "^##" | \
         head -n 1 | \
         cut -f 10- | \
-        sed 's/\t/\n/g' > {output.sample_order}
+        sed 's/\\t/\\n/g' > {output.sample_order}
       """
 
 rule filter_fixed_load:
@@ -229,7 +229,7 @@ rule filter_fixed_load:
         grep -v "^##" | \
         head -n 1 | \
         cut -f 10- | \
-        sed 's/\t/\n/g' > {output.sample_order}
+        sed 's/\\t/\\n/g' > {output.sample_order}
       """
 
 rule masked_load:
