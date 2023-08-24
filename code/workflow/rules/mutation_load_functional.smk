@@ -30,7 +30,8 @@ rule all_ml_snpeff:
       vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "mirang_filtered" ),
       maked_load = expand( "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz", sample = SAMPLES ),
       expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES ),
-      load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed", "fixed"] )
+      load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed", "fixed"] ),
+      load_anc = expand( "../results/mutation_load/snp_eff/by_ind/{load_type}_anc/{sample}_{load_type}_anc.bed.gz", sample = SAMPLES, load_type = ["expressed", "fixed"] )
 
 rule download_gtf:
     output:
@@ -314,6 +315,48 @@ rule fixed_load:
       EXPR_LOAD_ALT="( ( ! (ANN[*].ALLELE = REF)) & ((isVariant(GEN[${{SAMPLE_IDX}}].GT) & (isHom(GEN[${{SAMPLE_IDX}}].GT))) ))"
       zcat {input.vcf} | \
         SnpSift filter "( ${{EXPR_LOAD_REF}} | ${{EXPR_LOAD_ALT}} )" | \
+        grep -v "^##" | \
+        awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
+        sed 's/POS\tPOS/FROM\tTO/' | \
+        gzip > {output.bed}
+      """
+
+rule expressed_load_anc:
+    input: 
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
+      sample_order = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/mirang_filtered_{spec}_load_sample_order.pop", spec = get_spec_from_sample(wc.sample) )
+    output:
+      bed = "../results/mutation_load/snp_eff/by_ind/expressed_anc/{sample}_expressed_anc.bed.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.sample_order})
+      # homozygous for derived allele (expressed load - ancestral def)
+      zcat {input.vcf} | \
+        SnpSift filter "((isVariant(GEN[${{SAMPLE_IDX}}].GT)) & (isHom(GEN[${{SAMPLE_IDX}}].GT)))" | \
+        grep -v "^##" | \
+        awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
+        sed 's/POS\tPOS/FROM\tTO/' | \
+        gzip > {output.bed}
+      """
+
+rule fixed_load_anc:
+    input: 
+      vcf = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load.vcf.gz", spec = get_spec_from_sample(wc.sample) ),
+      sample_order = lambda wc: expand( "../results/mutation_load/snp_eff/load_subset/fixed/mirang_filtered_{spec}_fixed_load_sample_order.pop", spec = get_spec_from_sample(wc.sample) )
+    output:
+      bed = "../results/mutation_load/snp_eff/by_ind/fixed_anc/{sample}_fixed_anc.bed.gz"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
+      SAMPLE_IDX=$(awk '{{if($1=="{wildcards.sample}"){{print NR - 1}} }}' {input.sample_order})
+      # homozygous for derived allele (expressed load - ancestral def)
+      zcat {input.vcf} | \
+        SnpSift filter "((isVariant(GEN[${{SAMPLE_IDX}}].GT)) & (isHom(GEN[${{SAMPLE_IDX}}].GT)))" | \
         grep -v "^##" | \
         awk -v OFS="\t" -v s="{wildcards.sample}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
         sed 's/POS\tPOS/FROM\tTO/' | \
