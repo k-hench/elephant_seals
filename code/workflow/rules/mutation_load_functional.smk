@@ -31,7 +31,8 @@ rule all_ml_snpeff:
       maked_load = expand( "../results/mutation_load/snp_eff/by_ind/masked/{sample}_masked.bed.gz", sample = SAMPLES ),
       expressed_load = expand( "../results/mutation_load/snp_eff/by_ind/expressed/{sample}_expressed.bed.gz", sample = SAMPLES ),
       load_in_roh = expand("../results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample}_{load_type}_in_roh.bed.gz", sample = SAMPLES, load_type = ["masked", "expressed", "fixed"] ),
-      load_anc = expand( "../results/mutation_load/snp_eff/by_ind/{load_type}_anc/{sample}_{load_type}_anc.bed.gz", sample = SAMPLES, load_type = ["expressed", "fixed"] )
+      load_anc = expand( "../results/mutation_load/snp_eff/by_ind/{load_type}_anc/{sample}_{load_type}_anc.bed.gz", sample = SAMPLES, load_type = ["expressed", "fixed"] ),
+      load_anc_in_roh = expand( "../results/mutation_load/snp_eff/by_ind/{load_type}_anc_in_roh/{sample}_{load_type}_anc_in_roh.bed.gz", sample = SAMPLES, load_type = ["expressed", "fixed"] )
 
 rule download_gtf:
     output:
