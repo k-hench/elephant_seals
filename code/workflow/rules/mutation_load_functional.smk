@@ -211,11 +211,7 @@ rule sample_order_load:
     container: c_ml
     shell:
       """
-      bcftools view -O v {input.vcf} | \
-        grep -v "^##" | \
-        head -n 1 | \
-        cut -f 10- | \
-        sed 's/\\t/\\n/g' > {output.sample_order}
+      ./sh/sample_order_from_vcf.sh {input.vcf} > {output.sample_order}
       """
 
 rule filter_fixed_load:
@@ -250,11 +246,7 @@ rule sample_order_fixed_load:
     container: c_ml
     shell:
       """
-      bcftools view -O v {input.vcf} | \
-        grep -v "^##" | \
-        head -n 1 | \
-        cut -f 10- | \
-        sed 's/\\t/\\n/g' > {output.sample_order}
+      ./sh/sample_order_from_vcf.sh {input.vcf} > {output.sample_order}
       """
 
 rule masked_load:
