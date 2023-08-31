@@ -26,8 +26,9 @@ SIM_INDS = [ "i" + str(x) for x in np.arange(20)]
 SIM_IDX = [ 1 + x for x in np.arange(100)]
 
 rule all_ml_sim:
-    input: expand( "../results/simulations/selection_coefficient/sim_{sim_idx}_s.tsv.gz", sim_idx = SIM_IDX )
-    # expand( "../results/simulations/by_ind/{load_type}/sim_{sim_idx}/{sim_ind}_{load_type}.bed.gz", load_type = ["expressed", "masked"], sim_idx = SIM_IDX, sim_ind = SIM_INDS )
+    input:
+     s = expand( "../results/simulations/selection_coefficient/sim_{sim_idx}_s.tsv.gz", sim_idx = SIM_IDX ),
+     tally = expand( "../results/simulations/tally/sim_{sim_idx}_load_by_ind.tsv", sim_idx = SIM_IDX )
 
 rule sim_selection_coefficients:
     input: 
@@ -40,45 +41,23 @@ rule sim_selection_coefficients:
     shell:
       """
       cat {input.vcf} | \
-        SnpSift extractFields /dev/stdin CHROM POS S | \
+        SnpSift extractFields /dev/stdin CHROM POS S DOM | \
         gzip > {output.bed}
       """
 
-
-rule sim_masked_load:
+rule sim_tally_load:
     input: 
       vcf = "../results/simulations/NES_SLiM_VCFs/NES_sim_Sample_{sim_idx}.vcf"
     output:
-      bed = "../results/simulations/by_ind/masked/sim_{sim_idx}/{sim_ind}_masked.bed.gz"
+      tsv = "../results/simulations/tally/sim_{sim_idx}_load_by_ind.tsv"
     resources:
       mem_mb=5120
     container: c_ml
     shell:
       """
-      # heterozygous (masked load)
-      cat {input.vcf} | \
-        SnpSift filter "( isHet(GEN[{wildcards.sim_ind}].GT) )" | \
-        grep -v "^##" | \
-        awk -v OFS="\t" -v s="{wildcards.sim_ind}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
-        sed 's/POS\tPOS/FROM\tTO/' | \
-        gzip > {output.bed}
-      """
-
-rule sim_expressed_load:
-    input: 
-      vcf = "../results/simulations/NES_SLiM_VCFs/NES_sim_Sample_{sim_idx}.vcf"
-    output:
-      bed = "../results/simulations/by_ind/expressed/sim_{sim_idx}/{sim_ind}_expressed.bed.gz"
-    resources:
-      mem_mb=5120
-    container: c_ml
-    shell:
-      """
-      # homozygous for derived allele (expressed load - ancestral def)
-      cat {input.vcf} | \
-        SnpSift filter "((isVariant(GEN[{wildcards.sim_ind}].GT)) & (isHom(GEN[{wildcards.sim_ind}].GT)))" | \
-        grep -v "^##" | \
-        awk -v OFS="\t" -v s="{wildcards.sim_ind}" '{{if(NR==1){{ for (i=1; i<=NF; ++i) {{ if ($i ~ s) c=i }} }} {{print $1,$2,$2,$c}} }}' | \
-        sed 's/POS\tPOS/FROM\tTO/' | \
-        gzip > {output.bed}
+      S_IDX=1
+      echo -e "sample\tn_masked_strong\tn_masked_intermediate\tn_masked_weak\tn_expressed_strong\tn_expressed_intermediate\tn_expressed_weak" > {output.tsv}
+      for k in {{0..19}}; do
+        ./sh/tally_load_ind.sh {input.vcf} i${{k}} >> {output.tsv}
+      done 
       """
