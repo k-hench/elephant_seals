@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # selection coefficient thresholds
-EXP_C1="( S < -0.033 )" 
-EXP_C2="(( S > -0.033 ) & ( S < -0.001 ))" 
+EXP_C1="( S < -0.33 )" 
+EXP_C2="(( S > -0.33 ) & ( S < -0.001 ))" 
 EXP_C3="( S > -0.001 )" 
 # load types
 L_MSK="( isHet(GEN[${2}].GT) )"
