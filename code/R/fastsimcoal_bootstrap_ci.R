@@ -4,8 +4,11 @@ library(here)
 library(glue)
 library(boot)
 source(here("code/R/project_defaults.R"))
-clr1 <- "red"
-clr2 <- "gray20"
+clr1 <- clr_default[1]
+clr2 <- clr_default[2]
+clr_accent <- clr1
+clr_accent2 <- clr1
+
 basepath <- "results/demography/fastsimcoal/mirang_on_mirang/"
 
 q_quant <- c(.95, 0.66)
@@ -140,7 +143,7 @@ all_estimates <- all_dem_types |>
 
 
 # CI based on 2.5 % and 97.5% percentiles of the bootstraped values
-clr_ano <- "gray70"
+clr_ano <- clr_default[2]
 all_estimates |> 
   left_join(data_boots |> select(demtype, data_quantiles) |> unnest(data_quantiles)) |> 
   ggplot(aes(y = demtype, color = demtype)) +
@@ -229,14 +232,16 @@ ggsave(here("results/img/demography/parameter_ci_with_RAD.pdf"),
 library(ggdist)
 library(ggnewscale)
 library(patchwork)
+n_levels <- c("NCUR",  "NBOT", "NANC", "NLGM")
+
 data_bot_expanded <- data_boots |>
   select(demtype, bs_data) |>
   unnest(bs_data) |> 
   select(demtype, NCUR, NANC, NBOT, NLGM = NGM, T1)
 
 plt_bs_estimate <- \(param,
-                     col = "red",
-                     col2 = "gray35",
+                     col = clr1,
+                     col2 = clr2,
                      adj = .45,
                      n_fine = 301,
                      size_est = 3){
@@ -296,10 +301,6 @@ plt_bs_estimate <- \(param,
           axis.title.y = element_blank())
 }
 
-clr_accent <- "red"
-clr_accent2 <- "#ff5b3a"
-n_levels <- c("NCUR",  "NBOT", "NLGM", "NANC")
-
 p0 <- all_estimates |> 
   filter(demtype == "bot06-lgm") |> 
   left_join(data_boots |> select(demtype, data_quantiles) |> unnest(data_quantiles)) |>
@@ -316,30 +317,122 @@ p0 <- all_estimates |>
              stroke = .4,
              color = clr_accent, 
              fill = clr_alpha("white")) +
-  scale_x_reverse(breaks = 4:1, labels = str_c(rev(n_levels), c("", "", " (T1)", ""))) +
+  scale_x_reverse(breaks = 4:1, labels = str_c(rev(n_levels), c("", " (T1)", "", ""))) +
   coord_cartesian(expand = 0,
                   xlim = c(4.02, .9),
                   ylim = c(-100, 14000)) +
-  labs(x = "Timepoint", y = "Population Size (n)") +
+  labs(x = "Timepoint", y = "Population Size (*N<sub>e</sub>*)") +
   theme_bw(base_family = "Arial") +
   theme(panel.border = element_blank(),
-        axis.line = element_line())
+        axis.line = element_line(),
+        axis.title.y = ggtext::element_markdown())
 
-p_units <- c(NCUR = " (n)",
-             NBOT = " (n)",
-             NLGM = " (n)",
-             NANC = " (n)",
-             T1 = " (<span style='color:red'>generations?</span>)")
+p_units <- c(NCUR = " (*N<sub>e</sub>*)",
+             NBOT = " (*N<sub>e</sub>*)",
+             NLGM = " (*N<sub>e</sub>*)",
+             NANC = " (*N<sub>e</sub>*)",
+             T1 = " (generations)")
 
-p_list <- c("NANC", "NLGM", "NBOT", "NCUR", "T1") |> 
+p_list <- c(rev(n_levels), "T1") |> 
   map(plt_bs_estimate, adj = .75, col = clr_accent)
 
 wrap_plots(c(p_list, list(p0)))  +
   plot_annotation(tag_levels = "a",
                   theme = theme(plot.margin = margin(r = unit(5,"pt")))) &
   theme(plot.tag = element_text(family = "Arial"),
-        axis.title.x = ggtext::element_markdown())
+        axis.title.x = ggtext::element_markdown(),
+        panel.grid = element_blank())
 
 ggsave("results/img/demography/param_selection.svg", width = 10, height = 5)
 ggsave("results/img/demography/param_selection.pdf", width = 10, height = 5, device = cairo_pdf)
+
+# main figure
+
+plt_bs_estimate_single <- \(param,
+                     col = clr1,
+                     col2 = clr2,
+                     adj = .45,
+                     n_fine = 301,
+                     size_est = 3){
+  data_est <- all_estimates |>
+    filter(str_detect(demtype, "lgm"),
+           str_detect(demtype, "06")) |> 
+    pivot_wider(values_from = estimate, names_from = stat) |> 
+    rename(NLGM = "NGM") |> 
+    mutate(across(starts_with("N"), \(x){x/2}),
+           demtype = str_remove(demtype, "-lgm"))
+  
+  data_bot_expanded |>
+    filter(str_detect(demtype, "lgm"),
+           str_detect(demtype, "06")) |> 
+    mutate(across(starts_with("N"), \(x){x/2}),
+           demtype = str_remove(demtype, "-lgm")) |> 
+    ggplot(aes(y = demtype, x = .data[[param]])) +
+    stat_slab(color = "transparent", fill = "transparent",n = 2) +
+    geom_linerange(data = data_est,
+                   linewidth = .3,
+                   aes(color = demtype,
+                       ymin = as.numeric(factor(demtype))-.45,
+                       ymax = as.numeric(factor(demtype))+.45)) +
+    stat_slab(aes(thickness = after_stat(pdf),
+                  fill_ramp = stat(cut_cdf_qi(cdf, .width = c(1, q_quant)))),
+              color = col, size = .25, scale = .75, side = "both",
+              fill  = "white",
+              adjust = adj,
+              normalize = "groups",
+              trim = FALSE, n = n_fine) +
+    scale_colour_ramp_discrete(from = col, aesthetics = "fill_ramp", guide = "none") +
+    stat_dots(side = "both", scale = 0.3, quantiles = 100,
+              color = clr_alpha("black"), shape = 19) +
+    geom_point(data = data_est,
+               shape = 21,
+               size = size_est,
+               stroke = .4,
+               aes(color = demtype), 
+               fill = clr_alpha("white")) +
+    scale_color_manual(values = c(`bot06` = clr_darken(col,.3), 
+                                  `bot10` = clr_darken(col2,.3), 
+                                  `null` = clr_darken(col2,.3)),
+                       guide = "none") +
+    labs(x = "*N<sub>e</sub>*",
+        y = param) +
+    theme_bw(base_family = "Arial") +
+    theme(panel.border = element_blank(),
+          axis.line = element_line(),
+          axis.title.y = ggtext::element_markdown(),
+          # axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          plot.subtitle = element_text(hjust = .5))
+}
+
+patch1 <- rev(n_levels) |> 
+  map(plt_bs_estimate_single, adj = .75, col = clr_accent) |> 
+  map2(.y = c(list(list(coord_flip(ylim = c(0.4,1.6)))),
+              rep(list(list(coord_flip(ylim = c(0.4,1.6)),
+                       theme(axis.title.y = element_blank()))),3)),
+       .f = \(x,y){x + y}) |> 
+  wrap_plots(nrow = 1)
+
+p_t <- plt_bs_estimate_single("T1", adj = .75, col = clr_accent) +
+  coord_cartesian(ylim = c(0.4,1.6)) +
+  labs(y = "T1", x = "generations") +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.text.x = element_text(),
+        plot.subtitle = element_text(hjust = .5))
+
+((patch1 /
+  p_t +
+  plot_layout(heights = c(1,.25))) |
+  p0) &
+  plot_annotation(tag_levels = "a",
+                  theme = theme(plot.margin = margin(r = unit(5,"pt")))) &
+  theme(plot.tag = element_text(family = "Arial"),
+        panel.grid = element_blank())
+
+ggsave("results/img/demography/param_selection_main.pdf", width = 9, height = 4.5, device = cairo_pdf)
 
