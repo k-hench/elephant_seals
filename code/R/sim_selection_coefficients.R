@@ -28,18 +28,27 @@ data_tally <- map_dfr(1:100, read_tally ) |>
 p1 <- data |> 
   ggplot(aes(x = -S,
              group = sim_idx)) +
+  geom_line(data = tibble(x = 10^seq(-3.5,0, length.out = 351),
+                          y = dgamma(x, shape = 0.04, rate = 0.2)),
+            aes(x = x, y = y *.05, group = "input"),
+            linetype = 3, color = clr_default[2])+
   geom_vline(xintercept = c(c(.001, .33)),
-             linetype = 3, color = "red") +
-  geom_text(data = tibble(x = 10^c(-3.2, -1.75, -0.25),
+             linetype = 3, color = clr_default[1]) +
+  geom_text(data = tibble(x = 10^c(-3.3, -1.75, -0.15),
                           lab = s_clases),
-            aes(x = x, y = 4, label = lab, group = lab),
-            color = "red", family = fnt_sel) +
+            aes(x = x, y = 4.5, label = lab, group = lab),
+            color = clr_default[1],
+            family = fnt_sel,
+            size = 3) +
   geom_density(color = clr_alpha(clr_default[[1]], .1),
                fill = "transparent",
                linewidth = .2) +
   scale_x_continuous(trans = scales::log10_trans()) +
   labs(y = "density", subtitle = "overall distribution of selection coefficients") +
-  theme_ms()
+  coord_cartesian(ylim = c(0, 4.65), expand = 0) +
+  theme_ms() +
+  theme(axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
 
 p2 <- data_tally |> 
   mutate(sel_class = factor(sel_class, levels = s_clases)) |> 
@@ -65,9 +74,12 @@ p2 <- data_tally |>
   labs(subtitle = "individual load scores (n SNPs)") +
   facet_wrap(sel_class ~ ., scales = "free")+
   theme_ms() +
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank(),
+        strip.text = element_text(color = clr_default[1]))
 
-p_out <- p1 / p2
+p_out <- p1 / p2 +
+  plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(family = fnt_sel))
 
 ggsave("results/img/load/sim_tally.pdf",
        width = 7, height = 5, 

@@ -10,7 +10,7 @@ clr_default <- c("#6495ED", "#777777")
 # the color scheme for the phenotypes
 clr_pheno <- RColorBrewer::brewer.pal(8, "Set1")[c(1,3:5,7:8)] |>
   color() |> 
-  set_names(nm = c("Worms", "Bacteria", "Malnutrition"," Trauma", "Protozoa", "Congenital defect"))
+  set_names(nm = c("Worms", "Bacteria", "Malnutrition", "Trauma", "Protozoa", "Congenital defect"))
 
 # the color scheme for the load types
 clr_load <- c("#000000", "gray80", "gray35", "gray60") |> 

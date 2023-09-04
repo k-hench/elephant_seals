@@ -24,6 +24,12 @@ results/img
 results/img/control
 results/img/*pdf
 results/img/qc/*
+!results/simulations
+results/simulations/*
+!results/simulations/README.md
+!results/RAD/
+results/RAD/*
+!results/RAD/README.md
 
 # exclude large data 
 # (explicitly define tracked files)

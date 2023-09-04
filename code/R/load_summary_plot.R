@@ -2,7 +2,8 @@ library(tidyverse)
 library(glue)
 library(here)
 library(prismatic)
-source(here("code/R/project_defaults.R"))
+library(patchwork)
+source(here("code/R/project_defaults_shared.R"))
 
 samples <- read_tsv("data/file_info.tsv") |> 
   select(sample_id, spec, treatment) |> 
@@ -27,7 +28,7 @@ read_all_load <- \(load_type, sample_id){
            data = list(data, data_anc, data_roh, data_anc_roh))
 }
 
-load_types <- c("expressed", "masked", "fixed")
+load_types <- c("masked", "expressed", "fixed")
 data_load <- expand_grid(sample_id = samples$sample_id,
               load_type = load_types) |> 
   pmap_dfr(read_all_load) |> 
@@ -57,4 +58,85 @@ data_load |>
   theme(legend.position = "bottom")
 
 ggsave(here("results/img/load/load_snp_eff.pdf"),
-       # width = 8, height = 8, device = cairo_pdf)
+       width = 8, height = 8, device = cairo_pdf)
+
+set.seed(42)
+p1 <- data_load |> 
+  filter(snp_subset == "anc") |> 
+  ggplot(aes(x = load_type, y = n_snps, color = treatment)) +
+  geom_jitter(shape = 21,
+              height = 0, width = .25,
+              aes(fill = after_scale(clr_alpha(color))),
+              size = 2)+#, aes(color = sample_id == "160488")) +
+  facet_grid(. ~ spec, scales = "free", switch = "y") +
+  scale_color_manual("Phenotype",
+                     values = clr_pheno,
+                     na.value = clr_default[2],
+                     guide = guide_legend(title.position = "top")) +
+  labs(y = "Load Tally (n SNPs)",
+       subtitle = "Load Tally by Load Type") +
+  theme_ms() +
+  theme(#panel.background = element_rect(color = "gray80"),
+        axis.line = element_line(),
+        axis.ticks = element_line(color = "gray80"),
+        strip.placement = "outside",
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = .5))
+
+clr_lab <- c(clr_pheno, mirang = clr_default[2])
+
+p2 <- data_load |> 
+  filter(snp_subset == "anc") |>
+  mutate(sample_ord = factor(str_c(spec, replace_na(treatment, "mirang"), sample_id)),
+         sample_lab = fct_reorder(glue("<span style='color:{clr_lab[replace_na(treatment, 'mirang')]}'>{sample_id}</span>"),
+                                  as.numeric(sample_ord))) |> 
+  ggplot(aes(x = sample_lab, y = n_snps)) +
+  geom_bar(stat = 'identity', aes(fill = load_type))+
+  scale_fill_manual("Load Type",
+                    values = clr_load,
+                     guide = guide_legend(title.position = "top")) +
+  coord_cartesian(xlim = c(.4,30.6),
+                  expand = 0) +
+  labs(y = "Load Tally (n SNPs)",
+       subtitle = "Individual Cummulative Load Tally") +
+  theme_ms() +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90,
+                                   hjust = 1,
+                                   vjust = .5),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = .5))
+
+p3 <- data_load |> 
+  filter(snp_subset == "anc") |>
+  mutate(sample_ord = factor(str_c(spec, replace_na(treatment, "mirang"), sample_id)),
+         sample_lab = fct_reorder(glue("<span style='color:{clr_lab[replace_na(treatment, 'mirang')]}'>{sample_id}</span>"),
+                                  as.numeric(sample_ord)),
+         load_impact = if_else(load_type == "masked", n_snps, 2*n_snps)) |> 
+  ggplot(aes(x = sample_lab, y = load_impact)) +
+  geom_bar(stat = 'identity', aes(fill = load_type))+
+  scale_fill_manual("Load Type",
+                    values = clr_load,
+                    guide = guide_legend(title.position = "top")) +
+  coord_cartesian(xlim = c(.4,30.6),
+                  expand = 0) +
+  labs(y = "Load Score (n X scoring factor)",
+       subtitle = "Load Score (scoring factor: Hom = 2, Het = 1)") +
+  theme_ms() +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90,
+                                   hjust = 1,
+                                   vjust = .5),
+        axis.title.x = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = .5))
+
+p_out <- p1 / (p2 + p3) +
+  plot_layout(guides = "collect") +
+  plot_annotation(tag_levels = "a") &
+  theme(legend.position = "bottom",
+        plot.tag = element_text(family = fnt_sel))
+
+ggsave(filename = here("results/img/load/load_snp_eff_anc_details.pdf"),
+      plot = p_out,
+      width = 9, height = 6, device = cairo_pdf)
