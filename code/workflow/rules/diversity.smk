@@ -30,11 +30,11 @@ rule he_by_ind:
 
 rule convert_012_by_spec:
     input:
-      vcf = "../results/genotyping/filtered/mirang_filtered_{spec}.vcf.gz"
+      vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
     output:
-      g012 = "../results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"
+      g012 = "../results/genotyping/012/{ref}_filtered_{spec}_012.tsv.gz"
     params:
-      out_prefix = "../results/genotyping/012/mirang_filtered_{spec}_012"
+      out_prefix = "../results/genotyping/012/{ref}_filtered_{spec}_012"
     container: c_popgen
     resources:
       mem_mb=15360

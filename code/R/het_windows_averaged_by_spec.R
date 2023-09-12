@@ -6,7 +6,7 @@
   library(here)
   library(data.table)
   library(ggrastr)
-  source(here("code/R/project_defaults.R"))
+  source(here("code/R/project_defaults_shared.R"))
   
   import_genomes <- function(spec){
     read_tsv(here("data", "genomes", "filtered", glue("{spec}_filt.fa.gz.fai")),
@@ -82,6 +82,9 @@
   windowed_avg_het <- c("mirang", "mirleo") |> 
     map_dfr(win_avg_het)
   
+windowed_avg_het |> 
+    write_tsv(here(glue("results/het/win_het_by_spec_w{window_width*1e-6}Mb_s{window_step*1e-3}kb.tsv.gz")))
+  
   # windowed_avg_het |>
   #   ggplot() +
   #   geom_rect(data = genome_tib |> select(-spec),
@@ -116,21 +119,21 @@
     ggplot(aes(x = spec, y = avg_het, color = spec)) +
     facet_wrap(seqnames ~ ., nrow = 1) +
     labs(subtitle = "by autosome") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.title.y = element_blank())
   
   p2 <- windowed_avg_het |> 
     filter(seqnames %in% genome_tib$chr[2:17]) |> 
     ggplot(aes(x = spec, y = avg_het, color = spec)) +
     labs(y = "heterozygosity", subtitle = glue("combined autosomes")) +
-    theme_minimal(base_family = fnt_sel, base_size = 9)
+    theme_ms(base_size = 9)
   
   p2 + p1 +
     plot_layout(widths = c(.1, 1))  +
     plot_annotation(subtitle = glue("heterozygosity within SNPs only (w{sprintf('%.0fMb', window_width /1e6)}, s{sprintf('%.0fkb', window_step /1e3)})"),
                     theme = theme(title = element_text(family = fnt_sel))) &
     geom_boxplot(aes(fill = after_scale(clr_alpha(color)))) &
-    scale_color_manual(values = clrs, guide = "none") &
+    scale_color_manual(values = clr_default, guide = "none") &
     coord_cartesian(ylim = c(0, 1)) &
     theme(axis.ticks.y = element_blank(),
           panel.grid = element_blank(),
@@ -145,14 +148,14 @@
     ggplot(aes(x = spec, y = win_het, color = spec)) +
     facet_wrap(seqnames ~ ., nrow = 1) +
     labs(subtitle = "by autosome") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.title.y = element_blank())
   
   p4 <- windowed_avg_het |> 
     filter(seqnames %in% genome_tib$chr[2:17]) |> 
     ggplot(aes(x = spec, y = win_het, color = spec)) +
     labs(y = "heterozygosity", subtitle = glue("combined autosomes"))  +
-    theme_minimal(base_family = fnt_sel, base_size = 9)
+    theme_ms(base_size = 9)
   
   p4 + p3 +
     plot_layout(widths = c(.1, 1)) +
@@ -160,7 +163,7 @@
                     theme = theme(title = element_text(family = fnt_sel))) &
     coord_cartesian(ylim = c(0, .0062)) &
     geom_boxplot(aes(fill = after_scale(clr_alpha(color)))) &
-    scale_color_manual(values = clrs, guide = "none") &
+    scale_color_manual(values = clr_default, guide = "none") &
     theme(axis.ticks.y = element_blank(),
           panel.grid = element_blank(),
           axis.title.x = element_blank())
@@ -271,8 +274,10 @@
   
   
   # consider phenotype within mirang ========================================================================
-  clr_pheno <-  RColorBrewer::brewer.pal(3, "Set1") |> 
-    set_names(nm = c("worms", "control", "mirleo"))
+  clr_pheno_mirleo <- c(clr_pheno, clr_default[[2]], clr_default[[2]]) |> 
+    color() |> 
+    set_names(c(str_to_lower(names(clr_pheno)), "control","mirleo"))
+  
   data_pheno <- read_tsv("results/pop/group_pheno_labeled.pop",
                          col_names = c("sample_id", "phenotype"),
                          col_types = "cc") |> 
@@ -352,27 +357,30 @@
                                      win_avg_het_pheno) |> 
     mutate(pheno = factor(pheno, levels = c("worms", "control", "mirleo")))
   
+  windowed_avg_het_pheno |> 
+    write_tsv(here(glue("results/het/win_het_by_pheno_w{window_width*1e-6}Mb_s{window_step*1e-3}kb.tsv.gz")))
+  
   
   p5 <- windowed_avg_het_pheno |> 
     filter(seqnames %in% genome_tib$chr[2:17]) |> 
     ggplot(aes(x = pheno, y = avg_het, color = pheno)) +
     labs(subtitle = "by autosome") +
     facet_wrap(seqnames ~ ., nrow = 1) +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.title.y = element_blank())
   
   p6 <- windowed_avg_het_pheno |> 
     filter(seqnames %in% genome_tib$chr[2:17]) |> 
     ggplot(aes(x = pheno, y = avg_het, color = pheno)) +
     labs(y = "heterozygosity", subtitle = "combined autosomes") +
-    theme_minimal(base_family = fnt_sel, base_size = 9)
+    theme_ms(base_size = 9)
   
   p6 + p5 +
     plot_layout(widths = c(.1, 1))  +
     plot_annotation(subtitle = glue("heterozygosity within SNPs only (w{sprintf('%.0fMb', window_width /1e6)}, s{sprintf('%.0fkb', window_step /1e3)})"),
                     theme = theme(title = element_text(family = fnt_sel))) &
     geom_boxplot(aes(fill = after_scale(clr_alpha(color)))) &
-    scale_color_manual(values = clr_pheno, guide = "none") &
+    scale_color_manual(values = clr_pheno_mirleo, guide = "none") &
     coord_cartesian(ylim = c(0, 1)) &
     theme(axis.ticks.y = element_blank(),
           panel.grid = element_blank(),
@@ -387,14 +395,14 @@
     ggplot(aes(x = pheno, y = win_het, color = pheno)) +
     facet_wrap(seqnames ~ ., nrow = 1) +
     labs(subtitle = "by autosome") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.title.y = element_blank())
   
   p8 <- windowed_avg_het_pheno |> 
     filter(seqnames %in% genome_tib$chr[2:17]) |> 
     ggplot(aes(x = pheno, y = win_het, color = pheno)) +
     labs(y = "heterozygosity", subtitle = glue("combined autosomes"))  +
-    theme_minimal(base_family = fnt_sel, base_size = 9)
+    theme_ms(base_size = 9)
   
   p8 + p7 +
     plot_layout(widths = c(.1, 1)) +
@@ -402,7 +410,7 @@
                     theme = theme(title = element_text(family = fnt_sel))) &
     coord_cartesian(ylim = c(0, .0062)) &
     geom_boxplot(aes(fill = after_scale(clr_alpha(color)))) &
-    scale_color_manual(values = clr_pheno, guide = "none") &
+    scale_color_manual(values = clr_pheno_mirleo, guide = "none") &
     theme(axis.ticks.y = element_blank(),
           panel.grid = element_blank(),
           axis.title.x = element_blank())
@@ -426,10 +434,10 @@
     scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
                        sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
     facet_grid(pheno ~ ., switch = "y") +
-    scale_color_manual(values = clr_pheno, guide = "none") +
+    scale_color_manual(values = clr_pheno_mirleo, guide = "none") +
     labs(subtitle = glue("heterozygosity averaged by phenotype (based on SNPs only)"),
          y = "heterozygosity") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.ticks.x.bottom = element_line(linewidth = .2),
           axis.title.x = element_blank(),
           axis.ticks.y = element_blank(),
@@ -458,10 +466,10 @@
     scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
                        sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
     facet_grid(pheno ~ ., switch = "y") +
-    scale_color_manual(values = clr_pheno, guide = "none") +
+    scale_color_manual(values = clr_pheno_mirleo, guide = "none") +
     labs(subtitle = glue("heterozygosity averaged by phenotype (based on genome size)"),
          y = "heterozygosity") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.ticks.x.bottom = element_line(linewidth = .2),
           axis.title.x = element_blank(),
           axis.ticks.y = element_blank(),
@@ -491,10 +499,10 @@
     scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
                        sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
     facet_grid(spec ~ ., switch = "y") +
-    scale_color_manual(values = clrs, guide = "none") +
+    scale_color_manual(values = clr_default, guide = "none") +
     labs(subtitle = glue("heterozygosity averaged by phenotype (based on genome size)"),
          y = "heterozygosity") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.ticks.x.bottom = element_line(linewidth = .2),
           axis.title.x = element_blank(),
           axis.ticks.y = element_blank(),
@@ -521,10 +529,10 @@
     scale_x_continuous(expand = c(0, 0), labels = \(br){sprintf("%.1fGb", br * 1e-9)},
                        sec.axis = sec_axis(trans = identity, breaks = genome_tib$mid_pos[1:17], labels = 1:17)) +
     facet_grid(spec ~ ., switch = "y") +
-    scale_color_manual(values = clrs, guide = "none") +
+    scale_color_manual(values = clr_default, guide = "none") +
     labs(subtitle = glue("heterozygosity averaged by phenotype (based on SNPs only)"),
          y = "heterozygosity") +
-    theme_minimal(base_family = fnt_sel, base_size = 9) +
+    theme_ms(base_size = 9) +
     theme(axis.ticks.x.bottom = element_line(linewidth = .2),
           axis.title.x = element_blank(),
           axis.ticks.y = element_blank(),
