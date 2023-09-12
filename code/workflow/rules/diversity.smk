@@ -4,6 +4,7 @@ snakemake --rerun-triggers mtime -n all_diversity
 
 rule all_diversity:
     input: 
+      g012 = expand( "../results/genotyping/012/{ref}_filtered_{spec}_012.tsv.gz", ref = [ 'mirang', 'mirleo' ], spec = [ 'mirang', 'mirleo' ]),
       het = expand( "../results/het/het_{spec}.tsv", spec = [ 'mirang', 'mirleo' ]),
       pi_spec = expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
       pi_pheno = expand( "../results/pi/mirang_pheno_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS ),
