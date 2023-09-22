@@ -7,6 +7,7 @@ fnt_sel <- "Arial"#"CMU Sans Serif"
 fnt_sz <- 12 / ggplot2::.pt
 
 specs <-  c("mirang", "mirleo") 
+spec_names <- c(mirang = "M. angustirostris", mirleo = "M. leonina")
 clrs <- c("#282828", "#db4a32") |> 
   purrr::set_names(specs)
 

@@ -23,7 +23,7 @@ clr_f_traj <- colorRampPalette(colors = c("gray90",
 
 clr_lines <- "black"
 
-theme_ms <- \(..., lwd = .3){
+theme_ms <- \(..., lwd = .2){
   list(theme_bw(base_family = fnt_sel,
                 ...),
        theme(panel.border = element_blank(),
@@ -33,6 +33,10 @@ theme_ms <- \(..., lwd = .3){
              axis.ticks = element_line(colour = clr_lines,
                                        linewidth = lwd),
              axis.text = element_text(color = "black"),
+             axis.text.x = element_text(color = "black"),
+             axis.text.y = element_text(color = "black"),
              plot.subtitle = element_text(hjust = .5),
              strip.background = element_blank()))
 }
+
+spec_names <- c(mirang = "M. angustirostris", mirleo = "M. leonina")

@@ -1,11 +1,18 @@
+#!/usr/bin/env Rscript
+# Rscript qc_vcfstats.R <ref_tag>
 library(tidyverse)
 library(here)
 library(ggstance)
 library(prismatic)
+library(glue)
 source("code/R/project_defaults.R")
 
-files <- c(here("results/genotyping/raw/mirang_raw_snps_stat.txt"),
-           dir(here("results/genotyping/filtered/"), pattern = "txt",full.names = TRUE))
+args <- commandArgs(trailingOnly = TRUE)
+ref <- as.character(args[1])
+
+files <- c(here(glue("results/genotyping/raw/{ref}_raw_snps_stat.txt")),
+           dir(here("results/genotyping/filtered/"),
+               pattern = glue("{ref}.*.txt"), full.names = TRUE))
 
 get_vcfstats <- \(file){
   tibble(raw = read_lines(file) |> 
