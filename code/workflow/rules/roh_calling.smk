@@ -130,7 +130,7 @@ rule roh_plink:
         --homozyg-snp {wildcards.nsnp} \
         --homozyg-kb {wildcards.leng} \
         --homozyg-gap {wildcards.gap} \
-        --homozyg-density {wildcards.gap} \
+        --homozyg-density {wildcards.den} \
         --homozyg-window-missing {wildcards.wmis} \
         --homozyg-het {wildcards.het} \
         --homozyg-window-het {wildcards.whet}

@@ -9,7 +9,7 @@ library(ggrastr)
 source(here("code/R/project_defaults.R"))
 source(here("code/R/project_defaults_shared.R"))
 
-roh_length_threshold <- 1e3
+roh_length_threshold <- 1e6 #1e3
 prefix <- c(certain = "cert", callable = "max")
 roh_version <- "callable" # "certain" # 
 
@@ -129,7 +129,7 @@ p2 <- data |>
   scale_x_continuous(breaks = 3:7,
                      labels = c("1kb", "10kb", "100kb", "1Mb", "10Mb")) +
   coord_cartesian(xlim = c(2.8, 7.3), expand = 0) + 
-  labs(x = glue("ROH Length Distribution <span style='color:red'>(max {roh_version})</span>"))+
+  labs(x = glue("ROH length distribution <span style='color:red'>(max {roh_version})</span>"))+
   theme_ms() +
   theme(axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
@@ -181,7 +181,7 @@ p3 <- roh_summary_by_sample |>
   geom_boxplot(outlier.color = NA,
                color = clr_default[[1]],
                fill = clr_alpha(clr_default[[1]])) +
-  labs(y = "*F<sub>ROH</sub>*",
+  labs(y = "*F*<sub>ROH</sub>",
        x = glue("<span style='color:red'>(max {roh_version})</span>"))+
   theme_ms()+
   theme(axis.title.x = ggtext::element_markdown(family = fnt_sel),
@@ -204,7 +204,7 @@ p3b <- roh_summary_by_sample |>
               height = 0, shape = 21, width = .25) +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
                      guide = "none") +
-  labs(y = "*F<sub>ROH</sub>*",
+  labs(y = "*F*<sub>ROH</sub>",
        x = NULL)+
   theme_ms()+
   theme(axis.title.x = ggtext::element_markdown(family = fnt_sel),
@@ -253,7 +253,7 @@ plot_cum_froh <- \(roh_length_threshold = 1e3, n_classes = 301){
                     ylim = c(0, .63),
                     expand = 0) +
     labs(x = "ROH Length",
-         y = "Cumulative *F<sub>ROH</sub>*",
+         y = "Cumulative *F*<sub>ROH</sub>",
          subtitle = glue("min ROH length: {sprintf('%.0f',roh_length_threshold*1e-3)}kb"))+
     theme_ms() +
     theme(axis.title.y = ggtext::element_markdown(family = fnt_sel),
@@ -300,8 +300,8 @@ p_cum_pheno <- data |>
   coord_cartesian(xlim = c(2.8, 7.3),
                   ylim = c(0, .63),
                   expand = 0) +
-  labs(x = "ROH Length",
-       y = "Cumulative *F<sub>ROH</sub>*",
+  labs(x = "ROH length",
+       y = "Cumulative *F*<sub>ROH</sub>",
        subtitle = glue("min ROH length: {sprintf('%.0f',roh_length_threshold*1e-3)}kb"))+
   theme_ms() +
   theme(axis.title.y = ggtext::element_markdown(family = fnt_sel),
@@ -334,8 +334,8 @@ plot_cum_froh_raw <- \(roh_length_threshold = 1e3){
     coord_cartesian(xlim = c(2.8, 7.3),
                     ylim = c(0, .63),
                     expand = 0) +
-    labs(x = "ROH Length",
-         y = "Cumulative F<sub>ROH</sub>",
+    labs(x = "ROH length",
+         y = "Cumulative *F*<sub>ROH</sub>",
          subtitle = glue("min ROH length: {sprintf('%.0f',roh_length_threshold*1e-3)}kb"))+
     theme_ms() +
     theme(axis.title.y = ggtext::element_markdown(family = fnt_sel),

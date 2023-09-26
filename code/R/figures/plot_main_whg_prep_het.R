@@ -49,7 +49,7 @@ p1b <- data_avg_ind |>
               shape = 21,
               aes( color = treatment,
               fill = after_scale(clr_alpha(color)))) +
-  labs(y = "Genome wide average heterozygosity") +
+  labs(y = "Heterozygosity") +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
                      guide = "none") +
   theme_ms() +
@@ -59,7 +59,6 @@ p1b <- data_avg_ind |>
 
 saveRDS(object = p1b,
         here("results/img/R/p_het_ind_bp_pheno.Rds"))  
-
 
 p2 <- data_avg_ind |> 
   ggplot(aes(x = spec, y = avg_het_snp)) +

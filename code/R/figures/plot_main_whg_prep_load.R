@@ -34,38 +34,12 @@ data_load <- expand_grid(sample_id = samples$sample_id,
   pmap_dfr(read_all_load) |> 
   mutate(load_type = factor(load_type, levels = load_types))
 
-set.seed(42)
-p1 <- data_load |> 
-  filter(snp_subset == "anc") |> 
-  ggplot(aes(x = load_type, y = n_snps, color = treatment)) +
-  geom_jitter(shape = 21,
-              height = 0, width = .25,
-              aes(fill = after_scale(clr_alpha(color))),
-              size = 2)+#, aes(color = sample_id == "160488")) +
-  facet_grid(. ~ spec, scales = "free", switch = "y") +
-  scale_color_manual("Phenotype",
-                     values = clr_pheno,
-                     na.value = clr_default[2],
-                     guide = guide_legend(title.position = "top")) +
-  labs(y = "Load Tally (n SNPs)",
-       subtitle = "Load Tally by Load Type") +
-  theme_ms() +
-  theme(#panel.background = element_rect(color = "gray80"),
-    axis.line = element_line(),
-    axis.ticks = element_line(color = "gray80"),
-    strip.placement = "outside",
-    axis.title.x = element_blank(),
-    legend.position = "bottom",
-    legend.title = element_text(hjust = .5))
-
-saveRDS(object = p1,
-        here("results/img/R/p_load_by_type.Rds"))  
-
-load_labs <- c("inbreeding load",
+load_labs <- c("inbreeding\nload",
                "segregating", 
                "drift")
 
-p1b <- data_load |> 
+set.seed(42)
+p1 <- data_load |> 
   filter(snp_subset == "anc") |> 
   mutate(load_label = c(masked = load_labs[[1]],
                         fixed = load_labs[[3]],
@@ -73,7 +47,8 @@ p1b <- data_load |>
            factor(levels = load_labs),
          load_nest = c(masked = "",
                        fixed = "realised load",
-                       expressed = "realised load")[as.character(load_type)]) |> 
+                       expressed = "realised load")[as.character(load_type)],
+         treatment = factor(treatment, levels = names(clr_pheno)[c(1,2,4,3)])) |> 
   ggplot(aes(x = load_label, 
              y = n_snps,
              color = treatment)) +
@@ -81,7 +56,7 @@ p1b <- data_load |>
               height = 0, width = .25,
               aes(fill = after_scale(clr_alpha(color))))+#, aes(color = sample_id == "160488")) +
   geomtextpath::geom_textsegment(inherit.aes = FALSE,
-                                 data = tibble(y = -26, xmin = 1.7, xmax = 3.3),
+                                 data = tibble(y = -24, xmin = 1.7, xmax = 3.3),
                                  aes(y = y, yend = y, x = xmin, xend = xmax, label = "realised load"),
                                  linewidth = .2, family = fnt_sel, size = 3) +
   facet_grid(. ~ spec_names[spec], scales = "free", switch = "y") +
@@ -93,7 +68,7 @@ p1b <- data_load |>
                   ylim = c(0,235),
                   xlim = c(.4, 3.6),
                   expand = 0) +
-  labs(y = "Load Tally (n SNPs)",
+  labs(y = "Load tally (no. SNPs)",
        subtitle = "Load Tally by Load Type") +
   theme_ms() +
   theme(#panel.background = element_rect(color = "gray80"),
@@ -102,12 +77,14 @@ p1b <- data_load |>
     # legend.margin = margin(5,0,5,0,"pt"),
     legend.background = element_blank(),
     strip.placement = "outside",
+    strip.text = element_text(face = "italic"),
     axis.title.x = element_blank(),
     legend.position = "bottom",
     legend.title = element_text(hjust = .5))
 
-saveRDS(object = p1b,
-        here("results/img/R/p_load_by_type_b.Rds"))  
+saveRDS(object = p1,
+        here("results/img/R/p_load_by_type_b.Rds"))
+
 clr_lab <- c(clr_pheno, mirang = clr_default[2])
 clr_load_lab <- clr_load |> 
   set_names(nm = c(total = "total",
@@ -115,7 +92,7 @@ clr_load_lab <- clr_load |>
                    fixed = load_labs[[3]],
                    expressed = load_labs[[2]])[names(clr_load)])
 
-p2b <- data_load |> 
+p2 <- data_load |> 
   filter(snp_subset == "anc") |>
   mutate(sample_ord = factor(str_c(spec, replace_na(treatment, "mirang"), sample_id)),
          sample_lab = fct_reorder(glue("<span style='color:{clr_lab[replace_na(treatment, 'mirang')]}'>{sample_id}</span>"),
@@ -126,12 +103,13 @@ p2b <- data_load |>
            factor(levels = load_labs)) |> 
   ggplot(aes(x = sample_lab, y = n_snps)) +
   geom_bar(stat = 'identity', aes(fill = load_label))+
-  scale_fill_manual("Load Type",
+  scale_fill_manual("Load type",
                     values = clr_load_lab,
+                    labels = \(x){str_remove(x, "\\nload")}, 
                     guide = guide_legend(title.position = "top")) +
   coord_cartesian(xlim = c(.4,30.6),
                   expand = 0) +
-  labs(y = "Load Tally (n SNPs)",
+  labs(y = "Load tally (no. SNPs)",
        subtitle = "Individual Cummulative Load Tally") +
   theme_ms() +
   theme(axis.text.x = ggtext::element_markdown(angle = 90,
@@ -141,5 +119,5 @@ p2b <- data_load |>
         legend.position = "bottom",
         legend.title = element_text(hjust = .5))
 
-saveRDS(object = p2b,
+saveRDS(object = p2,
         here("results/img/R/p_load_by_ind_b.Rds"))  

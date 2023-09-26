@@ -2,7 +2,6 @@ library(tidyverse)
 library(prismatic)
 library(here)
 library(glue)
-# library(ggdist)
 source(here("code/R/project_defaults_shared.R"))
 
 read_pi <- \(part){read_csv(here(glue("results/pi/mirang_pi_dxy_{part}.tsv.gz")))}
@@ -39,16 +38,16 @@ p_pi <- data_pi_plot |>
              color = clr_default[[2]],
              fill = clr_alpha("white", .75),
              size = 2, shape  = 21) +
-  geom_text(data = data_pi_plot |> 
-              group_by(species) |> 
-              summarise(range = print_range(pi)),
-            aes(y = .004, label = range),
-            color = clr_default[[2]],
-            family = fnt_sel,
-            size = 3) +
+  # geom_text(data = data_pi_plot |> 
+  #             group_by(species) |> 
+  #             summarise(range = print_range(pi)),
+  #           aes(y = .004, label = range),
+  #           color = clr_default[[2]],
+  #           family = fnt_sel,
+  #           size = 3) +
   coord_cartesian(ylim = c(0,.004)) +
   scale_x_discrete(labels = \(x){spec_names[x]}) +
-  labs(y = "Nucleotide Diversity (\U03C0)") +
+  labs(y = "Nucleotide diversity (\U03C0)") +
   theme_ms() +
   theme(axis.text.x = element_text(face = "italic"),
         axis.title.x = element_blank())
