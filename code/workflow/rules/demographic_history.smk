@@ -33,7 +33,7 @@ rule all_demography:
       fs_iter = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.lhoods", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES ),
       bs_idx = expand( "../results/demography/bootstrap/{spec}_on_{ref}_bs_{idx}", ref = "mirang", spec = "mirang", idx = BOOTSTRAP_N ),
       bs_best = expand( "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bootstrap/bs_{idx}/all_lhoods.tsv", ref = "mirang", spec = "mirang", fs_run = DEM_TYPES, idx = BOOTSTRAP_N )
-    output: touch( "results/checkpoints/deomgraphy_done.check")
+    output: touch( "../results/checkpoints/deomgraphy_done.check")
 
 rule create_pop2_files:
     input:
