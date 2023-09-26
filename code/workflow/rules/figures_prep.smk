@@ -31,7 +31,7 @@ rule data_dem:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/fastsimcoal_data_merge_whg_rad.R
+      Rscript --vanilla R/fastsimcoal_data_merge_whg_rad.R
       """
 
 # --- whole genome figures -------------
@@ -42,7 +42,7 @@ rule plotprep_whg_pi:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_whg_prep_pi.R
+      Rscript --vanilla R/figures/plot_main_whg_prep_pi.R
       """
 
 rule plot_data_whg_het_ind:
@@ -55,7 +55,7 @@ rule plot_data_whg_het_ind:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/het_data_by_ind.R
+      Rscript --vanilla R/het_data_by_ind.R
       """
 
 rule plot_data_whg_het_spec:
@@ -67,7 +67,7 @@ rule plot_data_whg_het_spec:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/het_data_by_spec.R
+      Rscript --vanilla R/het_data_by_spec.R
       """
 
 rule plotprep_whg_het:
@@ -80,7 +80,7 @@ rule plotprep_whg_het:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_whg_prep_het.R
+      Rscript --vanilla R/figures/plot_main_whg_prep_het.R
       """
 
 rule plotprep_whg_froh:
@@ -98,7 +98,7 @@ rule plotprep_whg_froh:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_whg_prep_roh.R
+      Rscript --vanilla R/figures/plot_main_whg_prep_roh.R
       """
 
 rule plotprep_whg_load:
@@ -114,5 +114,5 @@ rule plotprep_whg_load:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_whg_prep_roh.R
+      Rscript --vanilla R/figures/plot_main_whg_prep_roh.R
       """

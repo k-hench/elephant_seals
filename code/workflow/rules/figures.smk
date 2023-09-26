@@ -18,7 +18,7 @@ rule fig_dem:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_demography.R
+      Rscript --vanilla R/figures/plot_main_demography.R
       """
 
 rule fig_whg:
@@ -34,7 +34,7 @@ rule fig_whg:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_main_whg.R
+      Rscript --vanilla R/figures/plot_main_whg.R
       """
 
 # requires imported results from RAD analysis
@@ -47,5 +47,5 @@ rule sup_fig_dem:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla code/R/figures/plot_si_demography.R
+      Rscript --vanilla R/figures/plot_si_demography.R
       """
