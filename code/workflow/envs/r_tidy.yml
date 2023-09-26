@@ -30,6 +30,9 @@ dependencies:
  - conda-forge::r-renv=0.17.3
  - conda-forge::r-biocmanager=1.30.20 
  - conda-forge::r-envstats=2.7.0 
+ - conda-forge::r-r.utils=2.12.2
+ - conda-forge::r-ggtext=0.1.2
+ - conda-forge::r-ggrastr=1.0.2 
  - bioconda::bioconductor-ggtree=3.6.0
  - bioconda::bioconductor-plyranges=1.18.0
 

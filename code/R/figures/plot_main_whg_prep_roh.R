@@ -5,7 +5,6 @@ library(glue)
 library(prismatic)
 library(ggridges)
 library(here)
-library(ggrastr)
 source(here("code/R/project_defaults.R"))
 source(here("code/R/project_defaults_shared.R"))
 
