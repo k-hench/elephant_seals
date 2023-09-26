@@ -32,7 +32,7 @@ convert_012_to_het <- \(mat){1 - abs(1 - mat)}
 
 avg_het_by_snp <- \(spec){
 
-  geno_mat <- (fread(glue("results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"), sep = "\t"))[,-1] |> as.matrix()
+  geno_mat <- (fread(here(glue("results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz")), sep = "\t"))[,-1] |> as.matrix()
   geno_mat[geno_mat == -1] <- NA
   cum_het <- colSums(convert_012_to_het(geno_mat), na.rm = TRUE)
   n_typed <- colSums(!is.na(geno_mat), na.rm = TRUE)
@@ -46,7 +46,7 @@ avg_het <- list(
 )
 
 win_avg_het <- \(spec){
-  snp_ids <- read_tsv(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.pos"),
+  snp_ids <- read_tsv(here(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.pos")),
                       col_names = c("chr", "pos")) |>
     mutate(snp = str_c(chr,"_",pos))
   

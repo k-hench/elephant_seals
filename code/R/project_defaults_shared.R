@@ -1,19 +1,20 @@
 library(ggplot2)
 library(purrr)
 library(prismatic)
+
 # the default font family
 fnt_sel <- "Arial"
 
 # the default plotting color as well as the secondary plotting color
-clr_default <- c("#6495ED", "#777777")
+clr_default <- c("#253741", "#7198AD")
 
 # the color scheme for the phenotypes
-clr_pheno <- RColorBrewer::brewer.pal(8, "Set1")[c(1,3:5,7:8)] |>
+clr_pheno <- c("#E41A1C", "#4DAF4A", "#984EA3", "#FF7F00", "#DEC102", "#E4A1A0") |> 
   color() |> 
   set_names(nm = c("Worms", "Bacteria", "Malnutrition", "Trauma", "Protozoa", "Congenital defect"))
 
 # the color scheme for the load types
-clr_load <- c("#000000", "gray80", "gray35", "gray60") |> 
+clr_load <- c("#000000", "#ADD2E8", "#253741", "#7198AD") |> 
   color() |> 
   set_names(nm = "total", "masked", "fixed", "expressed")
 

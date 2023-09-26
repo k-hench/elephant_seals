@@ -29,12 +29,12 @@ window_mirang <- slide_ranges(genome, width = window_width, step = window_step)
 convert_012_to_hom <- \(mat){abs(1 - mat)}
 
 run_window_het <- \(spec = "mirang", smpl_idx = 01){
-  snp_ids <- read_tsv(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.pos"),
+  snp_ids <- read_tsv(here(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.pos")),
                       col_names = c("chr", "pos")) |>
     mutate(snp = str_c(chr,"_",pos))
-  inds <- read_lines(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.indv"))
+  inds <- read_lines(here(glue("results/genotyping/012/mirang_filtered_{spec}_012.012.indv")))
   
-  geno_mat <- (fread(glue("results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz"), sep = "\t")[smpl_idx,]) |> as.matrix()
+  geno_mat <- (fread(here(glue("results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz")), sep = "\t")[smpl_idx,]) |> as.matrix()
   geno_mat[geno_mat == -1] <- NA
   
   granges_012 <- snp_ids |> 
