@@ -1,3 +1,4 @@
+library(prismatic)
 mm_to_inch <- 25.4
 fwidth <- 178 / mm_to_inch
 fhalfwidth <- 87 / mm_to_inch
