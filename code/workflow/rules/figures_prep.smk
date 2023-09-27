@@ -114,5 +114,5 @@ rule plotprep_whg_load:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla R/figures/plot_main_whg_prep_roh.R
+      Rscript --vanilla R/figures/plot_main_whg_prep_load.R
       """
