@@ -4,7 +4,7 @@ library(ggtext)
 library(here)
 library(glue)
 library(patchwork)
-source("code/R/project_defaults_shared.R")
+source(here("code/R/project_defaults_shared.R"))
 
 demtype_ord <- c("whg_null","whg_bot10" ,"whg_bot06", "rad_null",  "rad_bot10", "rad_bot06", "rad_bot06_1k")
 

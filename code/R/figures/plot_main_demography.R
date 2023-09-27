@@ -4,7 +4,7 @@ library(ggtext)
 library(here)
 library(glue)
 library(patchwork)
-source("code/R/project_defaults_shared.R")
+source(here("code/R/project_defaults_shared.R"))
 
 # --- set key variable ---------
 target_dem <- "rad_bot06_1k"
