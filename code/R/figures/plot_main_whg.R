@@ -26,7 +26,7 @@ p_out <- (p_pi + p_het + p_froh) /
   theme(plot.tag = element_text(family = fnt_sel),
         plot.subtitle = element_blank())
 
-ggsave(filename = "results/img/final/f_whg.pdf",
+ggsave(filename = here("results/img/final/f_whg.pdf"),
        plot = p_out, 
        width = 12,
        height = 8,
@@ -39,7 +39,7 @@ p_out_alt <- (p_pi + p_het + p_froh_cum) /
         plot.subtitle = element_blank())
 
 
-ggsave(filename = "results/img/main_draft_alt.pdf",
+ggsave(filename = here("results/img/main_draft_alt.pdf"),
        plot = p_out_alt, 
        width = 12,
        height = 8,

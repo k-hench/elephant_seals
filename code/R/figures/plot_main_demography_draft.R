@@ -194,7 +194,7 @@ p1b <- p1 +
                   ylim = c(-1e3,2.7e4),
                   expand = 0)
 
-ggsave(filename = "results/img/demography/param_single_panel_nbot_only_b.pdf",
+ggsave(filename = here("results/img/demography/param_single_panel_nbot_only_b.pdf"),
        plot = p1b, 
        width = 9, height = 6, device = cairo_pdf)
 
@@ -265,7 +265,7 @@ p1c <- p1 +
                   ylim = c(-1e3,2.7e4),
                   expand = 0)
 
-ggsave(filename = "results/img/demography/param_single_panel_nbot_ncur_b_update.pdf",
+ggsave(filename = here("results/img/demography/param_single_panel_nbot_ncur_b_update.pdf"),
        plot = p1c,
        width = 9, height = 6, device = cairo_pdf)
 
@@ -403,7 +403,7 @@ p3c <- data_bot_plot |>
                     ymax = 25500)
 )
 
-ggsave(filename = "results/img/demography/param_single_panel_nbot_ncur_b_alternative.pdf",
+ggsave(filename = here("results/img/demography/param_single_panel_nbot_ncur_b_alternative.pdf"),
        plot = p3,
        width = 8, height = 4,
        device = cairo_pdf)
@@ -493,7 +493,7 @@ p4 <- p4a +
                       ymin = 10000, 
                       ymax = 17500)
 
-ggsave(filename = "results/img/demography/param_single_panel_nbot_ncur_b_alternative2.pdf",
+ggsave(filename = here("results/img/demography/param_single_panel_nbot_ncur_b_alternative2.pdf"),
        plot = p4,
        width = 8, height = 3.5,
        device = cairo_pdf)
@@ -594,7 +594,7 @@ p5c <- data_bot_plot |>
                     ymin = 14500, 
                     ymax = 27000))
 
-ggsave(filename = "results/img/demography/param_single_panel_nbot_ncur_b_alternative3.pdf",
+ggsave(filename = here("results/img/demography/param_single_panel_nbot_ncur_b_alternative3.pdf"),
        plot = p5,
        width = 8, height = 5.5,
        device = cairo_pdf)

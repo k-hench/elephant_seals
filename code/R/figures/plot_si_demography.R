@@ -52,10 +52,14 @@ p_units <- c(NLGM = "*N<sub>eLGM</sub>* (*N<sub>e</sub>*)",
              NCUR = "*N<sub>ePOSTBOT</sub>* (*N<sub>e</sub>*)",
              T1 = "*T<sub>se</sub>* (generations)")
 
-names(p_units) |> 
+p_out <- names(p_units) |> 
   map(plot_param) |> 
   wrap_plots() +
   plot_annotation(tag_levels = "a",
                   tag_suffix = ")") &
   theme(text = element_text(family = fnt_sel))
 
+ggsave(filename = here("results/img/final/sf_dem.pdf"),
+       plot = p_out,
+       width = 8, height = 5.5,
+       device = cairo_pdf)
