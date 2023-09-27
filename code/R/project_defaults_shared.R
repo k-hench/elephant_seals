@@ -22,6 +22,8 @@ clr_f_traj <- colorRampPalette(colors = c("gray90",
                                           clr_default[[1]], 
                                           clr_darken(clr_default[[1]],.85)))
 
+point_sz <- 2
+
 clr_lines <- "black"
 
 theme_ms <- \(..., lwd = .2){

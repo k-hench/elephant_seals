@@ -54,6 +54,7 @@ p1 <- data_load |>
              color = treatment)) +
   geom_jitter(shape = 21,
               height = 0, width = .25,
+              size = point_sz,
               aes(fill = after_scale(clr_alpha(color))))+#, aes(color = sample_id == "160488")) +
   geomtextpath::geom_textsegment(inherit.aes = FALSE,
                                  data = tibble(y = -24, xmin = 1.7, xmax = 3.3),

@@ -100,6 +100,7 @@ p1 <- roh_summary_by_sample |>
   ggplot(aes(x = spec_names[spec], y = f_roh)) +
   geom_jitter(aes(color = treatment,
                fill = after_scale(clr_alpha(color))),
+              size = point_sz,
               height = 0, shape = 21, width = .25) +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
                      guide = "none") +

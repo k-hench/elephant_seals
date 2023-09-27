@@ -46,7 +46,7 @@ saveRDS(object = p1,
 p1b <- data_avg_ind |> 
   ggplot(aes(x = spec_names[spec], y = avg_het_bp)) +
   geom_jitter(height = 0, width = .33,
-              shape = 21,
+              shape = 21, size = point_sz,
               aes( color = treatment,
               fill = after_scale(clr_alpha(color)))) +
   labs(y = "Heterozygosity") +
@@ -63,6 +63,7 @@ saveRDS(object = p1b,
 p2 <- data_avg_ind |> 
   ggplot(aes(x = spec, y = avg_het_snp)) +
   geom_jitter(height = 0, width = .33,
+              size = point_sz,
               shape = 21, color = clr_default[[1]],
               fill = clr_alpha(clr_default[[1]])) +
   labs(y = "Heterozygosity across samples (avg. over SNPs)",

@@ -20,6 +20,7 @@ p_froh_cum <- readRDS(here("results/img/R/p_cum_f_rho_callable_pheno.Rds"))
 p_load_type <- readRDS(here("results/img/R/p_load_by_type_b.Rds")) + theme(axis.ticks = element_line(color ="black"))
 p_load_ind <- readRDS(here("results/img/R/p_load_by_ind_b.Rds"))
 
+set.seed(42)
 p_out <- (p_pi + p_het + p_froh) /
   (p_load_type + p_load_ind) +
   plot_annotation(tag_levels = "a", tag_suffix = ")") &

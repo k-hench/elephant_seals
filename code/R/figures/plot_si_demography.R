@@ -6,13 +6,19 @@ library(glue)
 library(patchwork)
 source(here("code/R/project_defaults_shared.R"))
 
-demtype_ord <- c("whg_null","whg_bot10" ,"whg_bot06", "rad_null",  "rad_bot10", "rad_bot06", "rad_bot06_1k")
+demtype_ord <- c("whg_null","whg_bot10" ,"whg_bot06", "rad_null",  "rad_bot10", "rad_bot06")#, "rad_bot06_1k")
 
-data_boot <- read_tsv(here("results/demography/all_models_raw_boots.tsv")) |>  mutate(demtype = factor(demtype, levels = demtype_ord))
-data_ci <- read_tsv(here("results/demography/all_models_ci_boots.tsv")) |>  mutate(demtype = factor(demtype, levels = demtype_ord))
-data_estimates <- read_tsv(here("results/demography/all_models_estimates.tsv")) |>  mutate(demtype = factor(demtype, levels = demtype_ord))
+data_boot <- read_tsv(here("results/demography/all_models_raw_boots.tsv")) |>
+  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
+  filter(demtype != "rad_bot06_1k")
+data_ci <- read_tsv(here("results/demography/all_models_ci_boots.tsv")) |>
+  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
+  filter(demtype != "rad_bot06_1k")
+data_estimates <- read_tsv(here("results/demography/all_models_estimates.tsv")) |> 
+  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
+  filter(demtype != "rad_bot06_1k")
 
-target_dem <- "rad_bot06_1k"
+target_dem <- "rad_bot06"
 
 plot_param <- \(param){
 ggplot(mapping = aes(x = .data[[param]], y = demtype)) +
@@ -21,7 +27,7 @@ ggplot(mapping = aes(x = .data[[param]], y = demtype)) +
                 fill = after_scale(clr_alpha(color))),
             normalize = "xy",
             adjust = .8,
-            linewidth = .2,
+            linewidth = .5,
             height = .8,
             trim = FALSE, density = density_unbounded ) +
   geom_linerange(data = data_ci |> filter(stat == param),
@@ -38,18 +44,18 @@ ggplot(mapping = aes(x = .data[[param]], y = demtype)) +
   scale_color_manual(values = c(`TRUE` = clr_darken(clr_default[[1]]),
                                 `FALSE` = clr_darken(clr_default[[2]])),
                      guide = "none") +
-   labs(x = p_units[[param]]) +
+  labs(x = p_units[[param]],
+        y = "Model") +
   theme_ms() +
   theme(panel.border = element_blank(),
         axis.line = element_line(),
-        axis.title.y = element_blank(),
         axis.title.x = element_markdown())
 }
 
-p_units <- c(NLGM = "*N<sub>eLGM</sub>* (*N<sub>e</sub>*)",
-             NANC = "*N<sub>ePREBOT</sub>* (*N<sub>e</sub>*)",
-             NBOT = "*N<sub>eBOT</sub>* (*N<sub>e</sub>*)",
-             NCUR = "*N<sub>ePOSTBOT</sub>* (*N<sub>e</sub>*)",
+p_units <- c(NLGM = "*N*<sub>*e*LGM</sub> (*N<sub>e</sub>*)",
+             NANC = "*N*<sub>*e*PREBOT</sub> (*N<sub>e</sub>*)",
+             NBOT = "*N*<sub>*e*BOT</sub> (*N<sub>e</sub>*)",
+             NCUR = "*N*<sub>*e*POSTBOT</sub> (*N<sub>e</sub>*)",
              T1 = "*T<sub>se</sub>* (generations)")
 
 p_out <- names(p_units) |> 

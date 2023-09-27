@@ -9,10 +9,10 @@ source(here("code/R/project_defaults_shared.R"))
 # --- set key variable ---------
 target_dem <- "rad_bot06_1k"
 ne_levels <- c("NCUR", "NBOT", "NANC", "NLGM")
-ne_labels <- c(NLGM = "*N<sub>eLGM</sub>*",
-               NANC = "*N<sub>ePREBOT</sub>*",
-               NBOT = "*N<sub>eBOT</sub>*",
-               NCUR = "*N<sub>ePOSTBOT</sub>*")
+ne_labels <- c(NLGM = "*N*<sub>*e*LGM</sub>",
+               NANC = "*N*<sub>*e*PREBOT</sub>",
+               NBOT = "*N*<sub>*e*BOT</sub>",
+               NCUR = "*N*<sub>*e*POSTBOT</sub>")
 
 clr_range <- "black"
 
@@ -65,23 +65,24 @@ data_estimates <- read_tsv(here("results/demography/all_models_estimates.tsv")) 
 
 p1 <- data_boot |> 
   ggplot(aes(x = value, y = stat)) +
+  geom_path(data = data_estimates |> 
+              arrange(stat),
+            aes(group = 1),
+            linetype = 2,
+            linewidth = .5,
+            color = "red") +
   stat_slab(data = data_boot,
             color = clr_default[[1]],
             fill = clr_alpha(clr_default[[1]]),
             normalize = "xy",
             adjust = .8,
-            linewidth = .2,
+            linewidth = .5,
             height = .9,
             trim = FALSE, density = density_unbounded ) +
-  geom_path(data = data_estimates |> 
-              arrange(stat),
-            aes(group = 1),
-            linetype = 3,
-            color = clr_default[[1]]) +
   geom_ci() +
   scale_y_discrete(limits = factor(ne_levels), label = \(x){glue("{ne_labels[x]}")}) +
   coord_cartesian(xlim = c(0, 28000)) +
-  labs(x = "*N<sub>e</sub>*", y = NULL) +
+  labs(x = "*N<sub>e</sub>*", y = "Demographic parameter") +
   theme_ms() +
   theme(panel.border = element_blank(),
         axis.line = element_line(),
@@ -96,8 +97,10 @@ p1 <- data_boot |>
 p2 <- data_boot |> 
   filter(stat %in% c("NBOT")) |> 
   ggplot(mapping = aes(y = stat, x = value)) +
-  stat_slab(fill = clr_alpha(clr_default[[1]]),
+  stat_slab(color = clr_default[[1]],
+            fill = clr_alpha(clr_default[[1]]),
             adjust = 2.5, height = .6,
+            linewidth = .5,
             trim = FALSE, density = density_unbounded ) +
   geom_ci(data_e = data_estimates |> 
             filter(stat %in% c("NBOT")),
@@ -121,8 +124,10 @@ p2 <- data_boot |>
 p3 <- data_boot |> 
   filter(stat %in% c("NCUR")) |> 
   ggplot(mapping = aes(x = value, y = stat)) +
-  stat_slab(fill = clr_alpha(clr_default[[1]]),
+  stat_slab(color = clr_default[[1]],
+            fill = clr_alpha(clr_default[[1]]),
             adjust = 2.5, height = .6,
+            linewidth = .5,
             trim = FALSE, density = density_unbounded ) +
   geom_ci(data_e = data_estimates |> 
             filter(stat %in% c("NCUR")),
