@@ -32,6 +32,11 @@ ggsave(filename = here("results/img/final/f_whg.pdf"),
        height = 8,
        device = cairo_pdf)
 
+ggsave(filename = here("results/img/final/f_whg.png"),
+       plot = p_out, 
+       width = 12,
+       height = 8)
+
 p_out_alt <- (p_pi + p_het + p_froh_cum) /
   (p_load_type + p_load_ind) +
   plot_annotation(tag_levels = "a") &

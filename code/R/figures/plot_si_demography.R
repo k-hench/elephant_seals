@@ -63,3 +63,7 @@ ggsave(filename = here("results/img/final/sf_dem.pdf"),
        plot = p_out,
        width = 10, height = 7,
        device = cairo_pdf)
+
+ggsave(filename = here("results/img/final/sf_dem.png"),
+       plot = p_out,
+       width = 10, height = 7)
