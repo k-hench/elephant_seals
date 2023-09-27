@@ -61,5 +61,5 @@ p_out <- names(p_units) |>
 
 ggsave(filename = here("results/img/final/sf_dem.pdf"),
        plot = p_out,
-       width = 8, height = 5.5,
+       width = 10, height = 7,
        device = cairo_pdf)

@@ -144,8 +144,7 @@ p3 <- data_boot |>
         plot.subtitle = element_text(hjust = .5))
 
 
-(p_out <- p1 +
-    # geom_vline(linetype = 2, xintercept = c(1,2), linewidth = .2) +
+p_out <- p1 +
     annotation_custom(grob = ggplotGrob(p2),
                       ymin = 1.475,
                       ymax = 2.4,
@@ -155,7 +154,7 @@ p3 <- data_boot |>
                       ymin = 0.425,
                       ymax = 1.4,
                       xmin = 14500, 
-                      xmax = 27000))
+                      xmax = 27000)
 
 ggsave(filename = here("results/img/final/f_dem.pdf"),
        plot = p_out,
