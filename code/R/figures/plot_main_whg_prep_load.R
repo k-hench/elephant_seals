@@ -5,7 +5,7 @@ library(prismatic)
 library(patchwork)
 source(here("code/R/project_defaults_shared.R"))
 
-samples <- read_tsv("data/file_info.tsv") |> 
+samples <- read_tsv(here("data/file_info.tsv")) |> 
   select(sample_id, spec, treatment) |> 
   filter(!duplicated(sample_id))
 
