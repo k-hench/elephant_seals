@@ -85,7 +85,7 @@ p1 <- data_load |>
 saveRDS(object = p1,
         here("results/img/R/p_load_by_type_b.Rds"))
 
-clr_lab <- c(clr_pheno, mirang = clr_default[2])
+clr_lab <- c(clr_pheno, mirang = "black")
 clr_load_lab <- clr_load |> 
   set_names(nm = c(total = "total",
                    masked = load_labs[[1]],
