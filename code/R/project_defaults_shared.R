@@ -22,6 +22,7 @@ clr_f_traj <- colorRampPalette(colors = c("gray90",
                                           clr_default[[1]], 
                                           clr_darken(clr_default[[1]],.85)))
 
+clr_red_line <- "#ca562c"
 point_sz <- 2
 
 clr_lines <- "black"

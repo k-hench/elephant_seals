@@ -37,7 +37,7 @@ p_pi <- data_pi_plot |>
   geom_point(data = avg_pi,
              color = clr_default[[2]],
              fill = clr_alpha("white", .75),
-             size = 2, shape  = 21) +
+             size = point_sz, shape  = 21) +
   # geom_text(data = data_pi_plot |> 
   #             group_by(species) |> 
   #             summarise(range = print_range(pi)),

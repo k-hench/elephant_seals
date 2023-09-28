@@ -57,7 +57,7 @@ p1 <- data_load |>
               size = point_sz,
               aes(fill = after_scale(clr_alpha(color))))+#, aes(color = sample_id == "160488")) +
   geomtextpath::geom_textsegment(inherit.aes = FALSE,
-                                 data = tibble(y = -24, xmin = 1.7, xmax = 3.3),
+                                 data = tibble(y = -30, xmin = 1.7, xmax = 3.3),
                                  aes(y = y, yend = y, x = xmin, xend = xmax, label = "realised load"),
                                  linewidth = .2, family = fnt_sel, size = 3) +
   facet_grid(. ~ spec_names[spec], scales = "free", switch = "y") +

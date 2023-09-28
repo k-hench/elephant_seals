@@ -6,17 +6,19 @@ library(glue)
 library(patchwork)
 source(here("code/R/project_defaults_shared.R"))
 
+upper_3 <- \(x){str_replace(str_replace(x, "^whg", "wgs"), "^[a-z]{3}", toupper)}
+
 demtype_ord <- c("whg_null","whg_bot10" ,"whg_bot06", "rad_null",  "rad_bot10", "rad_bot06")#, "rad_bot06_1k")
 
 data_boot <- read_tsv(here("results/demography/all_models_raw_boots.tsv")) |>
-  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
-  filter(demtype != "rad_bot06_1k")
+  mutate(demtype = factor(upper_3(demtype), levels = upper_3(demtype_ord))) |> 
+  filter(demtype != upper_3("rad_bot06_1k"))
 data_ci <- read_tsv(here("results/demography/all_models_ci_boots.tsv")) |>
-  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
-  filter(demtype != "rad_bot06_1k")
+  mutate(demtype = factor(upper_3(demtype), levels = upper_3(demtype_ord))) |> 
+  filter(demtype != upper_3("rad_bot06_1k"))
 data_estimates <- read_tsv(here("results/demography/all_models_estimates.tsv")) |> 
-  mutate(demtype = factor(demtype, levels = demtype_ord)) |> 
-  filter(demtype != "rad_bot06_1k")
+  mutate(demtype = factor(upper_3(demtype), levels = upper_3(demtype_ord))) |> 
+  filter(demtype != upper_3("rad_bot06_1k"))
 
 target_dem <- "rad_bot06"
 
@@ -52,11 +54,11 @@ ggplot(mapping = aes(x = .data[[param]], y = demtype)) +
         axis.title.x = element_markdown())
 }
 
-p_units <- c(NLGM = "*N*<sub>*e*LGM</sub> (*N<sub>e</sub>*)",
-             NANC = "*N*<sub>*e*PREBOT</sub> (*N<sub>e</sub>*)",
-             NBOT = "*N*<sub>*e*BOT</sub> (*N<sub>e</sub>*)",
-             NCUR = "*N*<sub>*e*POSTBOT</sub> (*N<sub>e</sub>*)",
-             T1 = "*T<sub>se</sub>* (generations)")
+p_units <- c(NLGM = "*N*<sub>eLGM</sub>",
+             NANC = "*N*<sub>ePREBOT</sub>",
+             NBOT = "*N*<sub>eBOT</sub>",
+             NCUR = "*N*<sub>ePOSTBOT</sub>",
+             T1 = "*T*<sub>se</sub> (generations)")
 
 p_out <- names(p_units) |> 
   map(plot_param) |> 

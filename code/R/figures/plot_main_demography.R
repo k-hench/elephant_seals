@@ -9,10 +9,10 @@ source(here("code/R/project_defaults_shared.R"))
 # --- set key variable ---------
 target_dem <- "rad_bot06_1k"
 ne_levels <- c("NCUR", "NBOT", "NANC", "NLGM")
-ne_labels <- c(NLGM = "*N*<sub>*e*LGM</sub>",
-               NANC = "*N*<sub>*e*PREBOT</sub>",
-               NBOT = "*N*<sub>*e*BOT</sub>",
-               NCUR = "*N*<sub>*e*POSTBOT</sub>")
+ne_labels <- c(NLGM = "*N*<sub>eLGM</sub>",
+               NANC = "*N*<sub>ePREBOT</sub>",
+               NBOT = "*N*<sub>eBOT</sub>",
+               NCUR = "*N*<sub>ePOSTBOT</sub>")
 
 clr_range <- "black"
 
@@ -69,8 +69,8 @@ p1 <- data_boot |>
               arrange(stat),
             aes(group = 1),
             linetype = 2,
-            linewidth = .5,
-            color = "red") +
+            linewidth = .3,
+            color = clr_red_line) +
   stat_slab(data = data_boot,
             color = clr_default[[1]],
             fill = clr_alpha(clr_default[[1]]),
@@ -81,8 +81,9 @@ p1 <- data_boot |>
             trim = FALSE, density = density_unbounded ) +
   geom_ci() +
   scale_y_discrete(limits = factor(ne_levels), label = \(x){glue("{ne_labels[x]}")}) +
+  scale_x_continuous(breaks = (0:5)*5000) +
   coord_cartesian(xlim = c(0, 28000)) +
-  labs(x = "*N<sub>e</sub>*", y = "Demographic parameter") +
+  labs(x = "*N*<sub>e</sub>", y = "Demographic parameter") +
   theme_ms() +
   theme(panel.border = element_blank(),
         axis.line = element_line(),
