@@ -6,7 +6,8 @@ rule final_figures:
     input:
       main_f2 = "../results/img/final/f_dem.pdf",
       main_f4 = "../results/img/final/f_whg.pdf",
-      si_sf6 = "../results/img/final/sf_dem.pdf"
+      si_sf6 = "../results/img/final/sf_dem.pdf",
+      si_sfX = "../results/img/final/sf_roh_length.pdf"
 
 # requires imported results from RAD analysis
 rule fig_dem:
@@ -48,4 +49,14 @@ rule sup_fig_dem:
     shell:
       """
       Rscript --vanilla R/figures/plot_si_demography.R
+      """
+
+rule sup_fig_roh_length:
+    input:
+      p_froh_cum_thresholds = "../results/img/R/p_cum_f_rho_callable_thresholds.Rds"
+    output: "../results/img/final/sf_roh_length.pdf"
+    conda: "r_tidy"
+    shell:
+      """
+      Rscript --vanilla R/figures/plot_si_roh_length.R
       """

@@ -7,7 +7,8 @@ source(here("code/R/project_defaults_shared.R"))
 read_pi <- \(part){read_csv(here(glue("results/pi/mirang_pi_dxy_{part}.tsv.gz")))}
 
 data_pi <- str_pad(1:20, width = 2, pad = "0") |> 
-  map_dfr(read_pi)
+  map_dfr(read_pi) |> 
+  filter( (start - 1) %% 100000 == 0)
 
 avg_pi <- data_pi |> 
   summarise(mirang = sum(sites *pi_mirang) / sum(sites),
@@ -54,3 +55,8 @@ p_pi <- data_pi_plot |>
 
 saveRDS(object = p_pi,
         here("results/img/R/p_pi.Rds"))  
+
+data_pi_plot |> 
+  group_by(species) |> 
+  summarise(min = min(pi),
+            max = max(pi))
