@@ -89,7 +89,7 @@ rule plotprep_whg_froh:
       spec_pops = expand( "../results/pop/inds_{spec}.pop", spec = BOTH_SPECS ),
       roh_data = expand( "../results/roh/bcftools/bed/max_callable/roh_max_{sample}_on_mirang.bed", sample = SAMPLES ),
       mirang_sex_chr = "../results/genomes/sex_chrom/mirang_sex_chrom.bed",
-      meverage_masks = expand( "../results/qc/coverage/masks/{sample}_on_mirang_binary_covmask.bed.gz", sample = SAMPLES ),
+      coverage_masks = expand( "../results/qc/coverage/masks/{sample}_on_mirang_binary_covmask.bed.gz", sample = SAMPLES ),
       file_info = "../data/file_info.tsv"
     output:
       p_froh = "../results/img/R/p_f_rho_callable_ind.Rds",

@@ -14,13 +14,13 @@ import_genomes <- function(spec){
            start_pos = lag(end_pos, default = 0),
            eo = idx %% 2)
 }
+
 import_pop <- \(spec){
   tibble(sample = read_lines(here(glue("results/pop/inds_{spec}.pop"))),
          spec = spec)}
 
 samples <- c("mirang", "mirleo") |> 
   map_dfr(import_pop)
-
 
 import_genomes <- function(spec){
   read_tsv(here("data", "genomes", "filtered", glue("{spec}_filt.fa.gz.fai")),

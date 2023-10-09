@@ -144,7 +144,7 @@ rule calculate_aic:
       Rscript {base_dir}/code/R/calculateAIC_kh.R {params.prefix}
       """
 
-rule likelihood_ditributions_bestrun:
+rule likelihood_distributions_bestrun:
     input:
       aic = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}/bestrun/{spec}_on_{ref}_{fs_run}.AIC",
       sfs_dir = "../results/demography/sfs/{spec}_on_{ref}"
