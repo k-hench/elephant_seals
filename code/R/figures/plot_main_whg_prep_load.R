@@ -122,3 +122,18 @@ p2 <- data_load |>
 
 saveRDS(object = p2,
         here("results/img/R/p_load_by_ind_b.Rds"))  
+
+data_load |> 
+  filter(snp_subset == "anc") |>
+  select(sample_id, spec, load_type, n_snps) |> 
+  pivot_wider(names_from = load_type, values_from = n_snps) |> 
+  mutate(total_load = masked + expressed + fixed,
+         realized_load = expressed + fixed) |> 
+  pivot_longer(-c(sample_id, spec), names_to = "load_type", values_to = "n_snps") |> 
+  group_by(spec, load_type) |> 
+  summarise(mean = mean(n_snps),
+            sd = sd(n_snps)) |> 
+  ungroup() |> 
+  pivot_wider(names_from = spec, values_from = c(mean, sd)) |> 
+  mutate(lab_ang = str_c(sprintf("%.1f", mean_mirang), " +/- ", sprintf("%.1f", sd_mirang)),
+         lab_leo = str_c(sprintf("%.1f", mean_mirleo), " +/- ", sprintf("%.1f", sd_mirleo)))

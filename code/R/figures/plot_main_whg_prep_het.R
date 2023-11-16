@@ -52,10 +52,17 @@ p1b <- data_avg_ind |>
   labs(y = "Heterozygosity") +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
                      guide = "none") +
+  coord_cartesian(ylim = c(0, .0018))+
   theme_ms() +
   theme(axis.title.x = element_blank(),
         axis.title.y = ggtext::element_markdown(family = fnt_sel),
         axis.text.x = element_text(face = "italic"))
+
+data_avg_ind |> 
+  group_by(spec) |> 
+  summarise(mean_het = mean(avg_het_bp),
+            sd_het = sd(avg_het_bp)) |> 
+  mutate(across(-spec, \(x){sprintf("%.6f", x)}))
 
 saveRDS(object = p1b,
         here("results/img/R/p_het_ind_bp_pheno.Rds"))  

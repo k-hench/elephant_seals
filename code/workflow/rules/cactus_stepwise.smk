@@ -3,22 +3,6 @@ snakemake --rerun-triggers mtime -n -R cactus_stepwise
 snakemake --dag -R  cactus_stepwise | dot -Tsvg > ../results/img/control/dag_cactus_step.svg
 snakemake --jobs 3 -R  cactus_stepwise
 
-snakemake --jobs 30 \
-  --latency-wait 30 \
-  -p \
-  --rerun-triggers mtime \
-  --default-resources mem_mb=51200 threads=1 \
-  --cluster '
-    qsub \
-      -V -cwd \
-      -P fair_share \
-      -l idle=1 \
-      -l si_flag=1 \
-      -pe multislot {threads} \
-      -l vf={resources.mem_mb}' \
-  --jn job_c.{name}.{jobid}.sh \
-  -R cactus_stepwise && mv job.* logs/
-
 snakemake --jobs 50 \
   --latency-wait 30 \
   -p \

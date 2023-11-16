@@ -10,6 +10,13 @@ data_pi <- str_pad(1:20, width = 2, pad = "0") |>
   map_dfr(read_pi) |> 
   filter( (start - 1) %% 100000 == 0)
 
+data_pi |> 
+  summarise(mean_ang = mean(pi_mirang),
+            sd_ang = sd(pi_mirang), 
+            mean_leo = mean(pi_mirleo),
+            sd_leo = sd(pi_mirleo)) |> 
+  mutate(across(everything(), \(x){sprintf("%.4f", x)}))
+
 avg_pi <- data_pi |> 
   summarise(mirang = sum(sites *pi_mirang) / sum(sites),
             mirleo = sum(sites *pi_mirleo) / sum(sites)) |> 

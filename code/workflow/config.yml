@@ -82,7 +82,7 @@ speciesTree: "((((((((pumcon,pumyag),acijub),(lynruf,(lyncan,lynpar))),((((priir
 # cactus_sif:
 # apptainer pull docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1
 cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
-cactus_cores: "8"
+cactus_cores: "24"
 
 # optional repeat masking
 need_masking:

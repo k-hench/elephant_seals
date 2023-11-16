@@ -54,6 +54,7 @@ data <- samples$sample |>
          sample_ord = as.numeric(factor(str_c(spec,"_" , str_pad(str_remove(sample, "[A-Z]*"), width = 7, pad = "0")))),
          sample_lab = str_c(glue("<span style='color:{clr_lab[spec]}'>"),sample,"</span>"))
 
+# numeric summary for reduced F_ROH estimates
 genome_mirang <- genomes |>
   filter(spec == "mirang") |>
   mutate(mid_pos = (start_pos + end_pos) / 2)
@@ -113,6 +114,12 @@ p1 <- roh_summary_by_sample |>
 
 saveRDS(object = p1,
         here(glue("results/img/R/p_f_rho_{roh_version}_ind.Rds")))
+
+roh_summary_by_sample |> 
+  group_by(spec) |> 
+  summarise(mean_froh = mean(f_roh),
+            sd_froh = sd(f_roh)) |> 
+  mutate(across(-spec, \(x){sprintf("%.2f", x)}))
 
 genome_length_autosomes <- genomes |> 
   filter(spec == "mirang",
@@ -209,3 +216,16 @@ p_cum_pheno <- data |>
 
 saveRDS(object = p_cum_pheno + labs(subtitle = NULL),
         here(glue("results/img/R/p_cum_f_rho_{roh_version}_pheno.Rds")))
+
+# numeric summary for reduced ROH length threshold
+data |>
+  filter(Length_bp > 1e3) |> 
+  group_by(sample, ref) |> 
+  summarize(sum_roh_length = sum(Length_bp)) |> 
+  left_join(mappable_lengths |> filter(roh_type == roh_version)) |> 
+  ungroup() |> 
+  mutate(f_roh = sum_roh_length / sum_bp) |> 
+  group_by(spec) |> 
+  summarise(mean_froh = mean(f_roh),
+            sd_froh = sd(f_roh)) |> 
+  mutate(across(-spec, \(x){sprintf("%.2f", x)}))
