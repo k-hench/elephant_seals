@@ -35,6 +35,10 @@ rule call_roh:
       plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] ),
       plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] )
 
+rule roh_leo:
+    input:
+      expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[1], sample = SAMPLES ),
+
 '''
 rule roh_calling_bcftools:
     input:

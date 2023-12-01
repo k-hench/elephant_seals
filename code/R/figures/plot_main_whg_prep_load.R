@@ -108,17 +108,20 @@ p2 <- data_load |>
                     values = clr_load_lab,
                     labels = \(x){str_remove(x, "\\nload")}, 
                     guide = guide_legend(title.position = "top")) +
-  coord_cartesian(xlim = c(.4,30.6),
+  coord_cartesian(#xlim = c(.4,30.6),
                   expand = 0) +
   labs(y = "Load tally (no. SNPs)",
        subtitle = "Individual Cummulative Load Tally") +
+  ggforce::facet_row(spec_names[spec]~., scales = "free_x",
+                     space = "free") +
   theme_ms() +
   theme(axis.text.x = ggtext::element_markdown(angle = 90,
                                                hjust = 1,
                                                vjust = .5),
         axis.title.x = element_blank(),
         legend.position = "bottom",
-        legend.title = element_text(hjust = .5))
+        legend.title = element_text(hjust = .5),
+        strip.text = element_text(face = "italic"))
 
 saveRDS(object = p2,
         here("results/img/R/p_load_by_ind_b.Rds"))  
