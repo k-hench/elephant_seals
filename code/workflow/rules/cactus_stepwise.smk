@@ -14,12 +14,14 @@ snakemake --jobs 50 \
   --cluster '
     sbatch \
       --export ALL \
-      -n {threads} \
-      -e logs/{name}.{jobid}.err \
-      -o logs/{name}.{jobid}.out \
-      --mem={resources.mem_mb}' \
+      --ntasks {threads} \
+      --cpus-per-task 1 \
+      --error logs/{name}.{jobid}.err \
+      --output logs/{name}.{jobid}.out \
+      --mem {resources.mem_mb} \
+      --job-name {name}.{jobid}' \
       --jn job_c.{name}.{jobid}.sh \
-      -R cactus_stepwise
+      -R cactus_stepwise -c 1
 """
 localrules: cactus_stepwise, round_completed, cactus_export_hal
 
