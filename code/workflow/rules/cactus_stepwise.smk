@@ -14,8 +14,8 @@ snakemake --jobs 50 \
   --cluster '
     sbatch \
       --export ALL \
-      --ntasks {threads} \
-      --cpus-per-task 1 \
+      --ntasks 1 \
+      --cpus-per-task {threads} \
       --error logs/{name}.{jobid}.err \
       --output logs/{name}.{jobid}.out \
       --mem {resources.mem_mb} \
@@ -119,7 +119,7 @@ rule single_job:
       seqfile = '../results/cactus/{name}.txt'.format(name = P_NAME),
       jobstore = JOBSTORE_PATH
     log: "logs/cactus/jobs/round_{nr}_j{job}_s{step}.log"
-    threads: int(CACTUS_CORES)
+    threads: 24
     shell:
       '''
       readonly CACTUS_IMAGE={params.sif} 
