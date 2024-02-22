@@ -198,8 +198,8 @@ rule vcf_aa_subset_species:
 rule snp_tables:
     input:
       vcf_all = "../results/genotyping/filtered/mirang_filtered.vcf.gz",
-      vcf_mirang = "../results/genotyping/filtered/mirang_filtered_mirang.vcf.gz",
-      vcf_mirleo = "../results/genotyping/filtered/mirang_filtered_mirleo.vcf.gz",
+      vcf_mirang = "../results/genotyping/filtered/mirang_bi-allelic_mirang.vcf.gz",
+      vcf_mirleo = "../results/genotyping/filtered/mirang_bi-allelic_mirleo.vcf.gz",
       vcf_load = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz"
     output:
       tsv_all =    "../results/mutation_load/snp_eff/snp_tally/all.tsv.gz",
