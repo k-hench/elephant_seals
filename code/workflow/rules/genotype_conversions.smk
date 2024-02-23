@@ -78,12 +78,10 @@ rule vcf_subset_species:
     container: c_popgen
     shell:
       """
-      vcftools \
-          --gzvcf {input.vcf} \
-          --keep {input.inds} \
-          --mac 1 \
-          --recode \
-          --stdout | \
+      bcftools view \
+        --samples-file {input.inds} \
+        -Ov {input.vcf} \
+        --min-ac 1:nonmajor | \
           bgzip > {output.vcf} 2> {log}
       
       tabix -p vcf {output.vcf} &>> {log}

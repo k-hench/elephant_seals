@@ -1,6 +1,7 @@
 """
 snakemake --rerun-triggers mtime -n all_ml_snpeff
 snakemake --dag  --rerun-triggers mtime -R all_ml_snpeff | dot -Tsvg > ../results/img/control/dag_snpeff_db.svg
+snakemake --rulegraph all_ml_snpeff | dot -Tsvg > ../results/img/control/rules_snpeff_db.svg
 
 snakemake --jobs 60 \
   --latency-wait 30 \
