@@ -105,6 +105,6 @@ snakemake <choice of run parameters> final_figures
 
 This will resolve the following steps:
 
-![](results/img/control/dag_final_figures.svg)
+![](dag_final_figures.svg)
 
 ---
