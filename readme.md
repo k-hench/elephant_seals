@@ -9,6 +9,7 @@ This repository contains the analysis of the whole genome resequencing data anal
 The analysis was managed using a [`snakemake`](https://snakemake.github.io/) (v 7.19.1) pipeline, which is located at `code/workflow/snakefile`.
 To execute the pipeline, the working directory of the `bash` session running `snakemake` needs to be the `code/` directory.
 This pipeline contains several modules that can (and were) run separately.
+
 For example to run prepare the reference genomes for the genotyping one would run the following:
 
 ```sh
@@ -20,9 +21,9 @@ The individual logical steps of the analysis are distributed over several `smk` 
 
 The structure of those `smk` is generally as follows:
 
-- a small commented header that holds the used launch commands for this step of the pipeline
+- a small commented header that holds the launch commands used for this step of the pipeline
 - one or several *target rules*, which don't produce output but gather all final files that this pipeline step is supposed to provide
-- an arbitrary long list of *worker rules*, which actually produce files and which are listed in the order of workflow as far as possible 
+- an arbitrary long list of *worker rules*, which produce files and which are listed in the order of the actual workflow as far as possible 
 
 Important *target rules* are for example:
 
@@ -56,9 +57,10 @@ The used `conda` environments are specified in `yml` files located under `code/w
 
 The used containers are specified within the `snakemake` config file (`code/workflow/config.yml`).
 
-**!! Note that this files will need adjusting when trying to re-run the analysis in a different environment:**
+**!! Note that `config.yml` will need adjusting when trying to re-run the analysis in a different environment:**
 
-That is because the used container are currently pointing to **local copies** of the containers.
+That is because the used container are currently pointing to **local copies** of the containers on the HPC where the analysis was originally run.
+
 Every container listed in the config file has an accompanying comment on how to re-create the local copy:
 
 ```yml
