@@ -9,10 +9,10 @@ source(here("code/R/project_defaults_shared.R"))
 # --- set key variable ---------
 target_dem <- "rad_bot06_1k"
 ne_levels <- c("NCUR", "NBOT", "NANC", "NLGM")
-ne_labels <- c(NLGM = "*N*<sub>eLGM</sub>",
-               NANC = "*N*<sub>ePREBOT</sub>",
-               NBOT = "*N*<sub>eBOT</sub>",
-               NCUR = "*N*<sub>ePOSTBOT</sub>")
+ne_labels <- c(NLGM = "*N*<sub>eLGM</sub><br>18270 ybs",
+               NANC = "*N*<sub>ePREBOT</sub><br>1222 ybs<br>(351–1570)",
+               NBOT = "*N*<sub>eBOT</sub><br>200 ybs",
+               NCUR = "*N*<sub>ePOSTBOT</sub><br>148 ybs")
 
 clr_range <- "black"
 
@@ -89,7 +89,8 @@ p1 <- data_boot |>
         axis.line = element_line(),
         axis.title.x = ggtext::element_markdown(family = fnt_sel),
         axis.title.y = ggtext::element_markdown(family = fnt_sel),
-        axis.text.y = ggtext::element_markdown(family = fnt_sel),
+        axis.text.y = ggtext::element_markdown(family = fnt_sel,
+                                               lineheight = 1.5),
         # axis.title.x = element_blank(),
         # axis.text.x = element_blank(),
         axis.ticks.y = element_blank(),
@@ -167,6 +168,6 @@ ggsave(filename = here("results/img/final/f_dem.pdf"),
        width = 8, height = 5.5,
        device = cairo_pdf)
 
-ggsave(filename = here("results/img/final/f_dem.png"),
+ggsave(filename = here("results/img/final/f_dem_yrs.png"),
        plot = p_out,
        width = 8, height = 5.5)

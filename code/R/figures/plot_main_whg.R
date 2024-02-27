@@ -27,6 +27,8 @@ p_out <- (p_pi + p_het + p_froh) /
   theme(plot.tag = element_text(family = fnt_sel),
         plot.subtitle = element_blank())
 
+# p_out <- cowplot::ggdraw(p_out) + cowplot::draw_label(label = "draft", x = .5, y = .5, hjust = .5, vjust = .5, angle = 30, color = rgb(.6, 0,0,.4), size = 67)
+
 ggsave(filename = here("results/img/final/f_whg.pdf"),
        plot = p_out, 
        width = 10,

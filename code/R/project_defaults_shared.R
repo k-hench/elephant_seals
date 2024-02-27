@@ -13,6 +13,13 @@ clr_pheno <- c("#E41A1C", "#4DAF4A", "#984EA3", "#FF7F00", "#DEC102", "#E4A1A0")
   color() |> 
   set_names(nm = c("Worms", "Bacteria", "Malnutrition", "Trauma", "Protozoa", "Congenital defect"))
 
+lab_pheno <- c(Worms = "Helminths", 
+               Bacteria = "Bacteria",
+               Malnutrition = "Malnutrition",
+               Trauma = "Trauma",
+               Protozoa = "Protozoa",
+               `Congenital defect` = "Congenital defect")
+
 # the color scheme for the load types
 clr_load <- c("#000000", "#ADD2E8", "#253741", "#7198AD") |> 
   color() |> 

@@ -51,6 +51,7 @@ p1b <- data_avg_ind |>
               fill = after_scale(clr_alpha(color)))) +
   labs(y = "Heterozygosity") +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
+                     labels = c(lab_pheno, mirleo = "M. leonina"),
                      guide = "none") +
   coord_cartesian(ylim = c(0, .0018))+
   theme_ms() +

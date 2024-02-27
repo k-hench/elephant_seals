@@ -21,7 +21,7 @@ snakemake --jobs 50 \
       --mem {resources.mem_mb} \
       --job-name {name}.{jobid}' \
       --jn job_c.{name}.{jobid}.sh \
-      -R cactus_stepwise -c 1
+      -R cactus_stepwise
 """
 localrules: cactus_stepwise, round_completed, cactus_export_hal
 

@@ -10,14 +10,16 @@ samples <- read_tsv(here("data/file_info.tsv")) |>
   filter(!duplicated(sample_id))
 
 read_all_load <- \(load_type, sample_id){
-  data <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}/{sample_id}_{load_type}.bed.gz")))
-  data_roh <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample_id}_{load_type}_in_roh.bed.gz")))
+  data <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}/{sample_id}_{load_type}.bed.gz")), col_types = "cddc")
+  data_roh <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_in_roh/{sample_id}_{load_type}_in_roh.bed.gz")),
+                       col_names = c("#CHROM", "FROM", "TO"), col_types = "cdd")
   if(load_type == "masked"){
     data_anc <- data
     data_anc_roh <- data_roh
   } else {
-    data_anc <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_anc/{sample_id}_{load_type}_anc.bed.gz")))
-    data_anc_roh <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_anc_in_roh/{sample_id}_{load_type}_anc_in_roh.bed.gz")))
+    data_anc <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_anc/{sample_id}_{load_type}_anc.bed.gz")), col_types = "cddc")
+    data_anc_roh <- read_tsv(here(glue("results/mutation_load/snp_eff/by_ind/{load_type}_anc_in_roh/{sample_id}_{load_type}_anc_in_roh.bed.gz")),
+                             col_names = c("#CHROM", "FROM", "TO"), col_types = "cdd")
   }
   
   tibble(sample_id = rep(sample_id, 4)) |> 
@@ -63,6 +65,7 @@ p1 <- data_load |>
   facet_grid(. ~ spec_names[spec], scales = "free", switch = "y") +
   scale_color_manual("Phenotype",
                      values = clr_pheno,
+                     labels = lab_pheno,
                      na.value = clr_default[2],
                      guide = guide_legend(title.position = "top")) +
   coord_cartesian(clip = FALSE,

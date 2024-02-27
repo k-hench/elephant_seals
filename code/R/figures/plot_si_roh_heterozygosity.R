@@ -5,6 +5,13 @@ library(here)
 library(ggrastr)
 source(here("code/R/project_defaults.R"))
 
+lab_pheno <- c(Worms = "Helminths", 
+               Bacteria = "Bacteria",
+               Malnutrition = "Malnutrition",
+               Trauma = "Trauma",
+               Protozoa = "Protozoa",
+               `Congenital defect` = "Congenital defect")
+
 import_pop <- \(spec){
   tibble(sample = read_lines(here(glue("results/pop/inds_{spec}.pop"))),
          spec = spec)}
@@ -69,7 +76,9 @@ p <- data_het_ind |>
                      aes(xmin = gstart, xmax = gend, y = -.2), lwd = 1.5, alpha= .7), dpi = 300) +
       scale_x_continuous("Position on genome", expand = c(0, 0), labels = \(x){sprintf("%.1f Gb",x *1e-9)}) +
       scale_y_continuous(breaks = c(0, 1), labels = c(0, 1)) +
-      scale_color_manual("Phenotype", values = clr_pheno) +
+      scale_color_manual("Phenotype", 
+                         values = clr_pheno,
+                         labels = lab_pheno) +
       coord_cartesian(ylim = c(-.4, 1)) +
       labs(y = "Heterozygosity within variable sites") +
       theme_ms() +

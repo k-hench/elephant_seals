@@ -104,6 +104,7 @@ p1 <- roh_summary_by_sample |>
               size = point_sz,
               height = 0, shape = 21, width = .25) +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
+                     labels = c(lab_pheno, mirang = "Southern elephant seal"),
                      guide = "none") +
   labs(y = "*F*<sub>ROH</sub>",
        x = NULL)+
@@ -200,6 +201,7 @@ p_cum_pheno <- data |>
              group = sample)) +
   geom_line(alpha = .45) +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
+                     labels = c(lab_pheno, mirang = "Southern elephant seal"),
                      guide = "none") +
   scale_x_continuous(breaks = 3:7,
                      labels = c("1kb", "10kb", "100kb", "1Mb", "10Mb")) +
