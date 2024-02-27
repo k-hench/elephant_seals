@@ -37,6 +37,10 @@ files with ref subset to single species (GATK_REF[0]):
  - genotyping_qc.smk
 """
 
+wildcard_constraints:
+    part = "[0-9]*",
+    ref = "[^-_]*"
+
 # read in the sequencing meta-data
 seq_file_data = pd.read_table('../data/file_info.tsv')
 seq_file_data['sample_ln'] = seq_file_data['sample_id'] + "_" +  [x[-1:] for x in seq_file_data['lane']]
@@ -410,7 +414,7 @@ rule gatk_filter_snps:
       metrics_plot = "../results/img/control/snp_metrics_{ref}.pdf"
     output:
       vcf_flagged = temp( "../results/genotyping/raw/{ref}_flagged.vcf.gz" ),
-      vcf_filtered = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+      vcf_filtered = "../results/genotyping/filtered/{ref}_gatk_filtered.vcf.gz"
     params:
       vals = lambda wc: get_filter_params(wc)
     benchmark:
@@ -444,6 +448,27 @@ rule gatk_filter_snps:
         -V {output.vcf_flagged} \
         -O {output.vcf_filtered} \
         --exclude-filtered
+      """
+
+rule bcftools_reformat_missing:
+    input:
+      vcf = "../results/genotyping/filtered/{ref}_gatk_filtered.vcf.gz"
+    output:
+      vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+    benchmark:
+      "benchmark/genotyping/bcftools_missing_{ref}.tsv"
+    resources:
+      mem_mb=40960
+    container: c_popgen
+    shell:
+      """
+      zcat {infile.vcf} | \
+        bcftools \
+          +setGT \
+          -Oz \
+          -o {output.vcf} - -- -t q -n . -i 'FORMAT/DP=0 | SMPL_MAX(FORMAT/PL)=0'
+    
+      tabix -p vcf {output.vcf}
       """
 
 rule vcftools_snp_filter:
@@ -567,7 +592,7 @@ rule concat_parts_snps_all_bp:
       vcfs = expand( "../results/genotyping/filtered/partitions/{{ref}}_all_bp_{{part}}_sub_{sub}_filtered.vcf.gz", sub = (np.arange(10) + 1) )
     output:
       vcf_list = temp( "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered_vcf.list" ),
-      vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz"
+      vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_gatk_filtered.vcf.gz"
     benchmark:
       'benchmark/genotyping/concat_all_bp_{ref}_pt{part}.tsv'
     resources:
@@ -581,4 +606,25 @@ rule concat_parts_snps_all_bp:
         MergeVcfs \
         -I {output.vcf_list} \
         -O {output.vcf}
+      """
+
+rule bcftools_reformat_missing_all_bp:
+    input:
+      vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_gatk_filtered.vcf.gz"
+    output:
+      vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz"
+    benchmark:
+      "benchmark/genotyping/bcftools_missing_{ref}_all_bp_{part}.tsv"
+    resources:
+      mem_mb=40960
+    container: c_popgen
+    shell:
+      """
+      zcat {infile.vcf} | \
+        bcftools \
+          +setGT \
+          -Oz \
+          -o {output.vcf} - -- -t q -n . -i 'FORMAT/DP=0 | SMPL_MAX(FORMAT/PL)=0'
+    
+      tabix -p vcf {output.vcf}
       """
