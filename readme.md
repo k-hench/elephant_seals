@@ -8,6 +8,9 @@ This repository contains the analysis of the whole genome resequencing data anal
 
 The analysis was managed using a [`snakemake`](https://snakemake.github.io/) (v 7.19.1) pipeline, which is located at `code/workflow/snakefile`.
 To execute the pipeline, the working directory of the `bash` session running `snakemake` needs to be the `code/` directory.
+
+### Sub-Modules
+
 This pipeline contains several modules that can (and were) run separately.
 
 For example to run prepare the reference genomes for the genotyping one would run the following:
@@ -25,6 +28,8 @@ The structure of those `smk` is generally as follows:
 - one or several *target rules*, which don't produce output but gather all final files that this pipeline step is supposed to provide
 - an arbitrary long list of *worker rules*, which produce files and which are listed in the order of the actual workflow as far as possible 
 
+### Target Rules
+
 Important *target rules* are for example:
 
 - `geno_prep` (`genotype_prep.smk`): preparing the genomes for genotyping
@@ -38,8 +43,8 @@ Important *target rules* are for example:
 - `all_demography` (`demographic_history.smk`): run the demographic history inference with `fastsimcoal`
 - `final_figures` (`figures.smk`): create the figures used in the manuscript
 
+### Cautionary note (Disc Usage Footprint)
 
-**Cautionary note:**<br>
 At the time of submission the whole directory has a disc usage footprint of  roughly 8 Tb:
 
 ```sh
@@ -48,6 +53,20 @@ du -sh elephant_seals
 ```
 
 Note that this estimate does *not include the raw data*.
+
+### Raw data
+
+The raw sequencing data were submitted to SRA with the accession number PRJNA1039994.
+To re-run the analysis, the whole genome resequencing raw data needs to be downloaded and placed within the directory `data/raw_sequences/`:
+
+```sh
+ls -1 data/raw_sequences/
+# A006850217_177968_S264_L003_R1_001.fastq.gz
+# A006850217_177968_S264_L003_R2_001.fastq.gz
+# <...>
+# A006850217_178026_S293_L004_R2_001.fastq.gz
+```
+
 
 ## Working Environments
 
