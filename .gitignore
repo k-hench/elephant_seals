@@ -22,6 +22,7 @@ code/sh/cactus
 results/*
 results/img
 results/img/control
+!results/img/control/dag_final_figures*
 results/img/*pdf
 results/img/qc/*
 !results/simulations
