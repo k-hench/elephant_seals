@@ -21,17 +21,17 @@ code/sh/cactus
 # exclude results by default
 results/*
 results/img/*
-!results/img/control
 results/img/control/*
-!results/img/control/dag_final_figures*
 results/img/*pdf
 results/img/qc/*
-!results/simulations
 results/simulations/*
-!results/simulations/README.md
-!results/RAD/
 results/RAD/*
+!results/simulations/README.md
+!results/simulations
 !results/RAD/README.md
+!results/RAD/
+!results/img/control
+!results/img/control/dag_final_figures*
 
 # exclude large data 
 # (explicitly define tracked files)
