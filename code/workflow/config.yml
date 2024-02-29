@@ -102,3 +102,5 @@ sif_sim: '$CDATA/apptainer_local/popsim_suite_v0.2.sif'
 sif_ml: '$CDATA/apptainer_local/re_load_v0.2.sif'
 # apptainer pull docker://lindenb/jvarkit:1b2aedf24
 sif_jvar: '$CDATA/apptainer_local/jvarkit_1b2aedf24.sif'
+# singularity container containg all conda environments defined in `envs/` (only needed to trick our HPC into accepting conda paths) 
+sif_conda: '$CDATA/apptainer_local/conda_byoe.sif'

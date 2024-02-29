@@ -56,6 +56,7 @@ rule check_genome:
       fai = expand("../data/genomes/{species}.fa.gz.fai", species = ['mirang', 'mirleo', 'filtered/mirang_filt', 'filtered/mirleo_filt'])
     output:
       partition = expand("../data/genomes/{species}_partitions.tsv", species = ['mirang', 'mirleo', 'filtered/mirang_filt', 'filtered/mirleo_filt'])
+    container: c_conda
     conda: "r_tidy"
     log:
       "logs/r_partition_ref_genomes.log"
@@ -95,6 +96,7 @@ rule subset_genome_partitions:
     params:
       n_partitions = 20,
       n_subs = 10
+    container: c_conda
     conda: "r_tidy"
     log:
       "logs/r_partition_{species}_subset.log"

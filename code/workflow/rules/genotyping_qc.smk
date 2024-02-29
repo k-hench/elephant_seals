@@ -52,7 +52,7 @@ rule all_vcfstats:
       "../results/genotyping/filtered/mirang_filtered_stat.txt",
       "../results/genotyping/filtered/mirang_bi-allelic_stat.txt",
       "../results/genotyping/filtered/mirang_mac1_stat.txt",
-      expand( "../results/genotyping/filtered/mirang_filtered_{subset}_stat.txt", subset = ["all", "mirang", "mirleo"])
+      expand( "../results/genotyping/filtered/mirang_filtered_{subset}_stat.txt", subset = ["all", "mirang", "mirleo", 'histor' ])
 
 # ---  sequencing qc --------------------------------
 rule fastqc:
@@ -253,6 +253,7 @@ rule allele_depth_to_het:
       "benchmark/qc/allelic_imbalance_het_bin_{file_base}_{spec}.tsv"
     log:
       "logs/r_allelic_imbalance_het_bin_{file_base}_{spec}"
+    container: c_conda
     conda: "r_tidy"
     resources:
       mem_mb=20480
@@ -275,6 +276,7 @@ rule plot_allelic_imbalance:
       "benchmark/qc/allelic_imbalance_plot_{file_base}_{spec}.tsv"
     log:
       "logs/r_allelic_imbalance_plot_{file_base}_{spec}"
+    container: c_conda
     conda: "r_tidy"
     resources:
       mem_mb=12288

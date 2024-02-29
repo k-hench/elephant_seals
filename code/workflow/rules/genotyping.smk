@@ -64,7 +64,7 @@ rule gt_all:
       producing the final filtered `vcf file`
       """
     input:
-      vcf = expand("../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz", ref = GATK_REF )
+      vcf = expand("../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz", ref = GATK_REF[0] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule gt_invariant:

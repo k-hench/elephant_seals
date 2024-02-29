@@ -26,7 +26,7 @@ rule all_anc_allele:
     input: 
       vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
       snp_tally = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv",
-      snp_details = expand( "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz", spec = ["mirang", "mirleo"])
+      snp_details = expand( "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz", spec = ["mirang", "mirleo", 'histor' ])
 
 rule extract_ancestral_hals:
     input:
@@ -114,6 +114,7 @@ rule determine_anc_ref:
       tex_miss = "../results/tab/ancestral_allele_mismatches.tex"
     log:
       "logs/r_ancestral_ref_proposal.log"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -230,6 +231,7 @@ rule tally_load_snps:
     output:
       tsv = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv",
       gztsv = "../results/mutation_load/snp_eff/snp_tally/snp_load_pop_details.tsv.gz"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -242,6 +244,7 @@ rule create_fixed_beds:
     output:
       mirang = "../results/mutation_load/snp_eff/snp_tally/fixed_in_mirang.bed.gz",
       mirleo = "../results/mutation_load/snp_eff/snp_tally/fixed_in_mirleo.bed.gz"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """

@@ -64,7 +64,7 @@ checkpoint species_list:
       list_incl_chicken = "../data/carnivora_and_chicken.tsv"
     log:
       "../code/logs/r_species_list.log"
-    container: None
+    container: c_conda
     conda: "r_tidy"
     shell: 'Rscript R/compile_species_list.R 2> {log} 1> {log}'
 
@@ -170,7 +170,7 @@ rule stat_plots:
       stats = expand("../results/genome_stats/{spec}.tsv", spec = SPEC_ALL),
       genomes = expand("../data/genomes/{spec}.fa.gz", spec = SPEC_ALL)
     output: "../results/img/qc/genomes_n50.svg"
-    container: None
+    container: c_conda
     conda: "r_tidy"
     log:
       "logs/r_genome_stats.log"

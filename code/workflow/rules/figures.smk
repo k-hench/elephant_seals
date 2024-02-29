@@ -19,6 +19,7 @@ rule fig_dem:
       ci = "../results/demography/all_models_ci_boots.tsv",
       estimates = "../results/demography/all_models_estimates.tsv"
     output: "../results/img/final/f_dem.pdf"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -35,6 +36,7 @@ rule fig_whg:
       p_load_type = "../results/img/R/p_load_by_type_b.Rds",
       p_load_ind = "../results/img/R/p_load_by_ind_b.Rds"
     output: "../results/img/final/f_whg.pdf"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -48,6 +50,7 @@ rule sup_fig_dem:
       ci = "../results/demography/all_models_ci_boots.tsv",
       estimates = "../results/demography/all_models_estimates.tsv"
     output: "../results/img/final/sf_dem.pdf"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -58,6 +61,7 @@ rule sup_fig_roh_length:
     input:
       p_froh_cum_thresholds = "../results/img/R/p_cum_f_rho_callable_thresholds.Rds"
     output: "../results/img/final/sf_roh_length.pdf"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -75,6 +79,7 @@ rule sup_fig_heterozygosity:
       sample_id = "../data/file_info.tsv",
       roh_data = expand( "../results/roh/bcftools/bed/max_callable/roh_max_{sample}_on_mirang.bed", sample = SAMPLES )
     output: "../results/img/final/sf_het.pdf"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """

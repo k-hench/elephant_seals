@@ -28,6 +28,7 @@ rule data_dem:
       boots = "../results/demography/all_models_raw_boots.tsv",
       ci = "../results/demography/all_models_ci_boots.tsv",
       estimates = "../results/demography/all_models_estimates.tsv"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -39,6 +40,7 @@ rule data_dem:
 rule plotprep_whg_pi:
     input: expand( "../results/pi/mirang_pi_dxy_{part}.tsv.gz", part = GENOME_PARTITIONS )
     output: "../results/img/R/p_pi.Rds"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -52,6 +54,7 @@ rule plot_data_whg_het_ind:
       g012_pos =  expand( "../results/genotyping/012/mirang_filtered_{spec}_012.012.pos", spec = BOTH_SPECS ),
       g012_ind = expand( "../results/genotyping/012/mirang_filtered_{spec}_012.012.indv", spec = BOTH_SPECS )
     output: "../results/het/win_het_ind_all_w1Mb_s250kb.tsv.gz"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -64,6 +67,7 @@ rule plot_data_whg_het_spec:
       g012 = expand( "../results/genotyping/012/mirang_filtered_{spec}_012.tsv.gz", spec = BOTH_SPECS ),
       g012_pos =  expand( "../results/genotyping/012/mirang_filtered_{spec}_012.012.pos", spec = BOTH_SPECS )
     output: "../results/het/win_het_by_spec_w1Mb_s250kb.tsv.gz"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -77,6 +81,7 @@ rule plotprep_whg_het:
       spec = "../results/het/win_het_by_spec_w1Mb_s250kb.tsv.gz"
     output:
       p_pheno = "../results/img/R/p_het_ind_bp_pheno.Rds"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -95,6 +100,7 @@ rule plotprep_whg_froh:
       p_froh = "../results/img/R/p_f_rho_callable_ind.Rds",
       p_froh_cum_thresholds = "../results/img/R/p_cum_f_rho_callable_thresholds.Rds",
       p_froh_cum = "../results/img/R/p_cum_f_rho_callable_pheno.Rds"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
@@ -111,6 +117,7 @@ rule plotprep_whg_load:
     output:
       p_load_type = "../results/img/R/p_load_by_type_b.Rds",
       p_load_ind = "../results/img/R/p_load_by_ind_b.Rds"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """

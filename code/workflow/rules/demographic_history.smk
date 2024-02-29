@@ -135,6 +135,7 @@ rule calculate_aic:
       runs = "{fs_run}",
       prefix = "{spec}_on_{ref}_{fs_run}",
       basedir = "../results/demography/fastsimcoal/{spec}_on_{ref}/{fs_run}"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """

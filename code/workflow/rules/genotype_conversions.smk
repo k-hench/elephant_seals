@@ -94,6 +94,7 @@ rule identify_chrX_scaffolds:
       psl = "../results/psl/slim_mirang_on_zalcal.psl.gz"
     output:
       bed = "../results/genomes/sex_chrom/mirang_sex_chrom.bed"
+    container: c_conda
     conda: "r_tidy"
     shell:
       """
