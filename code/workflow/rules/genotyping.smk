@@ -462,7 +462,7 @@ rule bcftools_reformat_missing:
     container: c_popgen
     shell:
       """
-      zcat {infile.vcf} | \
+      zcat {input.vcf} | \
         bcftools \
           +setGT \
           -Oz \
@@ -620,7 +620,7 @@ rule bcftools_reformat_missing_all_bp:
     container: c_popgen
     shell:
       """
-      zcat {infile.vcf} | \
+      zcat {input.vcf} | \
         bcftools \
           +setGT \
           -Oz \
