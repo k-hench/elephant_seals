@@ -13,7 +13,8 @@ snakemake --jobs 5 \
   --use-conda --rerun-triggers mtime -R mapping_done
 snakemake --dag -R  mapping_done | dot -Tsvg > ../results/img/control/dag_mapping.svg
 
-snakemake --jobs 60 \
+snakemake \
+  --jobs 50 \
   --latency-wait 30 \
   -p \
   --default-resources mem_mb=51200 threads=1 \
@@ -22,15 +23,16 @@ snakemake --jobs 60 \
   --use-conda \
   --rerun-triggers mtime \
   --cluster '
-    qsub \
-      -V -cwd \
-      -P fair_share \
-      -l idle=1 \
-      -l si_flag=1 \
-      -pe multislot {threads} \
-      -l vf={resources.mem_mb}' \
-  --jn job_gt.{name}.{jobid}.sh \
-  -R gt_all && mv job_gt.* logs/
+    sbatch \
+      --export ALL \
+      --ntasks 1 \
+      --cpus-per-task {threads} \
+      --error logs/{name}.{jobid}.err \
+      --output logs/{name}.{jobid}.out \
+      --mem {resources.mem_mb} \
+      --job-name {name}.{jobid}' \
+      --jn job_c.{name}.{jobid}.sh \
+      -R gt_all &&
 
 files with ref subset to single species (GATK_REF[0]):
  - genotyping.smk
@@ -102,7 +104,7 @@ rule ubam_adapters:
     benchmark:
       'benchmark/genotyping/adapter_{sample_ln}.tsv'
     resources:
-      mem_mb=15360
+      mem_mb=25600
     container: c_gatk
     shell:
       """
@@ -171,7 +173,7 @@ rule merge_bam:
     benchmark:
       'benchmark/genotyping/merge_{sample_ln}_on_{ref}.tsv'
     resources:
-      mem_mb=81920
+      mem_mb=92160
     container: c_gatk
     shell:
       """
@@ -243,7 +245,7 @@ rule collect_sample_and_haplotypecaller:
     benchmark:
       'benchmark/genotyping/gvcf_{sample_id}_on_{ref}.tsv'
     resources:
-      mem_mb=133120
+      mem_mb=143360
     container: c_gatk
     shell:
       """
