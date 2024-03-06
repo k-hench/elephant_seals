@@ -1,7 +1,7 @@
 # General setup
 #--------------
 # the bind-path list needs to start with a ',' to be appended properly
-singularity_bind_paths: '$(pwd),$CDATA'
+singularity_bind_paths: '$(pwd),$CDATA,$EDATA'
 
 # cactus section
 # --------------

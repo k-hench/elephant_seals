@@ -19,7 +19,7 @@ snakemake \
   -p \
   --default-resources mem_mb=51200 threads=1 \
   --use-singularity \
-  --singularity-args "--bind $CDATA" \
+  --singularity-args "--bind $CDATA,$EDATA" \
   --use-conda \
   --rerun-triggers mtime \
   --cluster '
