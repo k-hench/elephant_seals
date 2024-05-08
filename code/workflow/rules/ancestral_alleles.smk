@@ -26,7 +26,7 @@ rule all_anc_allele:
     input: 
       vcf = "../results/ancestral_allele/mirang_filtered_ann_aa.vcf.gz",
       snp_tally = "../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv",
-      snp_details = expand( "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz", spec = ["mirang", "mirleo", 'histor' ])
+      snp_details = expand( "../results/mutation_load/snp_eff/snp_tally/fixed_in_{spec}.bed.gz", spec = ["mirang", "mirleo" ] )#, 'histor' ])
 
 rule extract_ancestral_hals:
     input:
