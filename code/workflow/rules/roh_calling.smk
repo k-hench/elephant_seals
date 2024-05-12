@@ -39,7 +39,7 @@ rule roh_leo:
     input:
       expand( "../results/roh/bcftools/snp_based/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[1], sample = SAMPLES ),
 
-'''
+
 rule roh_calling_bcftools:
     input:
       vcf = "../results/genotyping/filtered/partitions/{ref}_all_bp_{part}_filtered.vcf.gz"
@@ -103,7 +103,6 @@ rule roh_max_certain:
       zcat {input.cov_mask} |
         intersectBed -a stdin -b {input.roh} > {output.roh}
       """
-'''
 
 rule roh_plink:
     input:
