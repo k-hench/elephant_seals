@@ -33,7 +33,9 @@ rule convert_012_by_spec:
     input:
       vcf = "../results/genotyping/filtered/{ref}_filtered_{spec}.vcf.gz"
     output:
-      g012 = "../results/genotyping/012/{ref}_filtered_{spec}_012.tsv.gz"
+      g012 = "../results/genotyping/012/{ref}_filtered_{spec}_012.tsv.gz",
+      p012 = "../results/genotyping/012/{ref}_filtered_{spec}_012.012.pos",
+      i012 = "../results/genotyping/012/{ref}_filtered_{spec}_012.012.indv"
     params:
       out_prefix = "../results/genotyping/012/{ref}_filtered_{spec}_012"
     container: c_popgen
