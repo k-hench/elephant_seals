@@ -6,11 +6,15 @@ import os
 from copy import deepcopy
 import numpy as np
 import pandas as pd
+import time
+from datetime import datetime
 
 configfile: "workflow/config.yml"
 
 code_dir = os.getcwd()
 base_dir = code_dir + "/.."
+bu_path = os.path.expandvars(config[ 'backup_path' ])
+bu_dir = bu_path + "/elephant_seals/"
 
 rule all:
     params:
@@ -95,3 +99,12 @@ if config[ 'need_masking' ] != None:
 # conditional kick-off of the actual cactus alignment
 if os.path.exists("../results/cactus/job_inventory.tsv"):
   include: "./rules/cactus_stepwise.smk"
+
+# conditional backup (if path is specified in config.yml)
+if not bu_path == "":
+  onsuccess:
+    if not os.path.exists(bu_dir):
+      os.makedirs(bu_dir)
+    print( " --- snakemake workflow suceedded ---\n [ " + str(datetime.fromtimestamp(time.time()))[0:19] + " ] starting backup of results..." )
+    shell("rsync -aSuv --dry-run --recursive --ignore-missing-args --files-from=backup_list ../ " + bu_dir )
+    print( " [ " + str(datetime.fromtimestamp(time.time()))[0:19] + " ] ...finished backup of results." )

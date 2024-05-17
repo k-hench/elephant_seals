@@ -89,6 +89,9 @@ need_masking:
 #  - name
 #  - name2
 
+# exporting results to dedicated backup directory
+backup_path: "$NES_BU_DIR"
+
 # local paths to stored sif files for offline usage:
 # apptainer pull docker://khench/genotyping_suite:v0.3
 sif_gatk: '$CDATA/apptainer_local/genotyping_suite_v0.3.sif'

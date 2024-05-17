@@ -32,7 +32,7 @@ snakemake \
       --mem {resources.mem_mb} \
       --job-name {name}.{jobid}' \
       --jn job_c.{name}.{jobid}.sh \
-      -R gt_all &&
+      -R gt_all
 
 files with ref subset to single species (GATK_REF[0]):
  - genotyping.smk

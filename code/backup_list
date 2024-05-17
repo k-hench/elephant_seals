@@ -1,0 +1,9 @@
+results/genotyping/raw/mirang_raw.vcf.gz
+results/genotyping/filtered/mirang_filtered.vcf.gz
+results/genotyping/filtered/mirang_bi-allelic.vcf.gz
+results/genotyping/plink/mirang_filtered_all.bed",
+results/genotyping/plink/mirang_filtered_all.bim",
+results/genotyping/plink/mirang_filtered_all.fam",
+results/genotyping/plink/mirang_filtered_all.map",
+results/genotyping/plink/mirang_filtered_all.nosex",
+results/genotyping/plink/mirang_filtered_all.ped"
