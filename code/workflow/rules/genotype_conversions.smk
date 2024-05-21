@@ -103,8 +103,8 @@ rule identify_chrX_scaffolds:
 
 rule vcf_filter_autosome:
     input:
-      vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
-      bed = "../results/genomes/sex_chrom/mirang_sex_chrom.bed"
+      vcf = ancient( "../results/genotyping/filtered/{file_base}.vcf.gz"),
+      bed = ancient( "../results/genomes/sex_chrom/mirang_sex_chrom.bed")
     output:
       vcf = "../results/genotyping/autosome/{file_base}_autosome.vcf.gz"
     log:
