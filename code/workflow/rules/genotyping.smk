@@ -475,7 +475,7 @@ rule bcftools_reformat_missing:
 
 rule vcftools_snp_filter:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
+      vcf = ancient( "../results/genotyping/filtered/{ref}_filtered.vcf.gz")
     output:
       vcf = "../results/genotyping/filtered/{ref}_bi-allelic.vcf.gz"
     benchmark:
