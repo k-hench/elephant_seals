@@ -106,5 +106,5 @@ if not bu_path == "":
     if not os.path.exists(bu_dir):
       os.makedirs(bu_dir)
     print( " --- snakemake workflow suceedded ---\n [ " + str(datetime.fromtimestamp(time.time()))[0:19] + " ] starting backup of results..." )
-    shell("rsync -aSuv --dry-run --recursive --ignore-missing-args --files-from=backup_list ../ " + bu_dir )
+    shell("rsync -aSuv --recursive --ignore-missing-args --files-from=backup_list ../ " + bu_dir )
     print( " [ " + str(datetime.fromtimestamp(time.time()))[0:19] + " ] ...finished backup of results." )
