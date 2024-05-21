@@ -454,7 +454,7 @@ rule gatk_filter_snps:
 
 rule bcftools_reformat_missing:
     input:
-      vcf = "../results/genotyping/filtered/{ref}_gatk_filtered.vcf.gz"
+      vcf = ancient( "../results/genotyping/filtered/{ref}_gatk_filtered.vcf.gz")
     output:
       vcf = "../results/genotyping/filtered/{ref}_filtered.vcf.gz"
     benchmark:
