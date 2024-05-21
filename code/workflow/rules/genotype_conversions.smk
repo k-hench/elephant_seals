@@ -67,8 +67,8 @@ rule create_species_pop:
 
 rule vcf_subset_species:
     input:
-      vcf = "../results/genotyping/filtered/{file_base}.vcf.gz",
-      inds = "../results/pop/inds_{spec}.pop"
+      vcf = ancient( "../results/genotyping/filtered/{file_base}.vcf.gz"),
+      inds = ancient( "../results/pop/inds_{spec}.pop")
     output:
       vcf = "../results/genotyping/filtered/{file_base}_{spec}.vcf.gz"
     log:
