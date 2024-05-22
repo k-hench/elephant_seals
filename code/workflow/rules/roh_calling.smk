@@ -3,7 +3,7 @@ snakemake --rerun-triggers mtime -n -R call_roh
 
 snakemake --jobs 50 \
   --latency-wait 30 \
-  -p \
+  -p --nt \
   --default-resources mem_mb=51200 threads=1 \
   --use-singularity \
   --singularity-args "--bind $CDATA" \

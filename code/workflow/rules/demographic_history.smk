@@ -6,7 +6,7 @@ https://speciationgenomics.github.io/fastsimcoal2/
 
 snakemake --jobs 200 \
   --latency-wait 30 \
-  -p \
+  -p --nt \
   --default-resources mem_mb=51200 threads=1 \
   --use-singularity \
   --singularity-args "--bind $CDATA" \

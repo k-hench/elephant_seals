@@ -7,3 +7,7 @@ results/genotyping/plink/mirang_filtered_all.fam
 results/genotyping/plink/mirang_filtered_all.map
 results/genotyping/plink/mirang_filtered_all.nosex
 results/genotyping/plink/mirang_filtered_all.ped
+results/demography/sfs/mirang_on_mirang/dadi/mirang.sfs
+results/demography/sfs/mirang_on_mirang/dadi/mirang-40.sfs
+results/demography/sfs/mirleo_on_mirang/dadi/mirleo.sfs
+results/demography/sfs/mirleo_on_mirang/dadi/mirleo-40.sfs
