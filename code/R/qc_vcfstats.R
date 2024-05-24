@@ -29,13 +29,18 @@ get_vcfstats <- \(file){
 
 p <- files |> 
   map_dfr(get_vcfstats) |> 
-  mutate(file = factor(file, levels = c("mirang_raw_snps", "mirang_filtered_all",
+  mutate(file = factor(file, levels = c("mirang_raw_snps", "mirang_filtered","mirang_filtered_all",
                                         "mirang_bi-allelic", "mirang_mac1",
                                         "mirang_filtered_mirang", "mirang_filtered_mirleo") |> 
                          rev())) |> 
   ggplot(aes(x = n, y = file)) +
   geom_barh(stat = "identity",
             color = "gray60", fill = clr_alpha("gray85")) +
+  geom_text(color = "gray60",
+            fill = clr_alpha("gray85"),
+            aes(x = ifelse(n < 5, n + .5, .5), 
+                label = if_else(n %in% c(20, 40), n, n*1e6)),
+            hjust = 0) +
   facet_wrap(stat ~. , scales = "free", nrow = 2) +
   theme_minimal(base_family = fnt_sel) +
   theme(strip.text = ggtext::element_markdown())
