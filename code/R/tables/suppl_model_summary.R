@@ -69,3 +69,30 @@ data_aic |>
          NePOSTBOT,
          Tse) |> 
   write_tsv(here("results/tab/suppl_model_summary.tsv"))
+
+
+d_labels <- c(NLGM = "N_eLGM",
+             NANC = "N_ePREBOT",
+             NBOT = "N_eBOT",
+             NCUR = "N_ePOSTBOT",
+             T1 = "T_se")
+
+read_tsv(here("results/demography/all_models_ci_boots.tsv")) |>
+  mutate(demtype = upper_3(demtype)) |>
+  mutate(demtype = str_replace(demtype, "RAD_bot06_1k", "RAD_bot06-1k")) |> 
+  left_join(data_estimates, by = c("demtype", "stat")) |> 
+  separate(demtype, into = c("method", "model"), sep = "_") |> 
+  mutate(method = factor(str_to_lower(method), levels = c('wgs', "rad")),
+         model =  factor(str_replace(model, "bot06-1k", "bot06_1k"),
+                         levels = c("null", "bot10", "bot06","bot06_1k")),
+         parameter = factor(d_labels[stat], levels = d_labels)) |>
+  filter(complete.cases(parameter),
+         complete.cases(mean)) |> 
+  arrange(method, model, parameter) |> 
+  select(method, model, parameter,
+         estimate = mean,
+         bs_95_ci_lower = ci_95_u,
+         bs_median = median,
+         bs_95_ci_upper = ci_95_l) |> 
+  mutate(method = as.character(method) |> str_replace("wgs", "whg")) |> 
+  write_tsv(here("results/tab/suppl_tab_dem_ci.tsv"))
