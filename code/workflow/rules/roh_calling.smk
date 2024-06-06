@@ -28,10 +28,22 @@ wildcard_constraints:
     gap = "[0-9]*",
     spec = "[^-]*"
 
+# Parameters for plink ROH calling [ default values ]
+plink_roh_params = {
+    'het': [1000, 0, 2], # --homozyg-het [Inf]
+    'whet': [1, 3]    ,  # --homozyg-window-het [1]
+    'nsnp': [100],       # --homozyg-snp [100]
+    'wnsnp': [50],       # --homozyg-window-snp [50]
+    'wmis': [5, 20],     # --homozyg-window-missing [5]
+    'leng': [1000, 10],  # --homozyg-kb [100]
+    'gap': [1000, 50],   # --homozyg-gap [1000]
+    'den': [50]          # --homozyg-density [50]
+}
+
 rule call_roh:
     input:
       expand( "../results/roh/bcftools/{rohtype}/bed/max_certain/roh_cert_{sample}_on_{ref}.bed", ref = GATK_REF[0], sample = SAMPLES, rohtype = ["snp_based", "mac2"] ),
-      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"], het = [1000, 0, 2], whet = [1, 3], nsnp = [100], wnsnp = [50], wmis = [5, 20], leng = [1000, 10], gap = [1000, 50], den = [50] ),
+      plink_roh = expand( "../results/roh/plink/{file_base}_h{het}_wh{whet}_n{nsnp}_wn{wnsnp}_wm{wmis}_l{leng}_g{gap}_d{den}", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"], **plink_roh_params ),
       plink_defaults = expand( "../results/roh/plink/{file_base}_defaults", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] ),
       plink_only_kb = expand( "../results/roh/plink/{file_base}_only_kb", file_base = ["mirang_filtered_all", "mirang_filtered_all-mac2"] )
 

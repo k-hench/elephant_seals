@@ -53,6 +53,21 @@ rule download_gff:
       mv GCF_021288785.2_ASM2128878v3_genomic.gff.gz {output.gff}
       """
 
+rule extract_gene_bed:
+    input:
+      gff = GFF_FILE
+    output:
+      bed = "../results/genomes/mirang_genes.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      zgrep "ID=gene" {input.gff} | \
+        cut -f 1,4,5,9 | \
+        sed 's/;.*//; s/ID=gene-//' | \
+        awk '{{print $1"\t"$2-1"\t"$3"\t"$4}}' | \
+        bgzip > {output.bed}
+      """
+
 rule create_snpeff_config:
     output:
       conf = "../results/mutation_load/snp_eff/snpEff.config"
