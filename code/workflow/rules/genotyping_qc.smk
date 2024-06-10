@@ -53,8 +53,7 @@ rule all_bamstats:
                               sample_ln = SAMPLES_LN ),
       by_sample = expand(["../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv.gz",
                           "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz",
-                          "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
-                          "../results/het/{ref}_{sample_id}.csv"],
+                          "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats"],
                          sample_id = SAMPLES, ref = GATK_REF[0])
 
 rule all_vcfstats:
