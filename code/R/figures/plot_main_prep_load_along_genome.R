@@ -4,7 +4,6 @@ library(glue)
 library(prismatic)
 library(here)
 library(plyranges)
-library(ggtern)
 
 source(here("code/R/project_defaults_shared.R"))
 specs <-  c("mirang", "mirleo")
@@ -46,10 +45,9 @@ data <- crossing(sample = samples,
   pmap_dfr(read_load) |> 
   left_join(pops)
 
-
 load_labs <- c(masked = "inbreeding\nload",
-               expressed = "segregating", 
-               fixed = "drift")
+               expressed = "segregating\nload", 
+               fixed = "drift\nload")
 
 data_counts <- data |> 
   group_by(chr, pos, gpos, type, spec) |> 
@@ -68,7 +66,7 @@ clr_load_lab <- clr_load |>
                    fixed = load_labs[[3]],
                    expressed = load_labs[[2]])[names(clr_load)])
 
-ggplot() +
+p <- ggplot() +
   geom_rect(data = genome_mirang , 
             aes(xmin = start_pos,
                 xmax = end_pos, 
@@ -81,28 +79,29 @@ ggplot() +
                             y = n*2*(1.5- as.numeric(factor(spec))),
                             #color = load_label
                             color=  spec
-                            ),
-             size = .6, alpha = .5) +
+             ),
+             size = 1.5, alpha = .5) +
   geom_hline(yintercept = 0, linewidth = .3, linetype = 3) +
   scale_x_continuous(name = "Genomic Position (Gb)",
-                     labels = \(x){sprintf("%.1f", x * 1e-9)},
-                     sec.axis = sec_axis(name = "Scaffold Id",
-                                         trans = identity,
-                                         breaks = genome_mirang$mid_pos[1:17],
-                                         label = genome_mirang$chr[1:17] |>
-                                           str_remove("N[CW]_0723")))+
-  scale_y_continuous("Sample count at SNP (n)",
+                     labels = \(x){sprintf("%.1f", x * 1e-9)}#,
+                     # sec.axis = sec_axis(name = "Scaffold Id",
+                     #                     trans = identity,
+                     #                     breaks = genome_mirang$mid_pos[1:17],
+                     #                     label = genome_mirang$chr[1:17] |>
+                     #                       str_remove("N[CW]_0723"))
+                     )+
+  scale_y_continuous("No. of Individuals with SNP",#"Sample count at SNP (n)",
                      labels = \(y){abs(y)}#,
                      # sec.axis = sec_axis(name = "Load Frequency",
                      #                     trans = identity,
                      #                     breaks = c(-20,-15,-10,-5,0,5,10,15,20),
                      #                     label = c(1,0.75, 0.5, 0.25, 0,
                      #                               0.25, 0.5, 0.75, 1))
-                     ) +
+  ) +
   scale_fill_manual(values = c(`0` = rgb(0,0,0,.1), `1` = rgb(0,0,0,0)), guide = 'none') +
   # scale_color_manual(values = clr_load_lab) +
   scale_color_manual("Species",
-                     values = clr_default,
+                     values = c("black", "gray50"),
                      labels = spec_names) +
   facet_grid(load_label ~ ., switch = "y") +
   guides(color = guide_legend(override.aes = list(size = 2.5))) +
@@ -113,8 +112,12 @@ ggplot() +
         legend.position = "bottom",
         legend.text = element_text(face = "italic"))
 
-ggsave(here("results/img/load_along_genome_draft.pdf"),
+ggsave(plot = p,
+       here("results/img/load_along_genome_draft.pdf"),
        width = 12, height = 5, device = cairo_pdf)
+
+saveRDS(object = p,
+        here("results/img/R/p_load_along_genome.Rds"))  
 
 data_genes <- plyranges::read_bed(here("results/genomes/mirang_genes.bed.gz"))
 
@@ -146,60 +149,14 @@ data_genes_summary <- data_load_on_genes |>
   mutate(name = fct_reorder(name, -n_alleles_combined),
          load_label = factor(load_labs[type], levels = load_labs[c(2,1,3)]))
 
+data_genes_summary |>
+  group_by(spec, type, load_label) |> 
+  summarise(n_genes = length(n_SNPs),
+            across(c(n_SNPs, n_indv, n_alleles),.fns=list(mean = mean, sd = sd),.names = "{.col}_{.fn}")) |> 
+  mutate(load_label = str_replace(load_label, "\n", " ")) |> 
+  write_tsv(here("results/tab/load_by_genes_summary.tsv"))
+
 data_genes_summary |> 
-  ggplot(aes(x = name,
-             y = n_alleles,
-             fill = load_label)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(spec_names[spec] ~ ., 
-             scales = "free",
-             ncol = 1) +
-  coord_cartesian(ylim = c(0,165), 
-                  expand = 0) +
-  scale_fill_manual("Load Type",
-                    values = clr_load_lab) +
-  labs(x = "Gene Rank", y = "Allele Count per Gene (n)") +
-  theme_ms() +
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        legend.position = "bottom",
-        strip.text = element_text(face = "italic"))
-
-ggsave(here("results/img/load_allele_tally_by_gene.pdf"),
-       width = 10, height = 6, device = cairo_pdf)
-
-
-data_genotype_freqs <- data_counts |> 
-  # mutate(n_alleles = if_else(type == "masked", n, 2*n)) |> 
-  select(chr,pos,type,spec,n) |> 
-  pivot_wider(names_from = type,
-              values_from = n, 
-              values_fill = 0) |> 
-  mutate(AA = expressed + fixed,
-         AB = masked,
-         BB = 20 - (AA+AB),
-         across(AA:BB,\(x){x/20},.names = "{.col}_frq"))
-
-data_genotype_freqs |> 
-ggplot(aes(x = AA, y = AB, z = BB )) +
-  coord_tern() +
-  ggtern::stat_density_tern(geom='polygon',
-                            aes(fill=..level..))+
-  geom_point(size = .4) +
-  facet_wrap(spec_names[spec] ~ . ) +
-  scale_fill_gradientn(colours = c(clr_lighten(clr_default[[1]],.75),
-                                   clr_default[[1]],
-                                   clr_darken(clr_default[[1]],.75)),
-                       guide = FALSE) +
-  ggtern::scale_L_continuous(name = "expressed",labels = sprintf("%.1f",c(0,.2,.4,.6,.8,1))) +
-  ggtern::scale_T_continuous(name = "masked",labels = sprintf("%.1f",c(0,.2,.4,.6,.8,1))) +
-  ggtern::scale_R_continuous(name = "no\nload",labels =sprintf("%.1f",c(0,.2,.4,.6,.8,1))) +
-  geom_line(data = hypogen::hypo_hwe(n = 25),
-            mapping = aes(x = AA, y = Aa, z = aa ),
-            linetype = 3, color = "white", linewidth=.4)+
-  theme_light(base_family = fnt_sel,base_size = 9) +
-  theme(strip.background = element_blank(),
-        strip.text = element_text(colour = "black", face = "italic"))
-
-ggsave(here("results/img/load_genotype_spectrum.pdf"),
-       width = 14, height = 6, device = cairo_pdf)
+  mutate(load_label = str_replace(load_label, "\n", " ")) |> 
+  select(-spectrum) |> 
+  write_tsv(here("results/tab/load_by_genes.tsv"))

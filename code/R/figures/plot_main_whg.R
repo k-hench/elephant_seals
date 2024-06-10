@@ -20,25 +20,35 @@ p_froh_cum <- readRDS(here("results/img/R/p_cum_f_rho_callable_pheno.Rds"))
 p_load_type <- readRDS(here("results/img/R/p_load_by_type_b.Rds")) + theme(axis.ticks = element_line(color ="black"))
 p_load_ind <- readRDS(here("results/img/R/p_load_by_ind_b.Rds"))
 
+# from plot_main_prep_load_along_genome
+p_load_genome <- readRDS(here("results/img/R/p_load_along_genome.Rds")) +
+  guides(color = guide_legend(theme = theme(legend.title.position = "top",
+                                            legend.title = element_text(hjust = .5)),
+                              override.aes = list(size = 2))) +
+  theme(panel.spacing.y = unit(10,"pt"))
+
 set.seed(42)
-p_out <- (p_pi + p_het + p_froh) /
-  (p_load_type + p_load_ind) +
+p_out <- (free(p_pi) + free(p_het) + free(p_froh) + plot_layout(widths = c(.7,1,1))) /
+  (p_load_type + free(p_load_ind) + plot_layout(widths = c(.8,1))) /
+  p_load_genome +
+  plot_layout(guides = "collect") +
   plot_annotation(tag_levels = "a", tag_suffix = ")") &
   theme(plot.tag = element_text(family = fnt_sel),
-        plot.subtitle = element_blank())
+        plot.subtitle = element_blank(),
+        legend.position = "bottom")
 
 # p_out <- cowplot::ggdraw(p_out) + cowplot::draw_label(label = "draft", x = .5, y = .5, hjust = .5, vjust = .5, angle = 30, color = rgb(.6, 0,0,.4), size = 67)
 
 ggsave(filename = here("results/img/final/f_whg.pdf"),
        plot = p_out, 
-       width = 10,
-       height = 6.66,
+       width = 11,
+       height = 10,
        device = cairo_pdf)
 
 ggsave(filename = here("results/img/final/f_whg.png"),
        plot = p_out, 
-       width = 10,
-       height = 6)
+       width = 11,
+       height = 10)
 
 p_out_alt <- (p_pi + p_het + p_froh_cum) /
   (p_load_type + p_load_ind) +

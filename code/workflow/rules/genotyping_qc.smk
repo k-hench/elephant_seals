@@ -46,6 +46,18 @@ rule all_gt_qc:
                        ref = GATK_REF[0], set = ["all", "mirang", "mirleo"] )
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
+rule all_bamstats:
+    message:
+    input:
+      by_sample_ln = expand( ["../results/checkpoints/fastqc/{sample_ln}.check",
+                              "../results/qc/fastq_screen/{sample_ln}_fw_screen.txt"],
+                              sample_ln = SAMPLES_LN ),
+      by_sample = expand(["../results/qc/coverage/{sample_id}_on_{ref}_coverage.tsv.gz",
+                          "../results/qc/coverage/masks/{sample_id}_on_{ref}_binary_covmask.bed.gz",
+                          "../results/qc/bamstats/{sample_id}_on_{ref}.bamstats",
+                          "../results/het/{ref}_{sample_id}.csv"],
+                         sample_id = SAMPLES, ref = GATK_REF[0])
+
 rule all_vcfstats:
     input:
       "../results/genotyping/raw/mirang_raw_snps_stat.txt",
