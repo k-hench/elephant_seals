@@ -47,7 +47,6 @@ rule all_gt_qc:
       # GATK_REF[0] <- subset to mirang for now for disc-usage
 
 rule all_bamstats:
-    message:
     input:
       by_sample_ln = expand( ["../results/checkpoints/fastqc/{sample_ln}.check",
                               "../results/qc/fastq_screen/{sample_ln}_fw_screen.txt"],
