@@ -11,18 +11,22 @@ data_pi <- str_pad(1:20, width = 2, pad = "0") |>
   filter( (start - 1) %% 100000 == 0)
 
 data_pi |> 
-  summarise(mean_ang = mean(pi_mirang),
-            sd_ang = sd(pi_mirang), 
-            mean_leo = mean(pi_mirleo),
-            sd_leo = sd(pi_mirleo)) |> 
+  summarise(mean_ang = mean(pi_mirang, na.rm = TRUE),
+            sd_ang = sd(pi_mirang, na.rm = TRUE), 
+            mean_leo = mean(pi_mirleo, na.rm = TRUE),
+            sd_leo = sd(pi_mirleo, na.rm = TRUE)) |> 
   mutate(across(everything(), \(x){sprintf("%.4f", x)}))
 
 avg_pi <- data_pi |> 
-  summarise(mirang = sum(sites *pi_mirang) / sum(sites),
-            mirleo = sum(sites *pi_mirleo) / sum(sites)) |> 
-  pivot_longer(everything(),
+  select(sites, pi_mirang, pi_mirleo)|> 
+  pivot_longer(cols = starts_with("pi"),
                names_to = "species",
-               values_to = "pi")
+               values_to = "pi",
+               names_transform = \(str){str_remove(str,"pi_")}) |> 
+  filter(complete.cases(pi)) |> 
+  group_by(species) |> 
+  summarise(genome_wide_avg_pi = sum(sites *pi) / sum(sites)) |> 
+  ungroup()
 
 data_pi_plot <- data_pi |> 
   select(mirang = pi_mirang,
@@ -65,5 +69,5 @@ saveRDS(object = p_pi,
 
 data_pi_plot |> 
   group_by(species) |> 
-  summarise(min = min(pi),
-            max = max(pi))
+  summarise(min = min(pi, na.rm = TRUE),
+            max = max(pi, na.rm = TRUE))

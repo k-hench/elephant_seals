@@ -11,13 +11,11 @@ read_cov <- \(file){
     mutate(sample = str_remove(file, "_on_mirang_coverage.tsv.gz"))
 }
 
-
 files <- dir("results/qc/coverage/", pattern = "gz")
 
 data <- files |> 
   map_dfr(read_cov) |>
   mutate(spec = c("mirleo", "mirang")[grepl("ES", sample) + 1]) 
-
 
 data |> 
   ggplot(aes(x = sample, y = mean_depth, fill = spec)) +

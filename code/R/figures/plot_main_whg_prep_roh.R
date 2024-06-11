@@ -157,7 +157,7 @@ plot_cum_froh <- \(roh_length_threshold = 1e3, n_classes = 301){
     scale_x_continuous(breaks = 3:7,
                        labels = c("1kb", "10kb", "100kb", "1Mb", "10Mb")) +
     coord_cartesian(xlim = c(2.8, 7.3),
-                    ylim = c(0, .63),
+                    ylim = c(0, .67),
                     expand = 0) +
     labs(x = "ROH Length",
          y = "Cumulative *F*<sub>ROH</sub>",
