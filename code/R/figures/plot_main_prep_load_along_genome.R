@@ -3,6 +3,7 @@ library(patchwork)
 library(glue)
 library(prismatic)
 library(here)
+library(ggrastr)
 library(plyranges)
 
 source(here("code/R/project_defaults_shared.R"))
@@ -54,7 +55,7 @@ data_counts <- data |>
   count() |> 
   ungroup() |> 
   mutate(type = str_remove(type, "_anc"),
-         load_label = factor(load_labs[type], levels = load_labs[c(2,1,3)]))
+         load_label = factor(load_labs[type], levels = load_labs))
 
 genome_mirang <- genomes |> 
   filter(spec == "mirang") |>
@@ -66,14 +67,22 @@ clr_load_lab <- clr_load |>
                    fixed = load_labs[[3]],
                    expressed = load_labs[[2]])[names(clr_load)])
 
+unplaced_pos <- genomes |>
+  filter(spec == "mirang") |>
+  filter(row_number() > 17) |> 
+  summarise(start = min(start_pos),
+            end = max(end_pos)) |>
+  mutate(mid = (start + end)/2)
+
 p <- ggplot() +
-  geom_rect(data = genome_mirang , 
+  rasterize(geom_rect(data = genome_mirang , 
             aes(xmin = start_pos,
                 xmax = end_pos, 
                 ymin = -Inf,
                 ymax = Inf, 
                 fill = as.character(eo)),
-            color = "transparent") +
+            color = "transparent"),
+            dpi = 300) +
   geom_point(data = data_counts,
              mapping =  aes(x = gpos,
                             y = n*2*(1.5- as.numeric(factor(spec))),
@@ -83,12 +92,12 @@ p <- ggplot() +
              size = 1.5, alpha = .5) +
   geom_hline(yintercept = 0, linewidth = .3, linetype = 3) +
   scale_x_continuous(name = "Genomic Position (Gb)",
-                     labels = \(x){sprintf("%.1f", x * 1e-9)}#,
-                     # sec.axis = sec_axis(name = "Scaffold Id",
-                     #                     trans = identity,
-                     #                     breaks = genome_mirang$mid_pos[1:17],
-                     #                     label = genome_mirang$chr[1:17] |>
-                     #                       str_remove("N[CW]_0723"))
+                     labels = \(x){sprintf("%.1f", x * 1e-9)},
+                     sec.axis = sec_axis(name = "Scaffold Id",
+                                         trans = identity,
+                                         breaks = c(genome_mirang$mid_pos[1:17], unplaced_pos$mid),
+                                         label = c(genome_mirang$chr[1:17], "unplaced") |>
+                                           str_remove("NC_0723"))
                      )+
   scale_y_continuous("No. of Individuals with SNP",#"Sample count at SNP (n)",
                      labels = \(y){abs(y)}#,
@@ -98,7 +107,7 @@ p <- ggplot() +
                      #                     label = c(1,0.75, 0.5, 0.25, 0,
                      #                               0.25, 0.5, 0.75, 1))
   ) +
-  scale_fill_manual(values = c(`0` = rgb(0,0,0,.1), `1` = rgb(0,0,0,0)), guide = 'none') +
+  scale_fill_manual(values = c(`0` = rgb(.9,.9,.9,1), `1` = rgb(1,1,1,1)), guide = 'none') +
   # scale_color_manual(values = clr_load_lab) +
   scale_color_manual("Species",
                      values = c("black", "gray50"),
@@ -113,8 +122,12 @@ p <- ggplot() +
         legend.text = element_text(face = "italic"))
 
 ggsave(plot = p,
-       here("results/img/load_along_genome_draft.pdf"),
+       here("results/img/final/ext_data_fig_10.pdf"),
        width = 12, height = 5, device = cairo_pdf)
+
+ggsave(plot = p,
+       here("results/img/final/ext_data_fig_10.png"),
+       width = 12, height = 5)
 
 saveRDS(object = p,
         here("results/img/R/p_load_along_genome.Rds"))  
@@ -161,7 +174,7 @@ data_genes_summary <- data_load_on_genes |>
             spectrum = list(n)) |> 
   ungroup() |> 
   mutate(name = fct_reorder(name, -n_alleles_combined),
-         load_label = factor(load_labs[type], levels = load_labs[c(2,1,3)]))
+         load_label = factor(load_labs[type], levels = load_labs))
 
 str_c("# ",
       c("Summary data for Elephant Seal mutation load distribution over genes within the genome annotation ('GCF_021288785.2_ASM2128878v3_genomic.gtf.gz')",
@@ -188,6 +201,9 @@ ggplot() +
                  binwidth = 1, linewidth = .3) +
   facet_wrap(spec ~ .)
 
+
+range(data_genes_summary$n_SNPs_combined)
+# avg number of mutations/gene
 data_genes_summary |>
   group_by(spec) |> 
   filter(!duplicated(name)) |> 
@@ -237,3 +253,4 @@ data_genes_summary |>
   write_tsv(here("results/tab/load_by_genes.tsv"),
             col_names = TRUE,
             append = TRUE)
+

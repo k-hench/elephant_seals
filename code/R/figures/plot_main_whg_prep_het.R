@@ -49,14 +49,14 @@ p1b <- data_avg_ind |>
               shape = 21, size = point_sz,
               aes( color = treatment,
               fill = after_scale(clr_alpha(color)))) +
-  labs(y = "Heterozygosity") +
+  labs(y = "Heterozygosity",
+       x = "Species") +
   scale_color_manual(values = c(clr_pheno, mirleo = clr_default[[2]]),
                      labels = c(lab_pheno, mirleo = "M. leonina"),
                      guide = "none") +
   coord_cartesian(ylim = c(0, .0018))+
   theme_ms() +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = ggtext::element_markdown(family = fnt_sel),
+  theme(axis.title.y = ggtext::element_markdown(family = fnt_sel),
         axis.text.x = element_text(face = "italic"))
 
 data_avg_ind |> 

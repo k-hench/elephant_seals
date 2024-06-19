@@ -107,7 +107,7 @@ p1 <- roh_summary_by_sample |>
                      labels = c(lab_pheno, mirang = "Southern elephant seal"),
                      guide = "none") +
   labs(y = "*F*<sub>ROH</sub>",
-       x = NULL)+
+       x = "Species")+
   theme_ms()+
   theme(axis.title.x = ggtext::element_markdown(family = fnt_sel),
         axis.title.y = ggtext::element_markdown(family = fnt_sel),

@@ -46,7 +46,7 @@ p_pi <- data_pi_plot |>
                color = clr_default[[2]],
                fill = clr_alpha(clr_default[[2]]),
                linewidth = .2) +
-  geom_point(data = avg_pi,
+  geom_point(data = avg_pi |> rename(pi = "genome_wide_avg_pi"),
              color = clr_default[[2]],
              fill = clr_alpha("white", .75),
              size = point_sz, shape  = 21) +
@@ -59,10 +59,10 @@ p_pi <- data_pi_plot |>
   #           size = 3) +
   coord_cartesian(ylim = c(0,.004)) +
   scale_x_discrete(labels = \(x){spec_names[x]}) +
-  labs(y = "Nucleotide diversity (\U03C0)") +
+  labs(y = "Nucleotide diversity (\U03C0)",
+       x = "Species") +
   theme_ms() +
-  theme(axis.text.x = element_text(face = "italic"),
-        axis.title.x = element_blank())
+  theme(axis.text.x = element_text(face = "italic"))
 
 saveRDS(object = p_pi,
         here("results/img/R/p_pi.Rds"))  

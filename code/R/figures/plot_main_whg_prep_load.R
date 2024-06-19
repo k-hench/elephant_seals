@@ -36,7 +36,7 @@ data_load <- expand_grid(sample_id = samples$sample_id,
   pmap_dfr(read_all_load) |> 
   mutate(load_type = factor(load_type, levels = load_types))
 
-load_labs <- c("inbreeding\nload",
+load_labs <- c("inbreeding\n ",
                "segregating", 
                "drift")
 
@@ -60,7 +60,7 @@ p1 <- data_load |>
               aes(fill = after_scale(clr_alpha(color))))+#, aes(color = sample_id == "160488")) +
   geomtextpath::geom_textsegment(inherit.aes = FALSE,
                                  data = tibble(y = -30, xmin = 1.7, xmax = 3.3),
-                                 aes(y = y, yend = y, x = xmin, xend = xmax, label = "realised load"),
+                                 aes(y = y, yend = y, x = xmin, xend = xmax, label = "realised"),
                                  linewidth = .2, family = fnt_sel, size = 3) +
   facet_grid(. ~ spec_names[spec], scales = "free", switch = "y") +
   scale_color_manual("Phenotype",
@@ -73,7 +73,8 @@ p1 <- data_load |>
                   xlim = c(.4, 3.6),
                   expand = 0) +
   labs(y = "Load tally (no. SNPs)",
-       subtitle = "Load Tally by Load Type") +
+       subtitle = "Load Tally by Load Type",
+       x = "Load Type") +
   theme_ms() +
   theme(#panel.background = element_rect(color = "gray80"),
     axis.line = element_line(),
@@ -82,7 +83,6 @@ p1 <- data_load |>
     legend.background = element_blank(),
     strip.placement = "outside",
     strip.text = element_text(face = "italic"),
-    axis.title.x = element_blank(),
     legend.position = "bottom",
     legend.title = element_text(hjust = .5))
 
@@ -109,19 +109,19 @@ p2 <- data_load |>
   geom_bar(stat = 'identity', aes(fill = load_label))+
   scale_fill_manual("Load type",
                     values = clr_load_lab,
-                    labels = \(x){str_remove(x, "\\nload")}, 
+                    labels = \(x){str_remove_all(str_remove(x, "load"),"\\n")}, 
                     guide = guide_legend(title.position = "top")) +
   coord_cartesian(#xlim = c(.4,30.6),
                   expand = 0) +
   labs(y = "Load tally (no. SNPs)",
-       subtitle = "Individual Cummulative Load Tally") +
+       subtitle = "Individual Cummulative Load Tally",
+       x = "Sample ID") +
   ggforce::facet_row(spec_names[spec]~., scales = "free_x",
                      space = "free") +
   theme_ms() +
   theme(axis.text.x = ggtext::element_markdown(angle = 90,
                                                hjust = 1,
                                                vjust = .5),
-        axis.title.x = element_blank(),
         legend.position = "bottom",
         legend.title = element_text(hjust = .5),
         strip.text = element_text(face = "italic"))

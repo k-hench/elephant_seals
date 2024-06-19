@@ -177,11 +177,6 @@ rule run_snpeff:
       """
       cd {code_dir}/{params.snpeff_path}
       snpEff ann -Xmx24G -stats {wildcards.vcf_pre}_stats.html \
-          -no-downstream \
-          -no-intergenic \
-          -no-intron \
-          -no-upstream \
-          -no-utr \
           -v \
           mirang {wildcards.vcf_pre}.vcf.gz > {code_dir}/{output.snpef_vcf}
       """
