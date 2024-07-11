@@ -59,17 +59,17 @@ p1 <- data_load |>
               size = point_sz,
               aes(fill = after_scale(clr_alpha(color))))+#, aes(color = sample_id == "160488")) +
   geomtextpath::geom_textsegment(inherit.aes = FALSE,
-                                 data = tibble(y = -30, xmin = 1.7, xmax = 3.3),
+                                 data = tibble(y = -55, xmin = 1.7, xmax = 3.3),
                                  aes(y = y, yend = y, x = xmin, xend = xmax, label = "realised"),
                                  linewidth = .2, family = fnt_sel, size = 3) +
   facet_grid(. ~ spec_names[spec], scales = "free", switch = "y") +
-  scale_color_manual("Phenotype",
+  scale_color_manual("Cause of Death",
                      values = clr_pheno,
                      labels = lab_pheno,
                      na.value = clr_default[2],
                      guide = guide_legend(title.position = "top")) +
   coord_cartesian(clip = FALSE,
-                  ylim = c(0,235),
+                  ylim = c(0,415),
                   xlim = c(.4, 3.6),
                   expand = 0) +
   labs(y = "Load tally (no. SNPs)",
@@ -107,7 +107,7 @@ p2 <- data_load |>
            factor(levels = load_labs)) |> 
   ggplot(aes(x = sample_lab, y = n_snps)) +
   geom_bar(stat = 'identity', aes(fill = load_label))+
-  scale_fill_manual("Load type",
+  scale_fill_manual("Load Type",
                     values = clr_load_lab,
                     labels = \(x){str_remove_all(str_remove(x, "load"),"\\n")}, 
                     guide = guide_legend(title.position = "top")) +

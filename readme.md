@@ -2,7 +2,7 @@
 
 **Author:** Kosmas Hench
 
-This repository contains the analysis of the whole genome resequencing data analysis for the study *Consequences of an extreme bottleneck for the genetic load, inbreeding depression and the population recovery of the northern elephant seal* by Vendrami *et al*.
+This repository contains the analysis of the whole genome resequencing data analysis for the study *Consequences of an extreme bottleneck for the genetic load, inbreeding depression and the population recovery of the northern elephant seal* by Hoffman *et al*.
 
 ## Overview
 
